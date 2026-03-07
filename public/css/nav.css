@@ -1,0 +1,270 @@
+/* fade in */
+.fade-in {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Sticky navbar */
+.navbar {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1030 !important;
+    transition: background-color 0.3s ease-in-out !important;
+}
+
+/* Transparansi 100% */
+.navbar.bg-transparent {
+    background-color: rgba(0, 0, 0, 0) !important;
+}
+
+/* Transparansi 50% */
+.navbar.scrolled {
+    background-color: rgba(255, 255, 255, 0.723) !important;
+}
+
+.bg-primary.bg-gradient {
+    background: linear-gradient(
+        180deg,
+        rgba(0, 123, 255, 1) 0%,
+        rgba(0, 123, 255, 0.8) 100%
+    );
+}
+
+.rounded-3 {
+    border-radius: 0.75rem !important;
+}
+
+.feature {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    height: fit-content;
+    width: fit-content;
+}
+
+.fitur {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    height: fit-content;
+    width: 70px;
+}
+
+.carousel-inner img {
+    width: 100%;
+    object-fit: cover;
+    min-height: 300px;
+    max-height: 300px;
+}
+
+.carousel-item {
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.carousel-inner {
+    overflow: hidden;
+}
+
+.carousel-inner .active {
+    position: relative;
+}
+
+.carousel-wrapper {
+    width: 100%;
+    overflow: hidden;
+}
+
+#carouselContainer {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+
+/* transisi */
+/* Efek animasi awal */
+.fade-in,
+.slide-in {
+    opacity: 0;
+    transform: translateY(20px); /* Efek geser sedikit ke bawah */
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+/* Ketika elemen terlihat di viewport */
+.fade-in.visible,
+.slide-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.card-columns {
+    @include media-breakpoint-only(lg) {
+        column-count: 4;
+    }
+    @include media-breakpoint-only(xl) {
+        column-count: 5;
+    }
+}
+
+/* Product style */
+.grid-container {
+    column-count: 5;
+    column-gap: 15px;
+}
+
+.grid-item {
+    display: inline-block;
+    margin-bottom: 15px;
+    width: 100%;
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative; /* Tambahkan agar overlay bisa diatur */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.grid-item img {
+    width: 100%;
+    display: block;
+    border-radius: 10px;
+}
+
+/* Overlay yang muncul saat hover */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Warna gelap transparan */
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.grid-item:hover .overlay {
+    opacity: 1;
+}
+
+.overlay h5 {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.overlay p {
+    font-size: 1rem;
+    margin-bottom: 12px;
+}
+
+.buy-btn {
+    background-color: #ffd700;
+    color: black;
+    padding: 8px 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+.buy-btn:hover {
+    background-color: #ffc107;
+}
+
+/* --- Favorite Product Card Custom Styling --- */
+.product-favorite-card {
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.product-favorite-list {
+    max-height: 250px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #6c5ce7 #f1f1f1;
+}
+
+.product-favorite-list::-webkit-scrollbar {
+    width: 6px;
+}
+.product-favorite-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+.product-favorite-list::-webkit-scrollbar-thumb {
+    background-color: #6c5ce7;
+    border-radius: 10px;
+}
+
+/* List Item Favorite */
+.product-item {
+    border: none;
+    transition: background 0.3s ease;
+    border-radius: 10px;
+    margin-bottom: 5px;
+}
+
+.product-item:hover {
+    background-color: #f5f7fa;
+}
+
+/* Rank Badge Favorite */
+.rank-badge {
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    color: #fff;
+    font-weight: bold;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 3px 6px rgba(108, 92, 231, 0.5);
+}
+
+/* Product Image Favorite */
+.product-image {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.product-image:hover {
+    transform: scale(1.1);
+}
+
+/* Title khusus untuk Product Favorite */
+.product-favorite-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2d3436;
+}
+
+@media (max-width: 768px) {
+    .grid-container {
+        column-count: 2;
+    }
+}
+
+@media (max-width: 576px) {
+    .grid-container {
+        column-count: 1;
+    }
+}

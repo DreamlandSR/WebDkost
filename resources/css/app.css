@@ -1,0 +1,10 @@
+@import "../js/vendors/feather/feather.css";
+@import "./vendors/ti-icons/css/themify-icons.css";
+@import "../js/vendors/css/vendor.bundle.base.css";
+@import "../js/vendors/datatables.net-bs4/dataTables.bootstrap4.css";
+@import "../js/select.dataTables.min.css";
+@import "./vertical-layout-light/style.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
