@@ -13,7 +13,7 @@
                 <div class="row align-items-center justify-content-center">
                     <div class="col-lg-8 col-xl-7 col-xxl-6">
                         <div class="my-5 text-center text-xl-start">
-                            <h1 class="display-5 fw-bolder text-black mb-2 text-start">Griya Batik</h1>
+                            <h1 class="display-5 fw-bolder text-black mb-2 text-start">Kos Halmahera</h1>
                             <p class="lead fw-normal text-black mb-4 pr-5" style="text-align:left; font-size: 18px;">
                                 Griya Batik Disabilitas adalah wadah kreatif bagi penyandang disabilitas untuk berkarya
                                 melalui seni batik. Mengusung nilai inklusif dan pemberdayaan, Griya Batik menyatukan budaya
