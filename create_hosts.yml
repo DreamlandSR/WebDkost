@@ -1,0 +1,13 @@
+---
+- name: Create host files
+  hosts: localhost
+  tasks:
+    - name: Create dev host file
+      file:
+        path: "./dev.kelasdevops.xyz"
+        state: touch
+
+    - name: Create prod host file
+      file:
+        path: "./prod.kelasdevops.xyz"
+        state: touch
