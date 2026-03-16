@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;  // ← tambah ini
+use App\Mail\OtpMail;    
 
 class AuthController extends Controller
 {
@@ -23,6 +25,7 @@ class AuthController extends Controller
             'email'      => $request->email,
             'no_telepon' => $request->no_hp,
             'password'   => Hash::make($request->password),
+            'alamat'     => $request->alamat,  // ← tambah ini
             'role'       => 'penyewa',
         ]);
 
@@ -73,18 +76,21 @@ class AuthController extends Controller
         ]);
     }
 
-    public function lupaPassword(Request $request)
-    {
-        $request->validate(['email' => 'required|email|exists:users,email']);
-        $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        Cache::put("otp_{$request->email}", $otp, now()->addMinutes(10));
-        return response()->json([
-            'error'   => false,
-            'message' => "OTP dikirim ke {$request->email}.",
-            'otp'     => $otp, // hapus di production
-        ]);
-    }
+public function lupaPassword(Request $request)
+{
+    $request->validate(['email' => 'required|email|exists:users,email']);
+    
+    $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+    Cache::put("otp_{$request->email}", $otp, now()->addMinutes(10));
 
+    // Kirim email
+    Mail::to($request->email)->send(new OtpMail($otp));
+
+    return response()->json([
+        'error'   => false,
+        'message' => "Kode OTP telah dikirim ke {$request->email}.",
+    ]);
+}
     public function cekOtp(Request $request)
     {
         $request->validate([

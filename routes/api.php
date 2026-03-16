@@ -10,6 +10,7 @@ use App\Http\Controllers\API\TagihanController;
 use App\Http\Controllers\API\PembayaranController;
 use App\Http\Controllers\API\KeluhanController;
 use App\Http\Controllers\API\ReviewController;
+use App\Http\Controllers\API\GaleriKamarController;
 
 // ── PUBLIC ─────────────────────────────────────────────────
 Route::post('/register',       [AuthController::class, 'register']);
@@ -23,7 +24,7 @@ Route::get('/cek-api', function () {
 });
 
 // ── PROTECTED ──────────────────────────────────────────────
-Route::middleware('auth:sanctum')->group(function () {
+
 
     // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -53,13 +54,61 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/pembayaran',                 [PembayaranController::class, 'store']);
     Route::get('/pembayaran/{id}',             [PembayaranController::class, 'show']);
 
-    // Keluhan
-    Route::post('/keluhan',                    [KeluhanController::class, 'store']);
-    Route::get('/keluhan/user/{userId}',       [KeluhanController::class, 'indexByUser']);
+    Route::post('/keluhan',                  [KeluhanController::class, 'store']);
+    Route::get('/keluhan/user/{userId}',     [KeluhanController::class, 'indexByUser']);
 
     // Review
     Route::post('/review',                     [ReviewController::class, 'store']);
     Route::get('/review/kamar/{kamarId}',      [ReviewController::class, 'indexByKamar']);
     Route::put('/review/{id}',                 [ReviewController::class, 'update']);
     Route::delete('/review/{id}',              [ReviewController::class, 'destroy']);
+
+    Route::get('/image/{path}', function ($path) {
+        $fullPath = storage_path('app/public/' . $path);
+        
+        if (!file_exists($fullPath)) {
+            abort(404);
+        }
+
+        $ext      = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+        $mimeMap  = [
+            'jpg'  => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png'  => 'image/png',
+            'webp' => 'image/webp',
+            'gif'  => 'image/gif',
+        ];
+        $mimeType = $mimeMap[$ext] ?? 'image/jpeg';
+
+        return response()->stream(function () use ($fullPath) {
+            $handle = fopen($fullPath, 'rb');
+            while (!feof($handle)) {
+                echo fread($handle, 8192);
+                flush();
+            }
+            fclose($handle);
+        }, 200, [
+            'Content-Type'                => $mimeType,
+            'Content-Length'              => filesize($fullPath),
+            'Access-Control-Allow-Origin' => '*',
+            'Cache-Control'               => 'public, max-age=86400',
+        ]);
+    })->where('path', '.*');
+    
+    //Route::get('/test-image', function () {
+        //$fullPath = storage_path('app/public/keluhan/73bg0fGZYmGI8chvD2CbEuuSVHSgbGgGkEVe261A.jpg');
+        
+        // Bersihkan output buffer dulu
+        //while (ob_get_level()) {
+           // ob_end_clean();
+        //}
+        
+        //header('Content-Type: image/jpeg');
+        //header('Access-Control-Allow-Origin: *');
+       //readfile($fullPath);
+        //exit;
+    //});
+
+    Route::middleware('auth:sanctum')->group(function () {
+    
 });

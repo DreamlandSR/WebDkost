@@ -7,6 +7,18 @@ use Illuminate\Http\Request;
 
 class KeluhanController extends Controller
 {
+    private function imageToBase64($path)
+{
+    $fullPath = storage_path('app/public/' . $path);
+    if (!file_exists($fullPath)) return null;
+    
+    $ext      = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+    $mimeMap  = ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png'];
+    $mimeType = $mimeMap[$ext] ?? 'image/jpeg';
+    
+    $data = base64_encode(file_get_contents($fullPath));
+    return 'data:' . $mimeType . ';base64,' . $data;
+}
     public function indexByUser($userId)
     {
         $list = Keluhan::where('id_user', $userId)
@@ -16,7 +28,7 @@ class KeluhanController extends Controller
                 'id_kamar'          => $k->id_kamar,
                 'nomor_kamar'       => $k->kamar?->nomor_kamar,
                 'deskripsi_masalah' => $k->deskripsi_masalah,
-                'foto_bukti'        => $k->foto_bukti ? asset('storage/'.$k->foto_bukti) : null,
+                'foto_bukti' => $k->foto_bukti ? $this->imageToBase64($k->foto_bukti) : null,
                 'tgl_lapor'         => $k->tgl_lapor,
                 'status_keluhan'    => $k->status_keluhan,
             ]);
