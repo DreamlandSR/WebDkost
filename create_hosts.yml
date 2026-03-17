@@ -4,10 +4,10 @@
   tasks:
     - name: Create dev host file
       file:
-        path: "./dev.kelasdevops.xyz"
-        state: touch
+        path: "~/dev.kelasdevops.xyz"
+        state: directory
 
     - name: Create prod host file
       file:
-        path: "./prod.kelasdevops.xyz"
-        state: touch
+        path: "~/prod.kelasdevops.xyz"
+        state: directory
