@@ -3,7 +3,7 @@ node {
 
     stage("Build"){
         docker.image('php:8.2-cli').inside('-u root') {
-            sh 'apt-get update && apt-get install -y libzip-dev libpng-dev libonig-dev libxml2-dev'
+            sh 'apt-get update && apt-get install -y libzip-dev libpng-dev libonig-dev libxml2-dev libsqlite3-dev sqlite3'
             sh 'docker-php-ext-install pdo_mysql pdo_sqlite mbstring gd zip bcmath'
             sh 'curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer'
             sh 'composer install --no-interaction --prefer-dist'
@@ -19,7 +19,7 @@ node {
 
     stage("Testing"){
         docker.image('php:8.2-cli').inside('-u root') {
-            sh 'apt-get update && apt-get install -y libzip-dev libpng-dev libonig-dev libxml2-dev libsqlite3-dev'
+            sh 'apt-get update && apt-get install -y libzip-dev libpng-dev libonig-dev libxml2-dev libsqlite3-dev sqlite3'
             sh 'docker-php-ext-install pdo_mysql pdo_sqlite mbstring gd zip bcmath'
             sh 'curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer'
             sh 'composer install --no-interaction --prefer-dist'
@@ -29,7 +29,7 @@ node {
         }
     }
 
-    stage("Deploy"){
+    stage("Deploy Dev"){
         def branch = env.GIT_BRANCH ?: env.BRANCH_NAME
         if (branch == 'origin/main' || branch == 'main') {
             sh 'docker compose down'
@@ -43,8 +43,7 @@ node {
         }
     }
 
-    // deploy env prod
-    stage("Deploy"){
+    stage("Deploy Prod"){
         docker.image('agung3wi/alpine-rsync:1.1').inside('-u root') {
             sshagent(credentials: ['ssh-prod']) {
                 sh 'mkdir -p ~/.ssh'
