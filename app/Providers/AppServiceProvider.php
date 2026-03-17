@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Providers;
 
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -17,11 +16,5 @@ class AppServiceProvider extends ServiceProvider
         ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
             return config('app.frontend_url')."/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
         });
-
-        // Skip Vite manifest saat testing
-        if (app()->environment('testing')) {
-            \Illuminate\Foundation\Vite::useBuildDirectory('');
-            \Illuminate\Foundation\Vite::useManifestFilename('manifest-fake.json');
-        }
     }
 }
