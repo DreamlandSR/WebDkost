@@ -1,0 +1,545 @@
+:root {
+    --dk-primary: #00ab6b;
+    --dk-primary-hover: #008c56;
+    --dk-icon-bg: #00ab6b;
+    --dk-body: #f5fdf9;
+    --dk-text: #1f2a24;
+}
+
+body {
+    background: var(--dk-body) !important;
+    color: var(--dk-text) !important;
+    font-family: "Poppins", "Segoe UI", sans-serif;
+}
+
+a {
+    color: #0f2f24;
+}
+
+.hero {
+    background: linear-gradient(180deg, rgba(0, 171, 107, 0.08), rgba(255, 255, 255, 0));
+}
+
+header.py-5 {
+    background: #fff;
+}
+
+.btn-primary {
+    background: var(--dk-primary) !important;
+    border-color: var(--dk-primary) !important;
+    color: #fff !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background: var(--dk-primary-hover) !important;
+    border-color: var(--dk-primary-hover) !important;
+    color: #fff;
+}
+
+.btn-outline-primary {
+    background-color: transparent !important;  /* HARUS transparan */
+    color: #00AB6B !important;                 /* Teks hijau */
+    border-color: #00AB6B !important;
+    border-width: 2px !important;
+    transition: all 0.2s ease !important;
+}
+
+/* State Hover dan Focus - Background jadi hijau, teks putih */
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background-color: #00AB6B !important;      /* Hijau solid */
+    color: white !important;
+    border-color: #00AB6B !important;
+}
+
+/* State Active (SAAT DIKLIK) - Lebih gelap */
+.btn-outline-primary:active {
+    background-color: #008C56 !important;      /* Hijau lebih gelap */
+    color: white !important;
+    border-color: #008C56 !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Untuk memastikan tidak ada efek dari Bootstrap */
+.btn-outline-primary:not(:disabled):not(.disabled):active {
+    background-color: #008C56 !important;
+    color: white !important;
+    border-color: #008C56 !important;
+}
+
+/* Pastikan teks tidak hilang */
+.btn-outline-primary:active,
+.btn-outline-primary:focus,
+.btn-outline-primary:hover {
+    opacity: 1 !important;
+}
+
+.feature {
+    width: 58px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.25s ease;
+}
+
+.bg-icon {
+    background: var(--dk-icon-bg) !important;
+}
+
+.feature i {
+    font-size: 1.35rem;
+}
+
+.feature-card {
+    border: 1px solid #e9f2ea;
+    background: #fff;
+    border-radius: 15px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.card {
+    border-radius: 14px;
+    border: 0;
+}
+
+.card-body {
+    color: #1e2f27;
+}
+
+.slide-in {
+    animation: slideIn 0.45s ease-in-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#carouselContainer {
+    scroll-behavior: smooth;
+}
+
+.product-card {
+    min-width: 230px;
+}
+
+#android-download {
+    background: linear-gradient(120deg, rgba(0,171,107,0.12), #ffffff);
+    border-radius: 18px;
+    border: 1px solid #d8f0e0;
+}
+
+@media (max-width: 991px) {
+    .hero {
+        text-align: center;
+    }
+    .d-sm-flex {
+        justify-content: center !important;
+    }
+}
+
+/* Call to Action Section */
+#android-download {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 20px;
+    margin: 2rem auto;
+    max-width: 1400px;
+}
+
+/* Card Download */
+.download-card {
+    border-radius: 16px !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.download-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 30px rgba(0, 171, 107, 0.3) !important;
+}
+
+/* Tombol Download */
+.download-card .btn-light {
+    background: white;
+    border: none;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.download-card .btn-light:hover {
+    background: #f8f9fa;
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* QR Code Container */
+.download-card .bg-white {
+    border-radius: 12px !important;
+    transition: transform 0.3s ease;
+}
+
+.download-card .bg-white:hover {
+    transform: scale(1.05);
+}
+
+/* Teks putih di card */
+.download-card .text-white {
+    color: white !important;
+}
+
+.download-card .text-white-50 {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #android-download {
+        padding: 2rem 1rem !important;
+        margin: 1rem;
+        border-radius: 12px;
+    }
+    
+    .download-card {
+        max-width: 350px !important;
+    }
+    
+    .download-card .d-flex {
+        flex-direction: column !important;
+        text-align: center;
+    }
+    
+    .download-card .text-sm-start {
+        text-align: center !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .download-card {
+        max-width: 100% !important;
+    }
+    
+    .download-card .d-flex {
+        gap: 1.5rem !important;
+    }
+}
+
+/* Footer D'Kost */
+.dk-footer {
+    background: #f8f9fa;
+    color: #334155;
+}
+.dk-footer .footer-title {
+    color: #0f172a;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+}
+.dk-footer .footer-text,
+.dk-footer .footer-contact li,
+.dk-footer .footer-nav li,
+.dk-footer .news-item .text-muted {
+    color: #4a5568;
+}
+.dk-footer .footer-link {
+    color: #334155;
+    text-decoration: none;
+    font-weight: 500;
+}
+.dk-footer .footer-link:hover {
+    color: #00ab6b;
+    text-decoration: none;
+}
+.dk-footer .footer-nav li a {
+    color: #4a5568;
+    text-decoration: none;
+}
+.dk-footer .footer-nav li a:hover {
+    color: #00ab6b;
+    text-decoration: none;
+}
+.dk-footer .social-circle {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #00ab6b;
+    color: #fff;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+.dk-footer .social-circle:hover {
+    transform: translateY(-2px);
+    background: #008c56;
+}
+.dk-footer .footer-contact i {
+    color: #ffffff;
+    background: #00ab6b;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.4rem;
+    font-size: 0.8rem;
+}
+.dk-footer .footer-bottom {
+    border-top: 1px solid rgba(52, 73, 94, 0.5);
+    margin-top: 0.75rem;
+    padding-top: 0.9rem;
+}
+.dk-footer small {
+    color: #64748b;
+}
+@media (max-width: 767px) {
+    .dk-footer {
+        text-align: center;
+    }
+    .dk-footer .footer-contact li,
+    .dk-footer .footer-nav li,
+    .dk-footer .news-item {
+        text-align: center;
+    }
+    .dk-footer .d-flex {
+        justify-content: center;
+    }
+}
+
+footer.footer-01 {
+    background: #003623;
+    color: #ffffff;
+    border-top: 1px solid rgba(52, 73, 94, 0.5);
+}
+
+footer.footer-01 h2.footer-heading {
+    color: #ffffff;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+footer.footer-01 p,
+footer.footer-01 .text,
+footer.footer-01 small,
+footer.footer-01 .news-title,
+footer.footer-01 .block-23 ul li {
+    color: #bdc3c7;
+}
+
+footer.footer-01 a {
+    color: #bdc3c7;
+    text-decoration: none;
+}
+
+footer.footer-01 a:hover,
+footer.footer-01 a:focus {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+footer.footer-01 .social-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #00ab6b;
+    color: #ffffff;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+
+footer.footer-01 .social-circle:hover {
+    transform: translateY(-2px);
+    background: #008c56;
+}
+
+footer.footer-01 .bi {
+    color: #ffffff;
+}
+
+footer.footer-01 .border-top {
+    border-color: rgba(52,73,94,0.5) !important;
+}
+
+@media (max-width: 767px) {
+    footer.footer-01 {
+        text-align: left;
+    }
+    footer.footer-01 .ftco-footer-social {
+        justify-content: flex-start;
+    }
+}
+
+/* ===== MASONRY GRID UNTUK GALERI ===== */
+.grid-container {
+    column-count: 4;
+    column-gap: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.grid-item {
+    break-inside: avoid;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.grid-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.grid-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.grid-item:hover img {
+    transform: scale(1.05);
+}
+
+/* Overlay untuk informasi */
+.grid-item .overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    color: white;
+    padding: 30px 20px 20px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.grid-item:hover .overlay {
+    transform: translateY(0);
+}
+
+.grid-item .overlay h5 {
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+/* Tombol Beli */
+.buy-btn {
+    display: inline-block;
+    background: #00AB6B;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 10px;
+    transition: background 0.3s ease;
+}
+
+.buy-btn:hover {
+    background: #008C56;
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .grid-container {
+        column-count: 3;
+    }
+}
+
+@media (max-width: 992px) {
+    .grid-container {
+        column-count: 2;
+    }
+}
+
+@media (max-width: 576px) {
+    .grid-container {
+        column-count: 1;
+        padding: 10px;
+    }
+    
+    .grid-item .overlay {
+        transform: translateY(0);
+        background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    }
+}
+
+/* ===== KOS CARD STYLES ===== */
+.kos-card {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.kos-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15) !important;
+}
+
+.kos-card .card-img-top {
+    background: linear-gradient(135deg, #E0E0E0, #BDBDBD);
+}
+
+.kos-card .badge {
+    padding: 8px 12px;
+    font-weight: 500;
+    font-size: 0.8rem;
+    background-color: #F5F5F5 !important;
+    color: #4A5568 !important;
+    border-radius: 20px;
+}
+
+.kos-card .badge i {
+    color: #00AB6B;
+    font-size: 0.8rem;
+}
+
+.kos-card .text-warning i {
+    font-size: 0.9rem;
+    color: #FFC107;
+}
+
+.kos-card .btn-outline-primary {
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.kos-card .btn-outline-primary:hover {
+    background-color: #00AB6B;
+    color: white !important;
+    border-color: #00AB6B !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .kos-card .card-title {
+        font-size: 1.1rem !important;
+    }
+    
+    .kos-card .badge {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+}

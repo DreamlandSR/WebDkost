@@ -1,8 +1,8 @@
 <nav class="navbar navbar-expand-lg sticky-top bg-transparent text-white">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">
-            <img src="{{ asset('/img/griya batik_bru.png') }}" height="35" alt="Logo SMKN7 Jember" loading="lazy" />
-            <small class="fs-6 ml-2">Griya Batik</small>
+            <img src="{{ asset('/img/dkos_logo.png') }}" height="35" alt="Logo D'Kost" loading="lazy" />
+            <small class="fs-6 ml-2">D'Kost</small>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,13 +17,13 @@
                     <a class="nav-link" href="{{ route('about') }}">Tentang Kami</a>
                 </li>
                 <li class="nav-item me-4">
-                    <a class="nav-link" href="{{ route('product') }}">Produk</a>
+                    <a class="nav-link" href="{{ route('product') }}">Kamar</a>
                 </li>
             </ul>
             @guest
-                <a href="{{ route('login') }}" class="btn btn-primary">Masuk</a>
+                <a href="{{ route('login') }}" class="btn btn-primary">Login</a>
             @else
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-primary">Masuk</a>
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-primary">Login</a>
             @endguest
         </div>
     </div>
