@@ -1,50 +1,75 @@
 node {
     checkout scm
 
-    stage("Build"){
+    stage("Build") {
         docker.image('php:8.2-cli').inside('-u root') {
-            sh 'apt-get update && apt-get install -y libzip-dev libpng-dev libonig-dev libxml2-dev libsqlite3-dev sqlite3'
-            sh 'docker-php-ext-install pdo_mysql pdo_sqlite mbstring gd zip bcmath'
-            sh 'curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer'
-            sh 'composer install --no-interaction --prefer-dist'
+            sh '''
+                apt-get update -qq && apt-get install -y -qq \
+                    libzip-dev libpng-dev libonig-dev libxml2-dev libsqlite3-dev sqlite3
+                docker-php-ext-install pdo_mysql pdo_sqlite mbstring gd zip bcmath
+                curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+                composer install --no-interaction --prefer-dist --optimize-autoloader
+            '''
         }
     }
 
-    stage("Build Frontend"){
+    stage("Build Frontend") {
         docker.image('node:18').inside('-u root') {
-            sh 'npm install'
-            sh 'npm run build'
+            sh '''
+                npm install
+                npm run build
+            '''
         }
     }
 
-    stage("Testing"){
+    stage("Testing") {
         docker.image('php:8.2-cli').inside('-u root') {
-            sh 'apt-get update && apt-get install -y libzip-dev libpng-dev libonig-dev libxml2-dev libsqlite3-dev sqlite3'
-            sh 'docker-php-ext-install pdo_mysql pdo_sqlite mbstring gd zip bcmath'
-            sh 'curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer'
-            sh 'composer install --no-interaction --prefer-dist'
-            sh 'cp .env.example .env'
-            sh 'php artisan key:generate'
-            sh 'php artisan test'
+            sh '''
+                apt-get update -qq && apt-get install -y -qq \
+                    libzip-dev libpng-dev libonig-dev libxml2-dev libsqlite3-dev sqlite3
+                docker-php-ext-install pdo_mysql pdo_sqlite mbstring gd zip bcmath
+                curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+                composer install --no-interaction --prefer-dist
+                cp .env.example .env
+                php artisan key:generate
+                php artisan test
+            '''
         }
     }
 
-    stage("Deploy Dev"){
+    stage("Deploy") {
         def branch = env.GIT_BRANCH ?: env.BRANCH_NAME ?: ''
         echo "Current branch: ${branch}"
-        if (branch.contains('main')) {
-            sh 'docker compose down'
-            sh 'docker compose build --no-cache'
-            sh 'docker compose up -d'
-        } else if (branch.contains('develop')) {
-            sh 'docker compose down'
-            sh 'docker compose up -d --build'
+
+        def projectDir = '/var/www/html/WebDkost'
+
+        if (branch.contains('main') || branch.contains('develop')) {
+            sh """
+                cd ${projectDir}
+
+                # Pastikan .env ada
+                if [ ! -f .env ]; then
+                    cp .env.example .env
+                fi
+
+                # Stop & rebuild image dengan file terbaru
+                docker compose down
+                docker compose build --no-cache
+                docker compose up -d
+
+                # Jalankan migrate setelah container up
+                sleep 5
+                docker exec laravel_app php artisan migrate --force
+                docker exec laravel_app php artisan config:cache
+                docker exec laravel_app php artisan route:cache
+            """
+            echo "Deploy berhasil ke branch: ${branch}"
         } else {
             echo "Branch ${branch} - skip deploy"
         }
     }
 
-    stage("Deploy Prod"){
+    stage("Deploy Prod") {
         echo "Skip - production server belum dikonfigurasi"
     }
 }
