@@ -30,12 +30,13 @@ node {
     }
 
     stage("Deploy Dev"){
-        def branch = env.GIT_BRANCH ?: env.BRANCH_NAME
-        if (branch == 'origin/main' || branch == 'main') {
+        def branch = env.GIT_BRANCH ?: env.BRANCH_NAME ?: ''
+        echo "Current branch: ${branch}"
+        if (branch.contains('main')) {
             sh 'docker compose down'
             sh 'docker compose build --no-cache'
             sh 'docker compose up -d'
-        } else if (branch == 'origin/develop' || branch == 'develop') {
+        } else if (branch.contains('develop')) {
             sh 'docker compose down'
             sh 'docker compose up -d --build'
         } else {
@@ -44,12 +45,6 @@ node {
     }
 
     stage("Deploy Prod"){
-        docker.image('agung3wi/alpine-rsync:1.1').inside('-u root') {
-            sshagent(credentials: ['ssh-prod']) {
-                sh 'mkdir -p ~/.ssh'
-                sh 'ssh-keyscan -H "$PROD_HOST" > ~/.ssh/known_hosts'
-                sh "rsync -rav --delete ./laravel/ ubuntu@$PROD_HOST:/home/ubuntu/prod.kelasdevops.xyz/ --exclude=.env --exclude=storage --exclude=.git"
-            }
-        }
+        echo "Skip - production server belum dikonfigurasi"
     }
 }
