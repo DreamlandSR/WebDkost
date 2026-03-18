@@ -11,6 +11,10 @@ use App\Http\Controllers\API\PembayaranController;
 use App\Http\Controllers\API\KeluhanController;
 use App\Http\Controllers\API\ReviewController;
 use App\Http\Controllers\API\GaleriKamarController;
+use App\Http\Controllers\Payment\MidtransController;
+use Laravel\Sanctum\PersonalAccessToken;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 // ── PUBLIC ─────────────────────────────────────────────────
 Route::post('/register',       [AuthController::class, 'register']);
@@ -23,8 +27,11 @@ Route::get('/cek-api', function () {
     return response()->json(['message' => 'API D\'Kost terhubung!']);
 });
 
-// ── PROTECTED ──────────────────────────────────────────────
+// Webhook Midtrans — tanpa auth (Midtrans yang hit)
+Route::post('/payment/notification', [MidtransController::class, 'notification']);
 
+// ── PROTECTED ──────────────────────────────────────────────
+Route::middleware('auth:sanctum')->group(function () {
 
     // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -47,6 +54,7 @@ Route::get('/cek-api', function () {
     Route::put('/booking/{id}/batal',          [BookingController::class, 'batal']);
 
     // Tagihan
+    Route::get('/tagihan/saya',                [TagihanController::class, 'myTagihan']); // ← BARU
     Route::get('/tagihan/booking/{bookingId}', [TagihanController::class, 'indexByBooking']);
     Route::get('/tagihan/{id}',                [TagihanController::class, 'show']);
 
@@ -54,8 +62,12 @@ Route::get('/cek-api', function () {
     Route::post('/pembayaran',                 [PembayaranController::class, 'store']);
     Route::get('/pembayaran/{id}',             [PembayaranController::class, 'show']);
 
-    Route::post('/keluhan',                  [KeluhanController::class, 'store']);
-    Route::get('/keluhan/user/{userId}',     [KeluhanController::class, 'indexByUser']);
+    // Midtrans
+    Route::post('/payment/create-token',       [MidtransController::class, 'createToken']); // ← BARU
+
+    // Keluhan
+    Route::post('/keluhan',                    [KeluhanController::class, 'store']);
+    Route::get('/keluhan/user/{userId}',       [KeluhanController::class, 'indexByUser']);
 
     // Review
     Route::post('/review',                     [ReviewController::class, 'store']);
@@ -63,15 +75,48 @@ Route::get('/cek-api', function () {
     Route::put('/review/{id}',                 [ReviewController::class, 'update']);
     Route::delete('/review/{id}',              [ReviewController::class, 'destroy']);
 
+
+    //test
+    Route::get('/me', function (Request $request) {
+
+    $bearer = $request->bearerToken();
+
+    if (!$bearer) {
+        return ['error' => 'Bearer tidak ada'];
+    }
+
+    // pisahkan ID dan token
+    [$id, $plain] = explode('|', $bearer, 2);
+
+    $row = DB::table('personal_access_tokens')->where('id', $id)->first();
+
+    if (!$row) {
+        return ['error' => 'Token ID tidak ditemukan di DB'];
+    }
+
+    // bandingkan hash
+    $match = hash('sha256', $plain) === $row->token;
+
+    return [
+        'token_id' => $id,
+        'plain_token' => $plain,
+        'hash_request' => hash('sha256', $plain),
+        'hash_db' => $row->token,
+        'match' => $match,
+    ];
+    });
+
+    
+    // Image
     Route::get('/image/{path}', function ($path) {
         $fullPath = storage_path('app/public/' . $path);
-        
+
         if (!file_exists($fullPath)) {
             abort(404);
         }
 
-        $ext      = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
-        $mimeMap  = [
+        $ext     = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+        $mimeMap = [
             'jpg'  => 'image/jpeg',
             'jpeg' => 'image/jpeg',
             'png'  => 'image/png',
@@ -94,21 +139,4 @@ Route::get('/cek-api', function () {
             'Cache-Control'               => 'public, max-age=86400',
         ]);
     })->where('path', '.*');
-    
-    //Route::get('/test-image', function () {
-        //$fullPath = storage_path('app/public/keluhan/73bg0fGZYmGI8chvD2CbEuuSVHSgbGgGkEVe261A.jpg');
-        
-        // Bersihkan output buffer dulu
-        //while (ob_get_level()) {
-           // ob_end_clean();
-        //}
-        
-        //header('Content-Type: image/jpeg');
-        //header('Access-Control-Allow-Origin: *');
-       //readfile($fullPath);
-        //exit;
-    //});
-
-    Route::middleware('auth:sanctum')->group(function () {
-    
 });

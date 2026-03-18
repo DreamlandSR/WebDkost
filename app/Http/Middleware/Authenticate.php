@@ -12,6 +12,13 @@ class Authenticate
     public function handle(Request $request, Closure $next): Response
     {
         if (!Auth::check()) {
+            // Kalau request API → return JSON 401
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Unauthenticated.'
+                ], 401);
+            }
+            // Kalau request web → redirect ke login
             return redirect('/login');
         }
 

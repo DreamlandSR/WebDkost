@@ -3,72 +3,61 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Product;
+use App\Models\Kamar;
 
 class HomeController extends Controller
 {
-
     public function index()
     {
-        $products = Product::with('images')->get();
+        $kamars = Kamar::with('galeri')->get();
 
         return view('home.index', [
             'judul' => 'Beranda',
             'css' => ['nav.css', 'styles.css', 'ionicons.min.css'],
             'minimal_header' => true,
-            'products' => $products
+            'kamars' => $kamars
         ]);
     }
 
-
-
     public function login()
     {
-        $data = [
+        return view('home.login', [
             'judul' => 'Login',
             'css' => ['styles.css', 'ionicons.min.css'],
             'minimal_header' => true
-        ];
-
-        return view('home.login', $data);
+        ]);
     }
 
     public function about()
     {
-        $data = [
+        return view('home.about', [
             'judul' => 'About',
             'css' => ['nav.css', 'styles.css', 'ionicons.min.css'],
             'minimal_header' => true,
             'js' => 'script.js'
-        ];
-
-        return view('home.about', $data);
+        ]);
     }
 
     public function guide()
     {
-        $data = [
+        return view('home.guide', [
             'judul' => 'Guide',
             'css' => ['nav.css', 'styles.css', 'ionicons.min.css'],
             'minimal_header' => true,
             'js' => 'script.js'
-        ];
-
-        return view('home.guide', $data);
+        ]);
     }
 
     public function product()
     {
-        $products = Product::with('mainImage')->orderBy('id', 'asc')->get();
+        $kamars = Kamar::with('galeri')->orderBy('id_kamar', 'asc')->get();
 
-        $data = [
-            'judul' => 'Product',
+        return view('home.product', [
+            'judul' => 'Kamar',
             'css' => ['nav.css', 'styles.css', 'ionicons.min.css'],
             'minimal_header' => true,
             'js' => 'script.js',
-            'products' => $products
-        ];
-
-        return view('home.product', $data);
+            'kamars' => $kamars
+        ]);
     }
 }

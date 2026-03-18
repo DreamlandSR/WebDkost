@@ -1,15 +1,38 @@
 <?php
+
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
 
-class Pembayaran extends Model {
+class Pembayaran extends Model
+{
     protected $table = 'pembayaran';
     protected $primaryKey = 'id_pembayaran';
     public $timestamps = false;
+
     protected $fillable = [
-        'id_tagihan','order_id','snap_token','transaction_id_gateway',
-        'tgl_bayar','jumlah_bayar','metode_pembayaran','status_pembayaran'
+        'id_tagihan',
+        'order_id',
+        'snap_token',
+        'transaction_id_gateway',
+        'tgl_bayar',
+        'jumlah_bayar',
+        'metode_pembayaran',
+        'status_pembayaran',
     ];
 
-    public function tagihan() { return $this->belongsTo(Tagihan::class, 'id_tagihan', 'id_tagihan'); }
+    protected $casts = [
+        'tgl_bayar' => 'datetime', // ← tambahan
+    ];
+
+    public function tagihan()
+    {
+        return $this->belongsTo(Tagihan::class, 'id_tagihan', 'id_tagihan');
+    }
+
+    // ← tambahan, untuk catat pendapatan otomatis setelah lunas
+    public function pendapatan()
+    {
+        return $this->hasOne(Pendapatan::class, 'id_pembayaran', 'id_pembayaran');
+    }
 }
