@@ -10,20 +10,14 @@ class HomeController extends Controller
 
     public function index()
     {
-        // Ambil data kamar/kost dari database
-        $products = Product::with('images')->get(); // atau ganti dengan model Kamar
-        
-        $data = [
+        $products = Product::with('images')->get();
+
+        return view('home.index', [
             'judul' => 'Beranda',
             'css' => ['nav.css', 'styles.css', 'ionicons.min.css'],
             'minimal_header' => true,
-            'products' => $products,
-            'company_name' => 'D\'Kost',
-            'tagline' => 'Platform Untuk pemasaran kos secara online dan terpercaya',
-            'description' => 'Kos kami diingatkan dengan fasilitas yang lengkap dengan harga yang terjangkau untuk semua kalangan.'
-        ];
-
-        return view('home.index', $data);
+            'products' => $products
+        ]);
     }
 
 
