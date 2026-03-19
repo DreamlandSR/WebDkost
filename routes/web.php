@@ -13,6 +13,7 @@ use App\Http\Controllers\PengirimanController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Payment\MidtransController;
 
 /*
 |--------------------------------------------------------------------------
@@ -118,3 +119,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
 |--------------------------------------------------------------------------
 */
 require __DIR__ . '/auth.php';
+
+
+//Midtrans routes
+Route::middleware('auth')->group(function () {
+    Route::get('/payment/{orderId}', [PaymentController::class, 'show'])->name('payment.show');
+    Route::get('/payment/success',   [PaymentController::class, 'success'])->name('payment.success');
+    Route::get('/payment/pending',   [PaymentController::class, 'pending'])->name('payment.pending');
+    Route::get('/payment/failed',    [PaymentController::class, 'failed'])->name('payment.failed');
+});

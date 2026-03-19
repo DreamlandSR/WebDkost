@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Middleware;
 
 use Closure;
@@ -11,6 +10,12 @@ class Authenticate
 {
     public function handle(Request $request, Closure $next): Response
     {
+        // API request → jangan redirect
+        if ($request->is('api/*') || $request->expectsJson()) {
+            return $next($request);  // biarkan auth:sanctum yang handle
+        }
+
+        // Web request → redirect jika belum login
         if (!Auth::check()) {
             return redirect('/login');
         }

@@ -26,35 +26,37 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__.'/../routes/api.php',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        
-        // Middleware aliases
-        $middleware->alias([
-            'auth' => Authenticate::class,
-            'admin' => AdminMiddleware::class,
-            'role' => RoleMiddleware::class,
-            'permission' => PermissionMiddleware::class,
-            'role_or_permission' => RoleOrPermissionMiddleware::class,
-        ]);
-        
-        // Default web middleware stack
-        $middleware->web([
-            EncryptCookies::class,
-            AddQueuedCookiesToResponse::class,
-            StartSession::class,
-            ShareErrorsFromSession::class,
-            ValidateCsrfToken::class,
-            SubstituteBindings::class,
-        ]);
+    
+    $middleware->alias([
+        'auth'               => Authenticate::class,
+        'admin'              => AdminMiddleware::class,
+        'role'               => RoleMiddleware::class,
+        'permission'         => PermissionMiddleware::class,
+        'role_or_permission' => RoleOrPermissionMiddleware::class,
+    ]);
+    
+    // Web middleware stack
+    $middleware->web([
+        EncryptCookies::class,
+        AddQueuedCookiesToResponse::class,
+        StartSession::class,
+        ShareErrorsFromSession::class,
+        ValidateCsrfToken::class,
+        SubstituteBindings::class,
+    ]);
 
-       
-        
-        // Middleware groups lainnya jika diperlukan
-        $middleware->api([
-            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            'throttle:60,1', // 60 requests per minute
-            SubstituteBindings::class,
-        ]);
-    })
+    // API middleware — tanpa session
+    $middleware->api([
+        'throttle:60,1',
+        SubstituteBindings::class,
+    ]);
+
+    // ← Tambahkan ini: exclude API dari session/cookie middleware
+    $middleware->validateCsrfTokens(except: [
+        'api/*',
+        'api/pembayaran/webhook',
+    ]);
+})
     ->withExceptions(function (Exceptions $exceptions) {
         // Custom exception handling
     })->create();
