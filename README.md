@@ -52,12 +52,16 @@ Pastikan bagian database seperti ini:
 DB_CONNECTION=mysql
 DB_HOST=db
 DB_PORT=3306
-DB_DATABASE=nama_database
+DB_DATABASE=laravel
 DB_USERNAME=username
 DB_PASSWORD=password
+
+SESSION_DRIVER=file
+CACHE_STORE=file
 ```
 
 > ⚠️ Gunakan `DB_HOST=db` bukan `DB_HOST=127.0.0.1`
+> ⚠️ Gunakan `SESSION_DRIVER=file` dan `CACHE_STORE=file` untuk menghindari error tabel sessions/cache
 
 ### 4 — Setup Docker Socket (WSL)
 
@@ -82,6 +86,7 @@ source ~/.bashrc
 ### 5 — Build dan Jalankan Docker
 
 ```bash
+cd /var/www/html/WebDkost
 docker compose up -d --build
 ```
 
@@ -105,10 +110,10 @@ laravel_db     ✅
 docker exec laravel_app php artisan key:generate
 ```
 
-### 7 — Jalankan Migration dan Seeder
+### 7 — Jalankan Migration
 
 ```bash
-docker exec laravel_app php artisan migrate --seed
+docker exec laravel_app php artisan migrate --force
 ```
 
 ### 8 — Akses Aplikasi
@@ -138,35 +143,36 @@ docker compose up -d
 # Stop semua container
 docker compose down
 
+# Stop dan hapus semua volume (HATI-HATI: data akan hilang)
+docker compose down -v
+
+# Rebuild image dari awal
+docker compose down
+docker rmi webdkost-app -f
+docker compose build --no-cache
+docker compose up -d
+
 # Restart container tertentu
-docker compose restart laravel_nginx
+docker compose restart nginx
 ```
 
 ### Artisan Commands
 
 ```bash
 # Migration
-docker exec laravel_app php artisan migrate
+docker exec laravel_app php artisan migrate --force
 docker exec laravel_app php artisan migrate:rollback
-docker exec laravel_app php artisan db:seed
+docker exec laravel_app php artisan migrate:fresh --force
 
 # Clear cache
 docker exec laravel_app php artisan cache:clear
 docker exec laravel_app php artisan config:clear
 docker exec laravel_app php artisan view:clear
-```
+docker exec laravel_app php artisan route:clear
 
-### Menjalankan Test
-
-```bash
-# Test di lokal (wajib sebelum push!)
-php artisan test
-
-# Test spesifik
-php artisan test tests/Feature/ProfileTest.php
-
-# Test dengan detail
-php artisan test --verbose
+# Cek status tabel database
+docker exec laravel_app php artisan migrate:status
+docker exec laravel_app php artisan db:show
 ```
 
 ### Melihat Log
@@ -175,6 +181,19 @@ php artisan test --verbose
 docker logs laravel_app --tail 50
 docker logs laravel_nginx --tail 50
 docker logs laravel_db --tail 50
+```
+
+### Menjalankan Test
+
+```bash
+# Test di lokal (wajib sebelum push!)
+docker exec laravel_app php artisan test
+
+# Test spesifik
+docker exec laravel_app php artisan test tests/Feature/ProfileTest.php
+
+# Test dengan detail
+docker exec laravel_app php artisan test --verbose
 ```
 
 ---
@@ -203,7 +222,7 @@ git checkout -b feature/nama-fitur
 # 3. Kerjakan perubahan...
 
 # 4. Test di lokal WAJIB sebelum push
-php artisan test
+docker exec laravel_app php artisan test
 
 # 5. Commit dan push
 git add .
@@ -215,6 +234,25 @@ git push origin feature/nama-fitur
 # 8. Setelah approve, merge ke develop
 # 9. Develop ke main melalui PR
 ```
+
+### ⚠️ Penting Setelah Merge Branch
+
+Setelah merge branch ke develop, selalu rebuild Docker agar perubahan masuk ke container:
+
+```bash
+git checkout develop
+git pull origin develop
+
+docker compose down
+docker rmi webdkost-app -f
+docker compose build --no-cache
+docker compose up -d
+
+sleep 5
+docker exec laravel_app php artisan migrate --force
+```
+
+> ⚠️ Karena file di-COPY ke dalam Docker image saat build, setiap perubahan kode memerlukan rebuild image.
 
 ### Format Pesan Commit
 
@@ -266,8 +304,8 @@ Build Frontend → npm install & build Vite
       ↓
 Testing → php artisan test (SQLite)
       ↓
-Deploy Dev  → docker compose up (branch develop)
-Deploy Prod → rsync ke server (branch main)
+Deploy Dev  → docker compose up (branch develop/main)
+Deploy Prod → konfigurasi server production
 ```
 
 ### Menjalankan Build Manual
@@ -286,6 +324,16 @@ WebDkost/
 ├── app/
 │   ├── Http/Controllers/   → Controller
 │   ├── Models/             → Model Eloquent
+│   │   ├── Kamar.php
+│   │   ├── GaleriKamar.php
+│   │   ├── Booking.php
+│   │   ├── Tagihan.php
+│   │   ├── Pembayaran.php
+│   │   ├── FasilitasKamar.php
+│   │   ├── Furnitur.php
+│   │   ├── Keluhan.php
+│   │   ├── Review.php
+│   │   └── User.php
 │   └── Providers/          → Service Provider
 ├── database/
 │   ├── factories/          → Factory untuk testing
@@ -309,6 +357,28 @@ WebDkost/
 ├── entrypoint.sh           → Docker entrypoint script
 └── Jenkinsfile             → CI/CD pipeline config
 ```
+
+---
+
+## 🗃️ Struktur Database
+
+| Tabel | Keterangan |
+|---|---|
+| `users` | Data pengguna (admin & penyewa) |
+| `kamar` | Data kamar kost |
+| `galeri_kamar` | Foto-foto kamar |
+| `fasilitas_kamar` | Fasilitas tiap kamar |
+| `furnitur` | Data furnitur tambahan |
+| `booking` | Data pemesanan kamar |
+| `booking_detail_furnitur` | Furnitur yang dipilih per booking |
+| `tagihan` | Tagihan bulanan penyewa |
+| `pembayaran` | Riwayat pembayaran |
+| `pendapatan` | Rekap pendapatan |
+| `pengeluaran` | Rekap pengeluaran |
+| `review` | Ulasan kamar dari penyewa |
+| `keluhan` | Keluhan penyewa |
+| `sessions` | Session Laravel |
+| `cache` | Cache Laravel |
 
 ---
 
@@ -338,7 +408,67 @@ docker compose up -d laravel_db
 docker logs laravel_db --tail 30
 ```
 
-### 4. Jenkins permission denied Docker socket
+### 4. File not found di localhost:8000
+
+Penyebab paling umum di WSL2 — volume mount tidak bekerja dengan relative path.
+
+```bash
+# Pastikan docker-compose.yml pakai absolute path
+# volumes:
+#   - /var/www/html/WebDkost:/var/www   ✅
+#   - .:/var/www                         ❌ (tidak bekerja di WSL2)
+
+# Rebuild ulang
+docker compose down -v
+docker compose build --no-cache
+docker compose up -d
+```
+
+### 5. Error: Table 'laravel.sessions' doesn't exist
+
+```bash
+docker exec laravel_app php artisan session:table
+docker exec laravel_app php artisan migrate --force
+```
+
+Atau ganti ke file driver di `.env`:
+```env
+SESSION_DRIVER=file
+CACHE_STORE=file
+```
+
+### 6. Error: Table 'laravel.products' doesn't exist
+
+Project ini menggunakan tabel `kamar`, bukan `products`. Pastikan semua Controller, Model, dan View sudah menggunakan model `Kamar` bukan `Product`.
+
+```bash
+# Cari file yang masih pakai 'products'
+docker exec laravel_app grep -r "products" /var/www/app --include="*.php" -l
+```
+
+### 7. Perubahan kode tidak muncul setelah pull
+
+Karena file di-COPY ke dalam Docker image, perlu rebuild setiap ada perubahan:
+
+```bash
+docker compose down
+docker rmi webdkost-app -f
+docker compose build --no-cache
+docker compose up -d
+sleep 5
+docker exec laravel_app php artisan migrate --force
+```
+
+### 8. Error: composer.json not found di container
+
+Volume mount tidak bekerja. Pastikan menjalankan `docker compose` dari direktori project yang benar:
+
+```bash
+cd /var/www/html/WebDkost
+docker compose up -d
+```
+
+### 9. Jenkins permission denied Docker socket
 
 ```bash
 # Fix manual (lakukan setiap WSL restart jika .bashrc belum dikonfigurasi)
@@ -349,7 +479,15 @@ echo 'sudo chmod 666 /run/docker.sock 2>/dev/null || true' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-### 5. Git permission error saat checkout branch
+### 10. PHP version conflict saat build
+
+Jika muncul error seperti `requires php-64bit ^8.3`, ganti versi PHP di Dockerfile:
+
+```dockerfile
+FROM php:8.3-fpm   # ✅ Gunakan 8.3
+```
+
+### 11. Git permission error saat checkout branch
 
 ```bash
 sudo chown -R $USER:$USER storage bootstrap/cache
@@ -358,7 +496,7 @@ git restore storage/
 git restore bootstrap/cache/
 ```
 
-### 6. VSCode tidak sync dengan perubahan di WSL
+### 12. VSCode tidak sync dengan perubahan di WSL
 
 ```bash
 # Selalu buka VSCode dari terminal WSL
@@ -367,20 +505,7 @@ code .
 # Pastikan pojok kiri bawah menunjukkan ">< WSL: Ubuntu"
 ```
 
-### 7. File not found saat akses localhost:8000
-
-```bash
-# Pastikan nginx container jalan
-docker ps | grep laravel_nginx
-
-# Jika tidak jalan, start ulang
-docker compose up -d
-
-# Cek log nginx
-docker logs laravel_nginx --tail 20
-```
-
-### 8. php artisan serve tidak bisa konek database
+### 13. php artisan serve tidak bisa konek database
 
 Jangan gunakan `php artisan serve` — gunakan Docker:
 ```bash
