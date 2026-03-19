@@ -11,8 +11,8 @@
                         <div class="col-12 col-md-6 px-4 py-5">
                             {{-- Logo --}}
                             <div class="mb-5 d-flex justify-content-center">
-                                <img src="{{ asset('img/Asset 6.png') }}" alt="logo" class="img-fluid"
-                                    style="max-width: 100px;">
+                                <img src="{{ asset('img/dkos_logo.png') }}" alt="logo" class="img-fluid"
+                                    style="max-width: 0px;">
                             </div>
 
                             {{-- Title and Back Button --}}
