@@ -8,109 +8,103 @@ use Carbon\Carbon;
 
 class AdminController extends Controller
 {
-
     public function index()
     {
         $now = Carbon::now();
         $thirtyDaysAgo = $now->copy()->subDays(30);
         $prevThirtyDaysAgo = $now->copy()->subDays(60);
 
-        // Data 30 hari terakhir
-        $totalProduk = DB::table('products')
-            ->where('created_at', '>=', $thirtyDaysAgo)
-            ->count();
+        // Total Kamar (pengganti products)
+        $totalProduk = DB::table('kamar')->count();
+        $prevProduk = 0;
 
+        // Total Register user baru 30 hari
         $totalRegister = DB::table('users')
             ->where('created_at', '>=', $thirtyDaysAgo)
             ->count();
-
-        $totalSold = DB::table('orders')
-            ->where('status', 'completed')
-            ->where('created_at', '>=', $thirtyDaysAgo)
-            ->count();
-
-        $totalPembayaran = DB::table('orders')
-            ->where('status', 'completed')
-            ->where('created_at', '>=', $thirtyDaysAgo)
-            ->sum('total_harga');
-
-        // Data 30 hari sebelumnya (untuk perbandingan)
-        $prevProduk = DB::table('products')
-            ->whereBetween('created_at', [$prevThirtyDaysAgo, $thirtyDaysAgo])
-            ->count();
-
         $prevRegister = DB::table('users')
             ->whereBetween('created_at', [$prevThirtyDaysAgo, $thirtyDaysAgo])
             ->count();
 
-        $prevSold = DB::table('orders')
-            ->where('status', 'paid')
-            ->whereBetween('created_at', [$prevThirtyDaysAgo, $thirtyDaysAgo])
+        // Total Booking selesai 30 hari (pengganti sold)
+        $totalSold = DB::table('booking')
+            ->where('status_booking', 'selesai')
+            ->where('tgl_booking', '>=', $thirtyDaysAgo)
+            ->count();
+        $prevSold = DB::table('booking')
+            ->where('status_booking', 'selesai')
+            ->whereBetween('tgl_booking', [$prevThirtyDaysAgo, $thirtyDaysAgo])
             ->count();
 
-        $prevPembayaran = DB::table('orders')
-            ->where('status', 'paid')
-            ->whereBetween('created_at', [$prevThirtyDaysAgo, $thirtyDaysAgo])
-            ->sum('total_harga');
+        // Total Pembayaran 30 hari
+        $totalPembayaran = DB::table('pembayaran')
+            ->where('status_pembayaran', 'settlement')
+            ->where('tgl_bayar', '>=', $thirtyDaysAgo)
+            ->sum('jumlah_bayar');
+        $prevPembayaran = DB::table('pembayaran')
+            ->where('status_pembayaran', 'settlement')
+            ->whereBetween('tgl_bayar', [$prevThirtyDaysAgo, $thirtyDaysAgo])
+            ->sum('jumlah_bayar');
 
         // Hitung pertumbuhan (%)
         $growth = function ($current, $previous) {
-            if ($previous == 0) {
-                return $current > 0 ? 100 : 0;
-            }
+            if ($previous == 0) return $current > 0 ? 100 : 0;
             return round((($current - $previous) / $previous) * 100, 2);
         };
 
-        $growthProduk = $growth($totalProduk, $prevProduk);
-        $growthRegister = $growth($totalRegister, $prevRegister);
-        $growthSold = $growth($totalSold, $prevSold);
+        $growthProduk     = $growth($totalProduk, $prevProduk);
+        $growthRegister   = $growth($totalRegister, $prevRegister);
+        $growthSold       = $growth($totalSold, $prevSold);
         $growthPembayaran = $growth($totalPembayaran, $prevPembayaran);
 
-        // Ambil produk terlaris jika dipanggil oleh /admin/terlaris
-        $produkTerlaris = DB::table('order_items')
-            ->join('products', 'order_items.product_id', '=', 'products.id')
-            ->select('products.nama as nama_produk', DB::raw('SUM(order_items.kuantitas) as total_terjual'))
-            ->groupBy('products.nama')
+        // Kamar terlaris (pengganti produk terlaris)
+        $produkTerlaris = DB::table('booking')
+            ->join('kamar', 'booking.id_kamar', '=', 'kamar.id_kamar')
+            ->select('kamar.nomor_kamar as nama_produk', DB::raw('COUNT(booking.id_booking) as total_terjual'))
+            ->where('booking.status_booking', 'selesai')
+            ->groupBy('kamar.id_kamar', 'kamar.nomor_kamar')
             ->orderByDesc('total_terjual')
             ->limit(6)
             ->get();
 
-        // Total omset keseluruhan (tanpa batasan hari)
-        $totalOmsetKeseluruhan = DB::table('orders')
-            ->where('status', 'completed')
-            ->sum('total_harga');
+        // Total omset keseluruhan
+        $totalOmsetKeseluruhan = DB::table('pembayaran')
+            ->where('status_pembayaran', 'settlement')
+            ->sum('jumlah_bayar');
 
-        $productFavorite = DB::table('order_items')
-            ->join('products', 'order_items.product_id', '=', 'products.id')
-            ->leftJoin('product_images', function ($join) {
-                $join->on('products.id', '=', 'product_images.product_id')
-                    ->where('product_images.is_main', '=', 1);
-            })
+        // Kamar favorite (pengganti product favorite)
+        $productFavorite = DB::table('booking')
+            ->join('kamar', 'booking.id_kamar', '=', 'kamar.id_kamar')
             ->select(
-                'products.id',
-                'products.nama as nama_produk',
-                DB::raw('SUM(order_items.kuantitas) as total_terjual'),
-                'product_images.image_product'
+                'kamar.id_kamar',
+                'kamar.nomor_kamar as nama_produk',
+                'kamar.tipe_kamar',
+                DB::raw('COUNT(booking.id_booking) as total_terjual')
             )
-            ->groupBy('products.id', 'products.nama', 'product_images.image_product')
+            ->groupBy('kamar.id_kamar', 'kamar.nomor_kamar', 'kamar.tipe_kamar')
             ->orderByDesc('total_terjual')
             ->limit(5)
             ->get()
             ->map(function ($item) {
-                if ($item->image_product) {
-                    $base64 = base64_encode($item->image_product);
-                    $item->image_base64 = "data:image/jpeg;base64,{$base64}";
-                } else {
-                    $item->image_base64 = asset('img/default.jpg');
-                }
+                // Cek apakah ada foto dari galeri_kamar
+                $foto = DB::table('galeri_kamar')
+                    ->where('id_kamar', $item->id_kamar)
+                    ->where('is_main', 1)
+                    ->first();
+
+                $item->image_base64 = $foto
+                    ? asset('storage/' . $foto->url_foto)
+                    : asset('img/default.jpg');
+
                 return $item;
             });
 
-        $completedOrders = DB::table('orders')
-            ->selectRaw('MONTH(created_at) as bulan, COUNT(*) as total')
-            ->where('status', 'completed')
-            ->groupByRaw('MONTH(created_at)')
-            ->orderByRaw('MONTH(created_at)')
+        // Chart booking selesai per bulan
+        $completedOrders = DB::table('booking')
+            ->selectRaw('MONTH(tgl_booking) as bulan, COUNT(*) as total')
+            ->where('status_booking', 'selesai')
+            ->groupByRaw('MONTH(tgl_booking)')
+            ->orderByRaw('MONTH(tgl_booking)')
             ->get();
 
         $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
@@ -119,15 +113,12 @@ class AdminController extends Controller
         foreach ($completedOrders as $data) {
             $bulanIndex = $data->bulan - 1;
             if ($bulanIndex >= 0 && $bulanIndex < 12) {
-                $orderCountPerMonth[$bulanIndex] = (int)$data->total;
+                $orderCountPerMonth[$bulanIndex] = (int) $data->total;
             }
         }
 
-        // Pastikan ada minimal 1 nilai bukan nol
         if (max($orderCountPerMonth) === 0) {
-            $orderCountPerMonth = array_map(function () {
-                return rand(1, 5); // Nilai dummy untuk testing
-            }, $orderCountPerMonth);
+            $orderCountPerMonth = array_map(fn() => rand(1, 5), $orderCountPerMonth);
         }
 
         $growthData = [
@@ -149,5 +140,18 @@ class AdminController extends Controller
             'productFavorite',
             'growthData'
         ));
+    }
+
+    public function produkTerlaris()
+    {
+        $produkTerlaris = DB::table('booking')
+            ->join('kamar', 'booking.id_kamar', '=', 'kamar.id_kamar')
+            ->select('kamar.nomor_kamar as nama_produk', DB::raw('COUNT(booking.id_booking) as total_terjual'))
+            ->where('booking.status_booking', 'selesai')
+            ->groupBy('kamar.id_kamar', 'kamar.nomor_kamar')
+            ->orderByDesc('total_terjual')
+            ->get();
+
+        return view('dashboard.terlaris', compact('produkTerlaris'));
     }
 }

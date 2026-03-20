@@ -26,7 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__.'/../routes/api.php',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        
+
         // Middleware aliases
         $middleware->alias([
             'auth' => Authenticate::class,
@@ -35,19 +35,19 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
         ]);
-        
-        // Default web middleware stack
-        $middleware->web([
-            EncryptCookies::class,
-            AddQueuedCookiesToResponse::class,
-            StartSession::class,
-            ShareErrorsFromSession::class,
-            ValidateCsrfToken::class,
-            SubstituteBindings::class,
-        ]);
 
-       
-        
+        // Default web middleware stack
+        // $middleware->web([
+        //     EncryptCookies::class,
+        //     AddQueuedCookiesToResponse::class,
+        //     StartSession::class,
+        //     ShareErrorsFromSession::class,
+        //     ValidateCsrfToken::class,
+        //     SubstituteBindings::class,
+        // ]);
+
+
+
         // Middleware groups lainnya jika diperlukan
         $middleware->api([
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
@@ -59,4 +59,3 @@ return Application::configure(basePath: dirname(__DIR__))
         // Custom exception handling
     })->create();
 
-    
