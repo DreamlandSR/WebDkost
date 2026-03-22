@@ -137,16 +137,14 @@
                             <div class="carousel-inner">
                                 @foreach ($products as $index => $product)
                                     @php
-                                        $image = $product->images->first();
-                                        $base64 = $image ? base64_encode($image->image_product) : null;
-                                        $mime = $image
-                                            ? (new \finfo(FILEINFO_MIME_TYPE))->buffer($image->image_product)
-                                            : null;
+                                        $image = $product->galeri->first();
+                                        $base64 = $image ? base64_encode(file_get_contents(storage_path('app/public/' . $image->url_foto))) : null;
+                                        $mime = $image ? 'image/jpeg' : null;
                                     @endphp
                                     <div class="carousel-item {{ $index == 0 ? 'active' : '' }}"
                                         data-name="{{ $product->nama }}" data-description="{{ $product->deskripsi }}">
                                         @if ($image)
-                                            <img src="data:{{ $mime }};base64,{{ $base64 }}"
+                                            <img src="{{ $base64 }}"
                                                 class="img-square d-block w-100" alt="Product Image">
                                         @else
                                             <img src="{{ asset('img/kamira.png') }}" class="img-square d-block w-100"
@@ -215,16 +213,16 @@
                 <div id="carouselContainer" class="d-flex overflow-hidden">
                     @foreach ($products as $product)
                         @php
-                            $image = $product->images->first();
-                            $base64 = $image ? base64_encode($image->image_product) : null;
-                            $mime = $image ? (new \finfo(FILEINFO_MIME_TYPE))->buffer($image->image_product) : null;
+                            $image = $product->galeri->first();
+                            $base64 = $image ? $image->url_foto : null;
+                            $mime = 'image/jpeg';
                         @endphp
 
                         <div class="product-card me-3 mx-3 mb-5" style="flex: 0 0 22%;">
                             <div class="card h-100 shadow-sm">
                                 @if ($image)
                                     <img class="card-img-top rounded"
-                                        src="data:{{ $mime }};base64,{{ $base64 }}"
+                                        src="{{ $base64 }}"
                                         style="height: 200px; object-fit: cover ;" alt="{{ $product->nama }}">
                                 @else
                                     <img class="card-img-top rounded" src="{{ asset('/img/room-default.jpg') }}"

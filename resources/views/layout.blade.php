@@ -8,6 +8,7 @@
     <title>Halaman Admin</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="icon" href="{{ asset('img/asset 7.png') }}">
+    <link rel="stylesheet" href="{{ asset('css/styling.css') }}">
 </head>
 
 <body>
