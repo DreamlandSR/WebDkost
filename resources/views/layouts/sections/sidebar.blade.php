@@ -1,4 +1,4 @@
-<nav class="sidebar sidebar-offcanvas" id="sidebar">
+<nav class="sidebar sidebar-offcanvas d-none d-lg-block" id="sidebar">
     <div class="sidebar-brand">
         <div class="brand-logo">
             <img src="{{ asset('img/dkos_logo.png') }}" alt="logo">

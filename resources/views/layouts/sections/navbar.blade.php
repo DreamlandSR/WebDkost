@@ -77,7 +77,7 @@
             
             <li class="nav-item nav-profile ps-2">
                 <a class="nav-link d-flex align-items-center gap-3 p-0" href="{{ url('/ProfilePage') }}" style="border-radius: 50px; padding: 4px 6px 4px 18px !important; background: #ffffff; border: 1px solid #f0f4f8; transition: all 0.3s ease;" onmouseover="this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)'; this.style.borderColor='rgba(0,0,0,0.08)';" onmouseout="this.style.boxShadow='none'; this.style.borderColor='#f0f4f8';">
-                    <span class="d-none d-md-block fw-bold text-dark" style="font-size: 13.5px; letter-spacing: -0.2px;">Hi, {{ Auth::user()->nama ?? 'Admin' }}</span>
+                    <span class="d-none d-md-block fw-bold text-dark" style="font-size: 13.5px; letter-spacing: -0.2px;">{{ Auth::user()->nama ?? 'Admin' }}</span>
                     <img src="{{ asset(empty(Auth::user()->avatar) ? 'img/Batik 2.jpg' : 'storage/avatars/' . Auth::user()->avatar) }}"
                         alt="Profile" class="rounded-circle shadow-sm" style="width: 38px; height: 38px; object-fit: cover; border: 2px solid #fff;" />
                 </a>
@@ -103,7 +103,7 @@
                 </div>
             </li>
         </ul>
-        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+        <button class="navbar-toggler navbar-toggler-right d-none align-self-center" type="button"
             data-toggle="offcanvas">
             <span class="icon-menu"></span>
         </button>
