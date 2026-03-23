@@ -18,14 +18,18 @@ class GaleriKamarController extends Controller
 
         $galeri = GaleriKamar::create([
             'id_kamar' => $id,
-            'url_foto' => asset('storage/' . $path),
+            'url_foto' => $path,
             'is_main'  => $request->is_main ?? 0,
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Foto berhasil diupload.',
-            'data'    => $galeri,
+            'data'    => [
+                'id_foto'  => $galeri->id_foto,
+                'id_kamar' => $galeri->id_kamar,
+                'url_foto' => asset('storage/' . $galeri->url_foto), // generate di sini
+                'is_main'  => $galeri->is_main,
+            ],
         ]);
     }
 }

@@ -23,6 +23,8 @@ Route::get('/cek-api', function () {
     return response()->json(['message' => 'API D\'Kost terhubung!']);
 });
 
+Route::post('/galeri-kamar/{id}', [GaleriKamarController::class, 'store']);
+
 // Webhook Midtrans — PUBLIC (tidak pakai auth)
 Route::post('/pembayaran/webhook', [PembayaranController::class, 'webhook']);
 

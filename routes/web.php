@@ -14,7 +14,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Payment\MidtransController;
-
+use App\Http\Controllers\Api\GaleriKamarController;
 /*
 |--------------------------------------------------------------------------
 | Guest Routes (untuk tamu yang belum login)
@@ -37,6 +37,19 @@ Route::middleware('guest')->group(function () {
     Route::get('forgotPassword', [PasswordResetLinkController::class, 'create'])->name('forgot-password');
 });
 
+// CORS untuk storage files
+// Override storage route dengan CORS
+Route::get('storage/{path}', function ($path) {
+    $fullPath = storage_path('app/public/' . $path);
+    
+    if (!file_exists($fullPath)) {
+        abort(404);
+    }
+    
+    return response()->file($fullPath, [
+        'Access-Control-Allow-Origin' => '*',
+    ]);
+})->where('path', '.*')->name('storage.local');
 /*
 |--------------------------------------------------------------------------
 | Public Routes (bisa diakses semua orang)

@@ -19,7 +19,7 @@ class KamarController extends Controller
                 'deskripsi'       => $kamar->deskripsi,
                 'harga_per_bulan' => $kamar->harga_per_bulan,
                 'status_kamar'    => $kamar->status_kamar,
-                'foto_primary'    => $mainFoto ? $mainFoto->url_foto : null,
+                'foto_primary' => $mainFoto ? asset('storage/' . $mainFoto->url_foto) : null,
                 'rating'          => $avgRating ? round($avgRating, 1) : null,
             ];
         });
@@ -46,8 +46,8 @@ class KamarController extends Controller
                 'deskripsi'       => $kamar->deskripsi,
                 'harga_per_bulan' => $kamar->harga_per_bulan,
                 'status_kamar'    => $kamar->status_kamar,
-                'foto_primary'    => $mainFoto ? $mainFoto->url_foto : null,
-                'galeri'          => $kamar->galeri->pluck('url_foto'),
+                'foto_primary' => $mainFoto ? asset('storage/' . $mainFoto->url_foto) : null,
+                'galeri' => $kamar->galeri->map(fn($g) => asset('storage/' . $g->url_foto)),
                 'fasilitas'       => $kamar->fasilitas->map(fn($f) => [
                     'nama'      => $f->nama_fasilitas,
                     'deskripsi' => $f->deskripsi_fasilitas,
