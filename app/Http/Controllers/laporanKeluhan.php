@@ -29,4 +29,17 @@ class laporanKeluhan extends Controller
 
         return view('dashboard.keluhan', compact('keluhans'));
     }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status_keluhan' => 'required|in:pending,diproses,selesai',
+        ]);
+
+        $keluhan = keluhan::findOrFail($id);
+        $keluhan->status_keluhan = $request->status_keluhan;
+        $keluhan->save();
+
+        return redirect()->back()->with('success', 'Status keluhan berhasil diperbarui.');
+    }
 }
