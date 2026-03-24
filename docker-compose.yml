@@ -21,25 +21,15 @@ services:
     networks:
       - laravel
 
-  db:
+laravel_db:
     image: mysql:8.0
     container_name: laravel_db
-    restart: unless-stopped
+    restart: always
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_DATABASE: umkm_batik
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
     ports:
       - "3306:3306"
     volumes:
-      - dbdata:/var/lib/mysql
-    networks:
-      - laravel
-
-networks:
-  laravel:
-    driver: bridge
-
-volumes:
-  dbdata:
+      - db_data:/var/lib/mysql

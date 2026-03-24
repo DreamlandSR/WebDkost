@@ -6,18 +6,36 @@ use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
 {
-    public function items()
-    {
-        return $this->hasMany(OrderItem::class, 'order_id');
-    }
+    protected $fillable = [
+        'user_id',
+        'order_id',
+        'amount',
+        'snap_token',
+        'status',
+        'payment_type',
+        'transaction_id',
+        'notes',
+        'paid_at',
+    ];
 
-    public function order()
-    {
-        return $this->belongsTo(Order::class);
-    }
+    protected $casts = [
+        'paid_at' => 'datetime',
+    ];
 
+    // Relasi ke User
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // Helper cek status
+    public function isPaid(): bool
+    {
+        return $this->status === 'paid';
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
     }
 }
