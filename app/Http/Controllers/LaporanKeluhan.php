@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\keluhan;
+use App\Models\Keluhan;
 
-class laporanKeluhan extends Controller
+class LaporanKeluhan extends Controller
 {
     public function index(Request $request)
     {
