@@ -7,22 +7,24 @@ use App\Models\Kamar;
 
 class HomeController extends Controller
 {
-public function index()
-{
-    $kamars = Kamar::with('galeri')->get();
+    public function index()
+    {
+        $products = Kamar::with('galeri')->get();
 
-    return view('home.index', [
-        'judul'          => 'Beranda',
-        'css'            => ['nav.css', 'styles.css', 'ionicons.min.css'],
-        'minimal_header' => true,
-        'kamars'         => $kamars,
-        'products'       => $kamars, // ← tambah ini
-    ]);
-}
+        return view('home.index', [
+            'judul' => 'Beranda',
+            'css' => ['nav.css', 'styles.css', 'ionicons.min.css'],
+            'minimal_header' => true,
+            'products' => $products,
+            'company_name' => "D'Kost",
+            'tagline' => 'Platform untuk pemasaran kos secara online dan terpercaya',
+            'description' => 'Kos kami dilengkapi dengan fasilitas yang lengkap.'
+        ]);
+    }
 
     public function login()
     {
-        return view('home.login', [
+        return view('auth.login', [
             'judul' => 'Login',
             'css' => ['styles.css', 'ionicons.min.css'],
             'minimal_header' => true
@@ -51,14 +53,14 @@ public function index()
 
     public function product()
     {
-        $kamars = Kamar::with('galeri')->orderBy('id_kamar', 'asc')->get();
+        $products = Kamar::with('galeri')->orderBy('id_kamar', 'asc')->get();
 
         return view('home.product', [
             'judul' => 'Kamar',
             'css' => ['nav.css', 'styles.css', 'ionicons.min.css'],
             'minimal_header' => true,
             'js' => 'script.js',
-            'kamars' => $kamars
+            'products' => $products
         ]);
     }
 }

@@ -1,54 +1,49 @@
-<footer class="footer-01 py-5 slide-in">
+<footer class="dk-footer py-5 slide-in">
     <div class="container">
-      <div class="row">
-        <!-- Kolom 1 -->
-        <div class="col-12 col-sm-6 col-lg-3 mb-4">
-          <h2 class="footer-heading">Tentang Kami</h2>
-          <p>Kami merupakan pembuat batik yang berasal dari Bondowoso memiliki visi misi yang kuat untuk mengembangkan Produk kami hingga kancah internasional.</p>
-          <ul class="ftco-footer-social p-0 d-flex">
-            <li class="ftco-animate mr-3"><a href="#" data-toggle="tooltip" data-placement="top" title="Twitter"><span class="ion-logo-twitter"></span></a></li>
-            <li class="ftco-animate mr-3"><a href="#" data-toggle="tooltip" data-placement="top" title="Facebook"><span class="ion-logo-facebook"></span></a></li>
-            <li class="ftco-animate"><a href={{ url('https://www.instagram.com/p/C-xTA7XzFro/?utm_source=ig_web_copy_link') }} data-toggle="tooltip" data-placement="top" title="Instagram"><span class="ion-logo-instagram"></span></a></li>
-          </ul>
-        </div>
-
-        <!-- Kolom 2 -->
-        <div class="col-12 col-sm-6 col-lg-3 mb-4">
-          <h2 class="footer-heading">Berita Terkini</h2>
-          <div class="block-21 mb-4 d-flex">
-            <div class="text">
-              <h3 class="heading"><a href="#">Kami mempunyai mitra baru yang berada di Kecamatan Tenggarang.</a></h3>
-              <div class="meta">
-                <div><a href="#"><span class="icon-calendar"></span> Oct. 16, 2019</a></div>
-                <div><a href="#"><span class="icon-person"></span> Admin</a></div>
-                <div><a href="#"><span class="icon-chat"></span> 19</a></div>
-              </div>
+        <div class="row gy-4">
+            <div class="col-12 col-md-6 col-lg-3">
+                <h5 class="footer-title">Tentang kami</h5>
+                <p class="footer-text">D'Kost merupakan platform pemesanan kos online terpercaya yang terletak di Jember.</p>
+                <div class="d-flex gap-2 mt-3">
+                    <a href="#" class="social-circle"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="social-circle"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="social-circle"><i class="bi bi-linkedin"></i></a>
+                </div>
             </div>
-          </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <h5 class="footer-title">Berita terakhir</h5>
+                <div class="news-item mb-3">
+                    <a href="#" class="footer-link">Kamar baru dekat kampus dengan fasilitas AC + Wi-Fi</a>
+                    <div class="text-muted small">Mar 18, 2026 &nbsp; Admin</div>
+                </div>
+                <div class="news-item mb-2">
+                    <a href="#" class="footer-link">Promo early bird: potongan 20% booking bulan pertama</a>
+                    <div class="text-muted small">Mar 9, 2026 &nbsp; Admin</div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <h5 class="footer-title">Link cepat</h5>
+                <ul class="list-unstyled footer-nav">
+                    <li><a href="{{ route('index') }}">Home</a></li>
+                    <li><a href="{{ route('about') }}">About</a></li>
+                    <li><a href="{{ route('product') }}">Product</a></li>
+                    <li><a href="{{ route('login') }}">Login</a></li>
+                </ul>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <h5 class="footer-title">Ada pertanyaan?</h5>
+                <ul class="list-unstyled footer-contact">
+                    <li><i class="bi bi-geo-alt-fill"></i>  Jl. Mastrip, Krajan Timur, Sumbersari, Kec. Sumbersari, Kabupaten Jember, Jawa Timur 68121.</li>
+                    <li><i class="bi bi-telephone-fill"></i> +6277 05611 2113</li>
+                    <li><i class="bi bi-envelope-fill"></i> dkost@gmail.com</li>
+                </ul>
+            </div>
         </div>
-
-        <!-- Kolom 3 -->
-        <div class="col-12 col-sm-6 col-lg-3 mb-4">
-          <h2 class="footer-heading">Tautan</h2>
-          <ul class="list-unstyled">
-            <li><a href="#" class="py-2 d-block">Beranda</a></li>
-            <li><a href="#" class="py-2 d-block">Tentang</a></li>
-            <li><a href="#" class="py-2 d-block">Produk</a></li>
-          </ul>
+        <div class="row mt-4 pt-3 border-top footer-bottom">
+            <div class="col text-center">
+                <small>© {{ date('Y') }} D'Kost. Semua hak cipta dilindungi.</small>
+            </div>
         </div>
-
-        <!-- Kolom 4 -->
-        <div class="col-12 col-sm-6 col-lg-3 mb-4">
-          <h2 class="footer-heading">Memiliki pertanyaan?</h2>
-          <div class="block-23 mb-3">
-            <ul>
-              <li><span class="icon ion-ios-pin"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
-              <li><a href="#"><span class="icon ion-ios-call"></span><span class="text">+2 392 3929 210</span></a></li>
-              <li><a href="#"><span class="icon ion-ios-send"></span><span class="text">info@yourdomain.com</span></a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
     </div>
-  </footer>
+</footer>
 

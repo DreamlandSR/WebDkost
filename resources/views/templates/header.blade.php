@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="{{ asset('img/asset 7.png') }}">
+    <link rel="icon" href="{{ asset('img/dkos_logo.png') }}">
     <title>Halaman {{ $judul ?? 'Default Title' }}</title>
 
     @if(isset($minimal_header) && $minimal_header)

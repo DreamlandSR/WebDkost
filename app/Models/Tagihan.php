@@ -25,9 +25,8 @@ class Tagihan extends Model
         return $this->belongsTo(Booking::class, 'id_booking', 'id_booking');
     }
 
-    // ← diubah dari hasMany ke hasOne
     public function pembayaran()
     {
-        return $this->hasOne(Pembayaran::class, 'id_tagihan', 'id_tagihan');
+        return $this->hasMany(Pembayaran::class, 'id_tagihan', 'id_tagihan');
     }
 }

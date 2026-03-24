@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Kamar extends Model
 {
+    use HasFactory;
+
     protected $table = 'kamar';
     protected $primaryKey = 'id_kamar';
     public $timestamps = false;
@@ -15,16 +18,14 @@ class Kamar extends Model
         'tipe_kamar',
         'deskripsi',
         'harga_per_bulan',
-        'status_kamar'
+        'status_kamar',
     ];
 
-    // Semua gambar
     public function galeri()
     {
         return $this->hasMany(GaleriKamar::class, 'id_kamar', 'id_kamar');
     }
 
-    // Gambar utama
     public function mainImage()
     {
         return $this->hasOne(GaleriKamar::class, 'id_kamar', 'id_kamar')

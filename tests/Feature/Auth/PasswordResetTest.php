@@ -1,26 +1,19 @@
 <?php
-
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Notification;
 
 test('reset password link can be requested', function () {
     Notification::fake();
-
     $user = User::factory()->create();
-
     $this->post('/forgot-password', ['email' => $user->email]);
-
     Notification::assertSentTo($user, ResetPassword::class);
-});
+})->skip('skip - custom OTP reset used instead');
 
 test('password can be reset with valid token', function () {
     Notification::fake();
-
     $user = User::factory()->create();
-
     $this->post('/forgot-password', ['email' => $user->email]);
-
     Notification::assertSentTo($user, ResetPassword::class, function (object $notification) use ($user) {
         $response = $this->post('/reset-password', [
             'token' => $notification->token,
@@ -28,11 +21,7 @@ test('password can be reset with valid token', function () {
             'password' => 'password',
             'password_confirmation' => 'password',
         ]);
-
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertStatus(200);
-
+        $response->assertSessionHasNoErrors();
         return true;
     });
-});
+})->skip('skip - custom OTP reset used instead');

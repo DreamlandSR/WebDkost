@@ -118,6 +118,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/terlaris', [AdminController::class, 'produkTerlaris'])->name('admin.terlaris');
 
+    // Laporan Keluhan
+    Route::get('/laporan/keluhan', [\App\Http\Controllers\laporanKeluhan::class, 'index'])->name('keluhan.page');
+    Route::put('/laporan/keluhan/{id_keluhan}', [\App\Http\Controllers\laporanKeluhan::class, 'updateStatus'])->name('keluhan.updateStatus');
+
     // Halaman register hanya bisa diakses admin
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/register', [RegisteredUserController::class, 'store']);
