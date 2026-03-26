@@ -13,7 +13,8 @@ use App\Http\Controllers\PengirimanController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
-
+use App\Http\Controllers\Payment\MidtransController;
+use App\Http\Controllers\Api\GaleriKamarController;
 /*
 |--------------------------------------------------------------------------
 | Guest Routes (untuk tamu yang belum login)
@@ -36,6 +37,19 @@ Route::middleware('guest')->group(function () {
     Route::get('forgotPassword', [PasswordResetLinkController::class, 'create'])->name('forgot-password');
 });
 
+// CORS untuk storage files
+// Override storage route dengan CORS
+Route::get('storage/{path}', function ($path) {
+    $fullPath = storage_path('app/public/' . $path);
+    
+    if (!file_exists($fullPath)) {
+        abort(404);
+    }
+    
+    return response()->file($fullPath, [
+        'Access-Control-Allow-Origin' => '*',
+    ]);
+})->where('path', '.*')->name('storage.local');
 /*
 |--------------------------------------------------------------------------
 | Public Routes (bisa diakses semua orang)
@@ -104,6 +118,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/terlaris', [AdminController::class, 'produkTerlaris'])->name('admin.terlaris');
 
+    // Laporan Keluhan
+    Route::get('/laporan/keluhan', [\App\Http\Controllers\laporanKeluhan::class, 'index'])->name('keluhan.page');
+    Route::put('/laporan/keluhan/{id_keluhan}', [\App\Http\Controllers\laporanKeluhan::class, 'updateStatus'])->name('keluhan.updateStatus');
+
     // Halaman register hanya bisa diakses admin
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/register', [RegisteredUserController::class, 'store']);
@@ -118,3 +136,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
 |--------------------------------------------------------------------------
 */
 require __DIR__ . '/auth.php';
+
+
+//Midtrans routes
+Route::middleware('auth')->group(function () {
+    Route::get('/payment/{orderId}', [PaymentController::class, 'show'])->name('payment.show');
+    Route::get('/payment/success',   [PaymentController::class, 'success'])->name('payment.success');
+    Route::get('/payment/pending',   [PaymentController::class, 'pending'])->name('payment.pending');
+    Route::get('/payment/failed',    [PaymentController::class, 'failed'])->name('payment.failed');
+});

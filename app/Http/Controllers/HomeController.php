@@ -3,72 +3,64 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Product;
+use App\Models\Kamar;
 
 class HomeController extends Controller
 {
-
     public function index()
     {
-        $products = Product::with('images')->get();
+        $products = Kamar::with('galeri')->get();
 
         return view('home.index', [
             'judul' => 'Beranda',
             'css' => ['nav.css', 'styles.css', 'ionicons.min.css'],
             'minimal_header' => true,
-            'products' => $products
+            'products' => $products,
+            'company_name' => "D'Kost",
+            'tagline' => 'Platform untuk pemasaran kos secara online dan terpercaya',
+            'description' => 'Kos kami dilengkapi dengan fasilitas yang lengkap.'
         ]);
     }
 
-
-
     public function login()
     {
-        $data = [
+        return view('auth.login', [
             'judul' => 'Login',
             'css' => ['styles.css', 'ionicons.min.css'],
             'minimal_header' => true
-        ];
-
-        return view('auth.login', $data);
+        ]);
     }
 
     public function about()
     {
-        $data = [
+        return view('home.about', [
             'judul' => 'About',
             'css' => ['nav.css', 'styles.css', 'ionicons.min.css'],
             'minimal_header' => true,
             'js' => 'script.js'
-        ];
-
-        return view('home.about', $data);
+        ]);
     }
 
     public function guide()
     {
-        $data = [
+        return view('home.guide', [
             'judul' => 'Guide',
             'css' => ['nav.css', 'styles.css', 'ionicons.min.css'],
             'minimal_header' => true,
             'js' => 'script.js'
-        ];
-
-        return view('home.guide', $data);
+        ]);
     }
 
     public function product()
     {
-        $products = Product::with('mainImage')->orderBy('id', 'asc')->get();
+        $products = Kamar::with('galeri')->orderBy('id_kamar', 'asc')->get();
 
-        $data = [
-            'judul' => 'Product',
+        return view('home.product', [
+            'judul' => 'Kamar',
             'css' => ['nav.css', 'styles.css', 'ionicons.min.css'],
             'minimal_header' => true,
             'js' => 'script.js',
             'products' => $products
-        ];
-
-        return view('home.product', $data);
+        ]);
     }
 }

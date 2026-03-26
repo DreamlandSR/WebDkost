@@ -1,35 +1,13 @@
 <?php
-
 namespace App\Models;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
-class Review extends Model
-{
-    use HasFactory;
+class Review extends Model {
+    protected $table = 'review';
+    protected $primaryKey = 'id_review';
+    public $timestamps = false;
+    protected $fillable = ['id_user','id_kamar','rating','komentar','tgl_review'];
 
-    protected $fillable = [
-        'user_id',
-        'product_id',
-        'rating',
-        'komentar'
-    ];
-
-    protected $casts = [
-        'rating' => 'integer',
-        'user_id' => 'integer',
-        'product_id' => 'integer',
-    ];
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function getCreatedAtAttribute($value)
-    {
-        return Carbon::parse($value)->format('d M Y H:i');
-    }
+    public function user()  { return $this->belongsTo(User::class,  'id_user',  'id_user'); }
+    public function kamar() { return $this->belongsTo(Kamar::class, 'id_kamar', 'id_kamar'); }
 }
