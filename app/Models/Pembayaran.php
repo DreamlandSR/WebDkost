@@ -1,27 +1,57 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Pembayaran extends Model
+class OrderItem extends Model
 {
-    protected $table      = 'pembayaran';
-    protected $primaryKey = 'id_pembayaran';
-    public $timestamps    = false;
+
+    protected $table = 'order_items';
 
     protected $fillable = [
-        'id_tagihan',
         'order_id',
-        'snap_token',
-        'transaction_id_gateway',
-        'tgl_bayar',
-        'jumlah_bayar',
-        'metode_pembayaran',
-        'status_pembayaran',
+        'product_id',
+        'kuantitas',
+        'harga',
+        'subtotal',
     ];
 
-    public function tagihan()
+    public function product()
     {
-        return $this->belongsTo(Tagihan::class, 'id_tagihan', 'id_tagihan');
+        return $this->belongsTo(Product::class);
+    }
+
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    public function getSubtotalAttribute($value)
+    {
+        // Jika subtotal sudah ada, gunakan nilai tersebut
+        if ($value) {
+            return $value;
+        }
+
+        // Jika tidak ada, hitung otomatis
+        return $this->kuantitas * $this->harga;
+    }
+
+    public function setKuantitasAttribute($value)
+    {
+        $this->attributes['kuantitas'] = $value;
+        if (isset($this->attributes['harga'])) {
+            $this->attributes['subtotal'] = $value * $this->attributes['harga'];
+        }
+    }
+
+    public function setHargaAttribute($value)
+    {
+        $this->attributes['harga'] = $value;
+        if (isset($this->attributes['kuantitas'])) {
+            $this->attributes['subtotal'] = $this->attributes['kuantitas'] * $value;
+        }
     }
 }

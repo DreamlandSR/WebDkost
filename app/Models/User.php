@@ -1,17 +1,16 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
-    protected $primaryKey = 'id_user';
+    protected $primaryKey = 'id_user';  // Fix primary key
 
     public $timestamps = true;
     const UPDATED_AT = null;
@@ -20,8 +19,8 @@ class User extends Authenticatable
         'nama',
         'email',
         'password',
-        'no_telepon',
-        'alamat',
+        'no_telepon',   // sesuai kolom database
+        'alamat',       // sesuai kolom database
         'role',
     ];
 
@@ -33,12 +32,13 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
 
-    public function getAuthIdentifierName()
+    public function orders()
     {
-        return 'id_user';
+        return $this->hasMany(Order::class);
     }
 }

@@ -13,8 +13,7 @@ use App\Http\Controllers\PengirimanController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\Payment\MidtransController;
-use App\Http\Controllers\Api\GaleriKamarController;
+
 /*
 |--------------------------------------------------------------------------
 | Guest Routes (untuk tamu yang belum login)
@@ -37,19 +36,6 @@ Route::middleware('guest')->group(function () {
     Route::get('forgotPassword', [PasswordResetLinkController::class, 'create'])->name('forgot-password');
 });
 
-// CORS untuk storage files
-// Override storage route dengan CORS
-Route::get('storage/{path}', function ($path) {
-    $fullPath = storage_path('app/public/' . $path);
-    
-    if (!file_exists($fullPath)) {
-        abort(404);
-    }
-    
-    return response()->file($fullPath, [
-        'Access-Control-Allow-Origin' => '*',
-    ]);
-})->where('path', '.*')->name('storage.local');
 /*
 |--------------------------------------------------------------------------
 | Public Routes (bisa diakses semua orang)
@@ -86,18 +72,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/ProductPage', [ProductController::class, 'index'])->name('products.index');
 
-    // Pesanan
-    Route::get('PesananPage', [OrderController::class, 'index'])->name('pesanan.page');
-    Route::get('/order/{order}/edit', [OrderController::class, 'edit'])->name('order.edit');
-    Route::put('/order/{order}', [OrderController::class, 'update'])->name('order.update');
-    Route::delete('/order/{order}', [OrderController::class, 'destroy'])->name('order.destroy');
-    Route::get('DetailOrder', [OrderController::class, 'detailOrder'])->name('detail.page');
-    Route::get('/export-pesanan/pdf', [OrderController::class, 'exportPDF'])->name('export.pesanan.pdf');
-    Route::get('/export-pesanan/tahunan', [OrderController::class, 'exportRekapTahunan'])->name('export.pesanan.tahunan');
-
-    // Payment
-    Route::get('PaymentPage', [PaymentController::class, 'index'])->name('payment.page');
-
     // Pengiriman
     Route::get('/PengirimanPage', [PengirimanController::class, 'index'])->name('pengiriman.index');
     Route::get('/pengiriman/create', [PengirimanController::class, 'create'])->name('pengiriman.create');
@@ -119,9 +93,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/terlaris', [AdminController::class, 'produkTerlaris'])->name('admin.terlaris');
 
     // Laporan Keluhan
-    Route::get('/laporan/keluhan', [\App\Http\Controllers\laporanKeluhan::class, 'index'])->name('keluhan.page');
-    Route::put('/laporan/keluhan/{id_keluhan}', [\App\Http\Controllers\laporanKeluhan::class, 'updateStatus'])->name('keluhan.updateStatus');
+    Route::get('/laporan/keluhan', [\App\Http\Controllers\LaporanKeluhan::class, 'index'])->name('keluhan.page');
+    Route::put('/laporan/keluhan/{id_keluhan}', [\App\Http\Controllers\LaporanKeluhan::class, 'updateStatus'])->name('keluhan.updateStatus');
 
+    // Laporan Pengeluaran
+    Route::get('/laporan/pengeluaran', [\App\Http\Controllers\LaporanPengeluaran::class, 'index'])->name('pengeluaran.page');
+    Route::post('/laporan/pengeluaran/store', [\App\Http\Controllers\LaporanPengeluaran::class, 'store'])->name('pengeluaran.store');
+    Route::put('/laporan/pengeluaran/{id}', [\App\Http\Controllers\LaporanPengeluaran::class, 'update'])->name('pengeluaran.update');
+    Route::delete('/laporan/pengeluaran/{id}', [\App\Http\Controllers\LaporanPengeluaran::class, 'destroy'])->name('pengeluaran.destroy');
     // Halaman register hanya bisa diakses admin
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/register', [RegisteredUserController::class, 'store']);
@@ -136,12 +115,3 @@ Route::middleware(['auth', 'admin'])->group(function () {
 |--------------------------------------------------------------------------
 */
 require __DIR__ . '/auth.php';
-
-
-//Midtrans routes
-Route::middleware('auth')->group(function () {
-    Route::get('/payment/{orderId}', [PaymentController::class, 'show'])->name('payment.show');
-    Route::get('/payment/success',   [PaymentController::class, 'success'])->name('payment.success');
-    Route::get('/payment/pending',   [PaymentController::class, 'pending'])->name('payment.pending');
-    Route::get('/payment/failed',    [PaymentController::class, 'failed'])->name('payment.failed');
-});

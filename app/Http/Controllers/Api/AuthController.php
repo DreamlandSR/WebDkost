@@ -1,133 +1,71 @@
 <?php
-namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
-use App\Models\User;
+namespace App\Http\Controllers\Api;
+
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Mail;  // ← tambah ini
-use App\Mail\OtpMail;    
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
-    {
-        $request->validate([
-            'nama'     => 'required|string',
-            'email'    => 'required|email|unique:users',
-            'no_hp'    => 'required|string',
-            'password' => 'required|min:6',
-        ]);
-
-        $user = User::create([
-            'nama'       => $request->nama,
-            'email'      => $request->email,
-            'no_telepon' => $request->no_hp,
-            'password'   => Hash::make($request->password),
-            'alamat'     => $request->alamat,  // ← tambah ini
-            'role'       => 'penyewa',
-        ]);
-
-        return response()->json([
-            'error'   => false,
-            'message' => 'Registrasi berhasil.',
-            'data'    => $user,
-        ], 201);
-    }
-
     public function login(Request $request)
     {
-        $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required',
-        ]);
+        $user = DB::table('users')->where('email', $request->email)->first();
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'error'   => true,
-                'message' => 'Email atau password salah.',
-            ], 401);
+        if (!$user) {
+            return response()->json(['error' => true, 'message' => 'Email tidak ditemukan!']);
         }
 
-        $token = $user->createToken('dkost')->plainTextToken;
+        if (!Hash::check($request->password, $user->password)) {
+            return response()->json(['error' => true, 'message' => 'Password salah!']);
+        }
+        unset($user->password);
 
         return response()->json([
-            'error'   => false,
-            'message' => 'Login berhasil.',
-            'token'   => $token,
-            'user'    => [
-                'id_user' => $user->id_user,
-                'nama'    => $user->nama,
-                'email'   => $user->email,
-                'role'    => $user->role,
-            ],
+            'error' => false,
+            'message' => 'Login berhasil!',
+            'user' => $user
         ]);
     }
 
-    public function logout(Request $request)
+    public function register(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
-        return response()->json([
-            'error'   => false,
-            'message' => 'Logout berhasil.',
+        $exists = DB::table('users')->where('email', $request->email)->exists();
+
+        if ($exists) {
+            return response()->json(['error' => true, 'message' => 'Email sudah terdaftar!']);
+        }
+
+        DB::table('users')->insert([
+            'nama' => $request->nama,
+            'email' => $request->email,
+            'no_hp' => $request->no_hp,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
         ]);
+
+        return response()->json(['error' => false, 'message' => 'Registrasi berhasil!']);
     }
 
-public function lupaPassword(Request $request)
-{
-    $request->validate(['email' => 'required|email|exists:users,email']);
-    
-    $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-    Cache::put("otp_{$request->email}", $otp, now()->addMinutes(10));
-
-    // Kirim email
-    Mail::to($request->email)->send(new OtpMail($otp));
-
-    return response()->json([
-        'error'   => false,
-        'message' => "Kode OTP telah dikirim ke {$request->email}.",
-    ]);
-}
-    public function cekOtp(Request $request)
+    public function getUser($id)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'otp'   => 'required|digits:6',
-        ]);
-        $cached = Cache::get("otp_{$request->email}");
-        if (!$cached || $cached !== $request->otp) {
-            return response()->json([
-                'error'   => true,
-                'message' => 'OTP tidak valid atau kadaluarsa.',
-            ], 422);
+        $user = DB::table('users')->find($id);
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Data tidak ditemukan']);
         }
-        Cache::put("otp_verified_{$request->email}", true, now()->addMinutes(10));
-        Cache::forget("otp_{$request->email}");
-        return response()->json(['error' => false, 'message' => 'OTP valid.']);
+
+        return response()->json(['success' => true, 'data' => $user]);
     }
 
-    public function gantiPassword(Request $request)
+    public function updateUser(Request $request)
     {
-        $request->validate([
-            'email'                 => 'required|email|exists:users,email',
-            'password'              => 'required|min:6',
-            'password_confirmation' => 'required|same:password',
+        DB::table('users')->where('id', $request->id)->update([
+            'nama' => $request->nama,
+            'email' => $request->email,
+            'no_hp' => $request->no_hp,
         ]);
-        if (!Cache::get("otp_verified_{$request->email}")) {
-            return response()->json([
-                'error'   => true,
-                'message' => 'Verifikasi OTP diperlukan.',
-            ], 403);
-        }
-        User::where('email', $request->email)
-            ->update(['password' => Hash::make($request->password)]);
-        Cache::forget("otp_verified_{$request->email}");
-        return response()->json([
-            'error'   => false,
-            'message' => 'Password berhasil diubah.',
-        ]);
+
+        return response()->json(['success' => true, 'message' => 'Profil berhasil diperbarui']);
     }
 }
