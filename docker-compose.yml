@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     working_dir: /var/www
     volumes:
-      - /var/www/html/WebDkost:/var/www    # ← TAMBAHKAN INI
+      - /var/www/html/WebDkost:/var/www
     networks:
       - laravel
 
