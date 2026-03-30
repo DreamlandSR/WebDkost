@@ -32,17 +32,33 @@ class OtpResetController extends Controller
             return back()->withErrors(['email' => 'Email tidak ditemukan.']);
         }
 
+        if ($user->role !== 'admin') {
+            return back()->withErrors(['email' => 'Hanya admin yang dapat melakukan reset password.']);
+        }
+
         $otp = rand(100000, 999999);
 
-        DB::table('users')->where('email', $request->email)->update([
-            'otp' => $otp,
+        // Simpan OTP ke session bukan database
+        session([
+            'otp_code' => $otp,
+            'otp_email' => $request->email,
+            'otp_expires_at' => now()->addMinutes(15) // Berlaku 15 menit
         ]);
 
-        // Kirim email menggunakan blade template
-        Mail::send('emails.otp', ['otp' => $otp], function ($message) use ($request) {
-            $message->to($request->email)
-                ->subject('Kode OTP Reset Password');
-        });
+        // Kirim email menggunakan blade template dengan penanganan error
+        try {
+            Mail::send('emails.otp', ['otp' => $otp], function ($message) use ($request) {
+                $message->to($request->email)
+                    ->subject('Kode OTP Reset Password');
+            });
+        } catch (\Exception $e) {
+            // Jika gagal kirim email, hapus session agar tidak nanggung
+            session()->forget(['otp_code', 'otp_email', 'otp_expires_at']);
+            
+            return back()->withInput()->withErrors([
+                'email' => 'Gagal mengirim email. Silakan cek koneksi internet atau coba lagi nanti. (Error: ' . $e->getMessage() . ')'
+            ]);
+        }
 
         return redirect()->route('otp.verify.form', ['email' => $request->email]);
     }
@@ -55,15 +71,22 @@ class OtpResetController extends Controller
             'otp' => 'required|digits:6',  // otp kode
         ]);
 
-        // Ambil user berdasarkan email dan OTP
-        $user = DB::table('users')
-            ->where('email', $request->email)
-            ->where('otp', $request->otp)
-            ->first();
+        // Ambil OTP dari session
+        $session_otp = session('otp_code');
+        $session_email = session('otp_email');
+        $session_expires = session('otp_expires_at');
 
-        if (!$user) {
-            return back()->withErrors(['otp' => 'OTP tidak valid atau sudah kadaluarsa.']);
+        if (!$session_otp || $session_otp != $request->otp || $session_email != $request->email) {
+            return back()->withErrors(['otp' => 'OTP tidak valid atau email salah.']);
         }
+
+        if (now()->isAfter($session_expires)) {
+            session()->forget(['otp_code', 'otp_email', 'otp_expires_at']);
+            return back()->withErrors(['otp' => 'OTP sudah kadaluarsa. Silakan kirim ulang.']);
+        }
+
+        // Tandai session sebagai terverifikasi
+        session(['otp_verified' => true]);
 
         // Arahkan ke halaman ganti password setelah OTP valid
         return redirect()->route('password.reset.form', ['email' => $request->email]);
@@ -72,6 +95,9 @@ class OtpResetController extends Controller
     // Menampilkan form reset password
     public function showResetPasswordForm($email)
     {
+        if (!session('otp_verified') || session('otp_email') != $email) {
+            return redirect()->route('otp.request')->withErrors(['email' => 'Sesi verifikasi tidak valid.']);
+        }
         return view('auth.reset-password', compact('email'));
     }
 
@@ -82,17 +108,23 @@ class OtpResetController extends Controller
             'password' => 'required|min:8|confirmed',
         ]);
 
+        if (!session('otp_verified') || session('otp_email') != $email) {
+            return redirect()->route('otp.request')->withErrors(['email' => 'Sesi verifikasi telah berakhir.']);
+        }
+
         $user = DB::table('users')->where('email', $email)->first();
 
         if (!$user) {
             return back()->withErrors(['email' => 'Email tidak ditemukan.']);
         }
 
-        // Reset password dan hapus OTP
+        // Reset password dan hapus session OTP
         DB::table('users')->where('email', $email)->update([
             'password' => Hash::make($request->password),
-            'otp' => null,  // Menghapus OTP setelah reset
         ]);
+
+        // Hapus session setelah berhasil
+        session()->forget(['otp_code', 'otp_email', 'otp_expires_at', 'otp_verified']);
 
         return redirect()->route('login')->with('status', 'Password berhasil diubah.');
     }
