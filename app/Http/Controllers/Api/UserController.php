@@ -1,63 +1,55 @@
 <?php
+namespace App\Http\Controllers\API;
 
-namespace App\Http\Controllers\Api;
-
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    // Ambil data user berdasarkan ID
     public function show($id)
     {
         $user = User::find($id);
-
-        if ($user) {
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'nama' => $user->nama,
-                    'email' => $user->email,
-                    'no_hp' => $user->no_hp,
-                ],
-            ]);
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User tidak ditemukan.'], 404);
         }
-
         return response()->json([
-            'success' => false,
-            'message' => 'Data tidak ditemukan'
+            'success' => true,
+            'data'    => [
+                'id_user'    => $user->id_user,
+                'nama'       => $user->nama,
+                'email'      => $user->email,
+                'no_telepon' => $user->no_telepon,
+                'alamat'     => $user->alamat,
+                'role'       => $user->role,
+            ],
         ]);
     }
 
-    // Update data user
     public function update(Request $request, $id)
     {
-        $user = User::find($id);
-
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User tidak ditemukan'
-            ]);
-        }
-
-        // Validasi input
-        $validated = $request->validate([
-            'nama' => 'required|string',
-            'email' => 'required|email',
-            'no_hp' => 'required|string'
+        $request->validate([
+            'nama'   => 'required|string',
+            'email'  => "required|email|unique:users,email,{$id},id_user",
+            'no_hp'  => 'required|string',
+            'alamat' => 'nullable|string',
         ]);
 
-        // Update user
-        $user->nama = $validated['nama'];
-        $user->email = $validated['email'];
-        $user->no_hp = $validated['no_hp'];
-        $user->save();
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User tidak ditemukan.'], 404);
+        }
+
+        $user->update([
+            'nama'       => $request->nama,
+            'email'      => $request->email,
+            'no_telepon' => $request->no_hp,
+            'alamat'     => $request->alamat,
+        ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Profil berhasil diperbarui'
+            'message' => 'Profil berhasil diperbarui.',
         ]);
     }
 }
