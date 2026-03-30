@@ -13,7 +13,6 @@ class Keluhan extends Model
     protected $table = 'keluhan';
     protected $primaryKey = 'id_keluhan';
 
-    public $timestamps = false; 
     public $timestamps = false;
 
     protected $fillable = [

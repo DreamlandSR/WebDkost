@@ -19,7 +19,7 @@
                         <div class="my-5 text-center text-xl-start">
                             <h1 class="display-5 fw-bolder text-black mb-3 text-start">D'Kost</h1>
                             <p class="lead fw-normal text-black mb-4" style="text-align:left; font-size: 1rem;">
-                                D’Kost Merupakan Platform  Untuk pemesanan kos secara online dan terpercaya. Kos kami dilengkapi 
+                                D’Kost Merupakan Platform  Untuk pemesanan kos secara online dan terpercaya. Kos kami dilengkapi
                                 dengan fasilitas yang lengkap dengan harga yang terjangkau untuk semua kalangan
                             </p>
                             <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xl-start">
@@ -177,9 +177,9 @@
                     <div class="col-lg-10 col-xl-7">
                         <div class="text-center">
                             <h2 class="fw-bolder">Tentang Kami</h2>
-                            <div class="fs-5 mb-4 fst-italic">"D'Kost hadir untuk memberikan solusi tempat tinggal yang nyaman, aman, dan terjangkau. 
-                        Kami menyediakan berbagai pilihan kamar kos dengan fasilitas lengkap di lokasi strategis. 
-                        Dengan sistem pemesanan online yang mudah, transparansi harga, dan layanan pelanggan 24/7, 
+                            <div class="fs-5 mb-4 fst-italic">"D'Kost hadir untuk memberikan solusi tempat tinggal yang nyaman, aman, dan terjangkau.
+                        Kami menyediakan berbagai pilihan kamar kos dengan fasilitas lengkap di lokasi strategis.
+                        Dengan sistem pemesanan online yang mudah, transparansi harga, dan layanan pelanggan 24/7,
                         kami berkomitmen untuk memudahkan Anda menemukan kos impian."</div>
                             <div class="d-flex align-items-center justify-content-center">
                                 <img class="rounded-circle me-3" style="width: 40px; height:40px; object-fit:cover;"
@@ -264,14 +264,14 @@
             <!-- Kanan - Card Download -->
             <div class="col-lg-6 col-md-5">
                 <div class="d-flex justify-content-md-end justify-content-center">
-                    <div class="card download-card border-0 shadow-lg p-4" 
+                    <div class="card download-card border-0 shadow-lg p-4"
                          style="background: linear-gradient(135deg, #00AB6B, #008C56); max-width: 400px; width: 100%;">
                         <div class="d-flex flex-column flex-sm-row align-items-center gap-4">
                             <!-- Kiri: Teks -->
                             <div class="text-center text-sm-start text-white flex-grow-1">
                                 <h5 class="fw-bold text-white mb-2">For Android</h5>
                                 <p class="mb-3 text-white-50 small">Android 8.0+</p>
-                                <a href="{{ url('downloads/Healthy.pdf') }}" 
+                                <a href="{{ url('downloads/Healthy.pdf') }}"
                                    class="btn btn-light px-4 py-2 fw-bold"
                                    style="color: #00AB6B; border-radius: 8px;"
                                    download>
@@ -282,9 +282,9 @@
                             <!-- Kanan: QR Code -->
                             <div class="text-center">
                                 <div class="bg-white p-2 rounded-3 shadow-sm">
-                                    <img src="{{ asset('img/qrcode.png') }}" 
-                                         alt="QR Code" 
-                                         class="img-fluid" 
+                                    <img src="{{ asset('img/qrcode.png') }}"
+                                         alt="QR Code"
+                                         class="img-fluid"
                                          style="max-width: 100px; height: auto;">
                                 </div>
                                 <p class="text-white-50 small mt-2 mb-0">Scan QR</p>

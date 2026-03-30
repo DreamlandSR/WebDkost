@@ -18,9 +18,9 @@
                         <div class="text-center my-3">
                             <h1 class="fw-bolder mb-3">Tentang Kami</h1>
                             <p class="lead fw-normal text-muted mb-4">
-                              "D'Kost hadir untuk memberikan solusi tempat tinggal yang nyaman, aman, dan terjangkau. 
-                        Kami menyediakan berbagai pilihan kamar kos dengan fasilitas lengkap di lokasi strategis. 
-                        Dengan sistem pemesanan online yang mudah, transparansi harga, dan layanan pelanggan 24/7, 
+                              "D'Kost hadir untuk memberikan solusi tempat tinggal yang nyaman, aman, dan terjangkau.
+                        Kami menyediakan berbagai pilihan kamar kos dengan fasilitas lengkap di lokasi strategis.
+                        Dengan sistem pemesanan online yang mudah, transparansi harga, dan layanan pelanggan 24/7,
                         kami berkomitmen untuk memudahkan Anda menemukan kos impian."</p>
                             <a class="btn btn-primary btn-lg" href="#scroll-target">Pelajari Selengkapnya</a>
                         </div>

@@ -1,8 +1,9 @@
 <?php
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Kamar extends Model
 {
@@ -36,13 +37,19 @@ class Kamar extends Model
         return $this->hasMany(FasilitasKamar::class, 'id_kamar', 'id_kamar');
     }
 
-    public function booking()
+    public function bookings()
     {
         return $this->hasMany(Booking::class, 'id_kamar', 'id_kamar');
     }
 
-    public function review()
+    public function reviews()
     {
         return $this->hasMany(Review::class, 'id_kamar', 'id_kamar');
+    }
+
+    // Auto rating
+    public function getRatingAttribute()
+    {
+        return round($this->reviews()->avg('rating') ?? 0, 1);
     }
 }
