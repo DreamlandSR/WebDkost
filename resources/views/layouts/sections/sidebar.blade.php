@@ -69,7 +69,7 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link {{ request()->is('pengaturan*') ? 'active' : '' }}" href="{{ url('/pengaturan') }}">
+            <a class="nav-link {{ request()->is('PengaturanPage*') ? 'active' : '' }}" href="{{ url('/PengaturanPage') }}">
                 <i class="ti-settings"></i>
                 <span class="menu-title">Pengaturan</span>
             </a>
