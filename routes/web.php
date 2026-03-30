@@ -23,18 +23,18 @@ use App\Http\Controllers\PaymentController;
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);
-
-    Route::get('/forgot-password-otp', [OtpResetController::class, 'showRequestForm'])->name('otp.request');
-    Route::post('/send-otp', [OtpResetController::class, 'sendOtp'])->name('otp.send');
-
-    Route::get('/verify-otp', [OtpResetController::class, 'showVerifyForm'])->name('otp.verify.form');
-    Route::post('/verify-otp', [OtpResetController::class, 'verifyOtp'])->name('otp.verify');
-
-    Route::get('/reset-password/{email}', [OtpResetController::class, 'showResetPasswordForm'])->name('password.reset.form');
-    Route::post('/reset-password/{email}', [OtpResetController::class, 'resetPassword'])->name('otp.reset.password');
-
-    Route::get('forgotPassword', [PasswordResetLinkController::class, 'create'])->name('forgot-password');
 });
+
+Route::get('/forgot-password-otp', [OtpResetController::class, 'showRequestForm'])->name('otp.request');
+Route::post('/send-otp', [OtpResetController::class, 'sendOtp'])->name('otp.send');
+
+Route::get('/verify-otp', [OtpResetController::class, 'showVerifyForm'])->name('otp.verify.form');
+Route::post('/verify-otp', [OtpResetController::class, 'verifyOtp'])->name('otp.verify');
+
+Route::get('/reset-password/{email}', [OtpResetController::class, 'showResetPasswordForm'])->name('password.reset.form');
+Route::post('/reset-password/{email}', [OtpResetController::class, 'resetPassword'])->name('otp.reset.password');
+
+Route::get('forgotPassword', [PasswordResetLinkController::class, 'create'])->name('forgot-password');
 
 /*
 |--------------------------------------------------------------------------
