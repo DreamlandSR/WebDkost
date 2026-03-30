@@ -13,6 +13,10 @@ use App\Http\Controllers\PengirimanController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\KamarController;
+use App\Http\Controllers\FurnitureController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\BookingPaymentController;
 use App\Http\Controllers\Payment\MidtransController;
 use App\Http\Controllers\Api\GaleriKamarController;
 /*
@@ -122,6 +126,24 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/laporan/keluhan', [\App\Http\Controllers\laporanKeluhan::class, 'index'])->name('keluhan.page');
     Route::put('/laporan/keluhan/{id_keluhan}', [\App\Http\Controllers\laporanKeluhan::class, 'updateStatus'])->name('keluhan.updateStatus');
 
+    // Laporan Pengeluaran
+    Route::get('/laporan/pengeluaran', [\App\Http\Controllers\LaporanPengeluaran::class, 'index'])->name('pengeluaran.page');
+    Route::post('/laporan/pengeluaran/store', [\App\Http\Controllers\LaporanPengeluaran::class, 'store'])->name('pengeluaran.store');
+    Route::put('/laporan/pengeluaran/{id}', [\App\Http\Controllers\LaporanPengeluaran::class, 'update'])->name('pengeluaran.update');
+    Route::delete('/laporan/pengeluaran/{id}', [\App\Http\Controllers\LaporanPengeluaran::class, 'destroy'])->name('pengeluaran.destroy');
+    
+    // Kelola Kamar
+    Route::resource('/dashboard/kamar', KamarController::class);
+    
+    // Kelola Furnitur Kamar
+    Route::resource('/dashboard/furniture', FurnitureController::class);
+    
+    // Kelola Pengguna Kamar
+    Route::resource('/dashboard/user', UserController::class);
+    
+    // Kelola Booking & Pembayaran
+    Route::resource('/dashboard/booking', BookingPaymentController::class);
+    
     // Halaman register hanya bisa diakses admin
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/register', [RegisteredUserController::class, 'store']);

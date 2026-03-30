@@ -46,7 +46,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ request()->is('dashboard/furnitur*') ? 'active' : '' }}" href="{{ url('/dashboard/furnitur') }}">
+            <a class="nav-link {{ request()->is('dashboard/furniture*') ? 'active' : '' }}" href="{{ url('/dashboard/furniture') }}">
                 <i class="ti-layout"></i>
                 <span class="menu-title">Kelola Furnitur</span>
             </a>
