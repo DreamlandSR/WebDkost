@@ -101,6 +101,16 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/laporan/pengeluaran/store', [\App\Http\Controllers\LaporanPengeluaran::class, 'store'])->name('pengeluaran.store');
     Route::put('/laporan/pengeluaran/{id}', [\App\Http\Controllers\LaporanPengeluaran::class, 'update'])->name('pengeluaran.update');
     Route::delete('/laporan/pengeluaran/{id}', [\App\Http\Controllers\LaporanPengeluaran::class, 'destroy'])->name('pengeluaran.destroy');
+
+    // Kelola Kamar
+    Route::get('/dashboard/kamar', [\App\Http\Controllers\KamarController::class, 'index'])->name('kamar.index');
+    Route::get('/dashboard/kamar/create', [\App\Http\Controllers\KamarController::class, 'create'])->name('kamar.create');
+    Route::post('/dashboard/kamar', [\App\Http\Controllers\KamarController::class, 'store'])->name('kamar.store');
+    Route::get('/dashboard/kamar/{id_kamar}', [\App\Http\Controllers\KamarController::class, 'show'])->name('kamar.show');
+    Route::get('/dashboard/kamar/{id_kamar}/edit', [\App\Http\Controllers\KamarController::class, 'edit'])->name('kamar.edit');
+    Route::put('/dashboard/kamar/{id_kamar}', [\App\Http\Controllers\KamarController::class, 'update'])->name('kamar.update');
+    Route::delete('/dashboard/kamar/{id_kamar}', [\App\Http\Controllers\KamarController::class, 'destroy'])->name('kamar.destroy');
+
     // Halaman register hanya bisa diakses admin
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/register', [RegisteredUserController::class, 'store']);

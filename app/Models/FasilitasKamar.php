@@ -5,44 +5,28 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Favorite extends Model
+class FasilitasKamar extends Model
 {
     use HasFactory;
 
+    protected $table = 'fasilitas_kamar';
+    protected $primaryKey = 'id_fasilitas';
     public $timestamps = false;
+    
     protected $fillable = [
-        'user_id',
-        'product_id'
+        'id_kamar',
+        'nama_fasilitas'
     ];
 
     protected $casts = [
-        'user_id' => 'integer',
-        'product_id' => 'integer'
+        'id_kamar' => 'integer',
     ];
 
-    // Relationship dengan User (optional)
-    public function user()
+    /**
+     * Relationship dengan Kamar
+     */
+    public function kamar()
     {
-        return $this->belongsTo(User::class);
-    }
-
-    // Relationship dengan Product (optional)
-    // public function product()
-    // {
-    //     return $this->belongsTo(Product::class);
-    // }
-
-    // Scope untuk mencari favorites berdasarkan user
-    public function scopeForUser($query, $userId)
-    {
-        return $query->where('user_id', $userId);
-    }
-
-    // Check if product is favorited by user
-    public static function isFavorited($userId, $productId)
-    {
-        return self::where('user_id', $userId)
-                  ->where('product_id', $productId)
-                  ->exists();
+        return $this->belongsTo(Kamar::class, 'id_kamar', 'id_kamar');
     }
 }
