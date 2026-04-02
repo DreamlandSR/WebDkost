@@ -10,9 +10,9 @@
             <div class="main-panel">
                 <div class="content-wrapper pt-5 px-5 pb-2" style="background: #f8fafc; min-height: calc(100vh - 70px);">
 
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-12">
+                    <div class="container-fluid d-flex justify-content-center">
+                        <div class="row w-100 justify-content-center">
+                            <div class="col-12" style="max-width: 700px;">
                                 <div class="card border-0 rounded-4 shadow-sm overflow-hidden" style="background: #ffffff;">
                                     {{-- Header Decoration --}}
                                     <div style="height: 120px; background: linear-gradient(45deg, #00a669 0%, #00c985 100%); position: relative; overflow: hidden;">
@@ -68,7 +68,7 @@
                                                 </a>
 
                                                 {{-- Lupa Password --}}
-                                                <a href="{{ route('otp.request') }}" class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center justify-content-between border-top" style="font-size: 15px;">
+                                                <a href="{{ route('password.request') }}" class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center justify-content-between border-top" style="font-size: 15px;">
                                                     <div class="d-flex align-items-center">
                                                         <div class="rounded-3 d-flex align-items-center justify-content-center bg-light mr-3" style="width: 38px; height: 38px;">
                                                             <i class="ti-lock text-success" style="font-size: 18px;"></i>
@@ -79,7 +79,7 @@
                                                 </a>
 
                                                 {{-- Tambah Akun (Placeholder for consistency with image) --}}
-                                                <a href="#" class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center justify-content-between border-top" style="font-size: 15px;">
+                                                <a href="{{ route('register') }}" class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center justify-content-between border-top" style="font-size: 15px;">
                                                     <div class="d-flex align-items-center">
                                                         <div class="rounded-3 d-flex align-items-center justify-content-center bg-light mr-3" style="width: 38px; height: 38px;">
                                                             <i class="ti-plus text-success" style="font-size: 18px;"></i>
@@ -92,7 +92,7 @@
                                         </div>
 
                                         {{-- Action Buttons --}}
-                                        <div class="d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center justify-content-start">
                                             <div class="d-flex gap-4">
                                                 <form method="POST" action="{{ route('logout') }}" id="logout-form">
                                                     @csrf

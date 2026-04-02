@@ -4,82 +4,78 @@
     <div class="bootstrap-scope">
         <div class="container-scroller">
             <div class="container-fluid page-body-wrapper full-page-wrapper">
-                <div class="content-wrapper d-flex align-items-center auth px-0">
-                    <div class="row w-100 mx-0">
-                        <div class="col-lg-4 col-md-6 col-sm-8 mx-auto">
-                            <div class="auth-form-light p-4" style="border-radius: 10px;">
-
-                                <div class="brand-logo mb-4 d-flex align-items-center justify-content-center">
-                                    <img src="{{ asset('img/dkos_logo.png') }}" alt="logo" class="img-fluid me-2"
-                                        style="max-width: 50px;">
-                                </div>
-
-                                {{-- Title and Back Button --}}
-                                <div class="mb-4 d-flex align-items-center">
-                                    <a href="{{ url()->previous() }}" class="me-2 text-dark" style="font-size: 24px; line-height: 1;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" class="feather feather-arrow-left">
-                                            <line x1="19" y1="12" x2="5" y2="12" />
-                                            <polyline points="12 19 5 12 12 5" />
-                                        </svg>
+                <div class="content-wrapper auth-wrapper-modern px-0">
+                    
+                    <div class="row w-100 mx-0 justify-content-center">
+                        <div class="col-lg-5 col-md-7 col-sm-9 mx-auto">
+                            <div class="card auth-card-modern shadow-sm border-0">
+                                
+                                {{-- Header: Back Icon & Stepper --}}
+                                <div class="d-flex align-items-center justify-content-between mb-5 px-1 mt-1">
+                                    <a href="{{ url('/') }}" class="auth-back-btn">
+                                        <i class="ti-angle-left"></i>
                                     </a>
-                                    <h4 class="mb-0 fw-bold">Lupa Password</h4>
+                                    
+                                    {{-- Stepper Progress Indicator (Wider & Smaller) --}}
+                                    <div class="auth-stepper-container">
+                                        <div class="auth-stepper-line active"></div>
+                                        <div class="auth-stepper-dot active"></div>
+                                        <div class="auth-stepper-line"></div>
+                                        <div class="auth-stepper-dot"></div>
+                                        <div class="auth-stepper-line"></div>
+                                        <div class="auth-stepper-dot"></div>
+                                    </div>
+                                    
+                                    <div style="width: 18px;"></div>
                                 </div>
 
-                                <p class="text-muted mb-4">
-                                    {{ __('Lupa password Anda? Tidak masalah. Beritahu kami email Anda dan kami akan mengirimkan tautan reset password.') }}
-                                </p>
+                                {{-- Page Titles --}}
+                                <div class="text-center mb-5">
+                                    <h2 class="auth-title-large">Pemulihan password</h2>
+                                    <p class="auth-subtitle-small">BETA Server</p>
+                                    <p class="auth-desc-text">
+                                        Masukkan email anda untuk mendapatkan kode pemulihan.
+                                    </p>
+                                </div>
 
-                                <!-- Session Status -->
+                                {{-- Alert Messages --}}
                                 @if (session('status'))
-                                    <div class="alert alert-success mb-4">
-                                        {{ session('status') }}
+                                    <div class="alert alert-success border-0 rounded-3 shadow-sm mb-4 py-2 px-3 text-center transition-all" style="font-size: 14px;">
+                                        <i class="ti-check-box mr-1"></i> {{ session('status') }}
                                     </div>
                                 @endif
 
                                 @if ($errors->any())
-                                    <div class="alert alert-danger">
-                                        <ul class="mb-0">
+                                    <div class="alert alert-danger border-0 rounded-3 shadow-sm mb-4 py-2 px-3 transition-all" style="font-size: 14px;">
+                                        <ul class="mb-0 list-unstyled text-center">
                                             @foreach ($errors->all() as $error)
-                                                <li>{{ $error }}</li>
+                                                <li><i class="ti-info-alt mr-1"></i> {{ $error }}</li>
                                             @endforeach
                                         </ul>
                                     </div>
                                 @endif
 
-                                <form method="POST" action="{{ route('password.email') }}">
+                                {{-- Recovery Form --}}
+                                <form method="POST" action="{{ route('otp.send') }}" class="px-2">
                                     @csrf
 
-                                    <!-- Email Address -->
-                                    <div class="mb-4">
-                                        <label for="email" class="form-label text-muted mb-1">Email Address</label>
+                                    <div class="mb-5">
+                                        <label for="email" class="form-label auth-form-label">Email</label>
                                         <input id="email" type="email" name="email"
-                                            class="form-control form-control-sm rounded shadow-sm" 
-                                            placeholder="Masukkan email anda" 
-                                            value="{{ old('email') }}" required autofocus>
-                                        @error('email')
-                                            <div class="text-danger small mt-1">{{ $message }}</div>
-                                        @enderror
+                                               class="form-control auth-input-modern" 
+                                               placeholder="Masukkan email anda" value="{{ old('email') }}" required autofocus>
                                     </div>
 
-                                    <div class="mb-3">
-                                        <button type="submit" class="btn btn-primary btn-lg w-100 rounded shadow-sm"
-                                            style="padding: 12px 0;">
-                                            Kirim Tautan Reset Password
+                                    <div class="mb-4 pb-2">
+                                        <button type="submit" class="btn auth-btn-pill-green w-100">
+                                            Selanjutnya
                                         </button>
                                     </div>
                                 </form>
-                                
-                                <div class="text-center mt-3">
-                                    <a href="{{ route('login') }}" class="small text-decoration-none text-success">
-                                        Kembali ke halaman login
-                                    </a>
-                                </div>
-                                
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>

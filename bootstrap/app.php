@@ -3,20 +3,6 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Spatie\Permission\Middleware\RoleMiddleware;
-use Spatie\Permission\Middleware\PermissionMiddleware;
-use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
-use App\Http\Middleware\Authenticate;
-use App\Http\Middleware\AdminMiddleware;
-use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
-use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -27,35 +13,38 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
 
-        // Middleware aliases
-        $middleware->alias([
-            'auth' => Authenticate::class,
-            'admin' => AdminMiddleware::class,
-            'role' => RoleMiddleware::class,
-            'permission' => PermissionMiddleware::class,
-            'role_or_permission' => RoleOrPermissionMiddleware::class,
+        $middleware->use([
+            \Illuminate\Http\Middleware\HandleCors::class,
         ]);
 
-        // Default web middleware stack
-        // $middleware->web([
-        //     EncryptCookies::class,
-        //     AddQueuedCookiesToResponse::class,
-        //     StartSession::class,
-        //     ShareErrorsFromSession::class,
-        //     ValidateCsrfToken::class,
-        //     SubstituteBindings::class,
-        // ]);
+        $middleware->alias([
+            'auth' => \App\Http\Middleware\Authenticate::class,
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+        ]);
 
+        $middleware->web([
+            \Illuminate\Cookie\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        ]);
 
-
-        // Middleware groups lainnya jika diperlukan
         $middleware->api([
-            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            'throttle:60,1', // 60 requests per minute
-            SubstituteBindings::class,
+            'throttle:60,1',
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'api/*',
+            'api/pembayaran/webhook',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        // Custom exception handling
-    })->create();
-
+        //
+    })
+    ->create();

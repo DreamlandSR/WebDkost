@@ -1,8 +1,9 @@
 <?php
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Kamar extends Model
 {
@@ -31,15 +32,28 @@ class Kamar extends Model
         return $this->hasOne(GaleriKamar::class, 'id_kamar', 'id_kamar')
                     ->where('is_main', 1);
     }
-    
-    // Untuk kompatibilitas dengan view yang menggunakan galeriKamar
-    public function galeriKamar()
-    {
-        return $this->mainImage();
-    }
+
 
     public function fasilitas()
     {
         return $this->hasMany(FasilitasKamar::class, 'id_kamar', 'id_kamar');
     }
+
+    public function bookings()
+    {
+        return $this->mainImage();
+    }
+
+
+    public function reviews()
+    {
+        return $this->hasMany(FasilitasKamar::class, 'id_kamar', 'id_kamar');
+    }
+
+    // Auto rating
+    public function getRatingAttribute()
+    {
+        return round($this->reviews()->avg('rating') ?? 0, 1);
+    }
+
 }

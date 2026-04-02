@@ -27,6 +27,12 @@ class Kernel extends HttpKernel
             'throttle:api',  // Menggunakan rate limiter 'api' yang sudah didefinisikan
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
+
+        // 'api' => [
+        //         \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+        //         'throttle:api',
+        //         \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        // ],
     ];
 
     protected $routeMiddleware = [

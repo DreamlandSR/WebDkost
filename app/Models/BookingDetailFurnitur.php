@@ -1,37 +1,12 @@
 <?php
-
 namespace App\Models;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Address extends Model
-{
-    use HasFactory;
-
+class BookingDetailFurnitur extends Model {
+    protected $table = 'booking_detail_furnitur';
+    protected $primaryKey = 'id_detail';
     public $timestamps = false;
+    protected $fillable = ['id_booking','id_furnitur','jumlah'];
 
-    protected $fillable = [
-        'user_id',
-        'nama_lengkap',
-        'nomor_hp',
-        'provinsi',
-        'kota',
-        'kecamatan',
-        'kode_pos',
-        'alamat_lengkap'
-    ];
-
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime'
-    ];
-
-    /**
-     * Relationship dengan User
-     */
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+    public function furnitur() { return $this->belongsTo(Furnitur::class, 'id_furnitur', 'id_furnitur'); }
 }
