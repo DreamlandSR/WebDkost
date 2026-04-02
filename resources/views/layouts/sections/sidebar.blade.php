@@ -34,13 +34,7 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link {{ request()->is('dashboard/kamar/create*') ? 'active' : '' }}" href="{{ url('/dashboard/kamar/create') }}">
-                <i class="ti-upload"></i>
-                <span class="menu-title">Upload Kamar</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ request()->is('dashboard/kamar*') && !request()->is('dashboard/kamar/create*') ? 'active' : '' }}" href="{{ url('/dashboard/kamar') }}">
+            <a class="nav-link {{ request()->is('dashboard/kamar*') ? 'active' : '' }}" href="{{ url('/dashboard/kamar') }}">
                 <i class="ti-home"></i>
                 <span class="menu-title">Kelola Kamar</span>
             </a>

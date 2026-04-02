@@ -8,4 +8,5 @@ class FasilitasKamar extends Model {
     protected $primaryKey = 'id_fasilitas';
     public $timestamps = false;
     protected $fillable = ['id_kamar','nama_fasilitas','deskripsi_fasilitas'];
+
 }
