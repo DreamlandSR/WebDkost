@@ -71,9 +71,9 @@
                                             <label class="text-muted fw-medium mb-0" style="font-size: 15px; white-space: nowrap;">Filter status</label>
                                             <select name="status" class="form-select shadow-none" style="width: 140px; border-radius: 4px; padding: 6px 12px; font-size: 14px; cursor: pointer;" onchange="this.form.submit()">
                                                 <option value="Semua" {{ request('status') == 'Semua' || !request('status') ? 'selected' : '' }}>Semua</option>
-                                                <option value="Tersedia" {{ request('status') == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
-                                                <option value="Terisi" {{ request('status') == 'Terisi' ? 'selected' : '' }}>Terisi</option>
-                                                <option value="Maintenance" {{ request('status') == 'Maintenance' ? 'selected' : '' }}>Maintenance</option>
+                                                <option value="Tersedia" {{ request('status') == 'tersedia' ? 'selected' : '' }}>Tersedia</option>
+                                                <option value="Terisi" {{ request('status') == 'terisi' ? 'selected' : '' }}>Terisi</option>
+                                                <option value="Maintenance" {{ request('status') == 'maintenance' ? 'selected' : '' }}>Maintenance</option>
                                             </select>
                                         </div>
 
@@ -245,7 +245,7 @@
                                             Status Kamar <span class="text-danger">*</span>
                                         </label>
                                         <div class="d-flex flex-wrap" style="gap: 10px;" id="statusGrid">
-                                            @foreach(['Tersedia', 'Terisi', 'Maintenance'] as $status)
+                                            @foreach(['tersedia', 'terisi', 'maintenance'] as $status)
                                             <label class="status-pill" style="cursor:pointer;">
                                                 <input type="radio" name="status_kamar" value="{{ $status }}" required style="display:none;" onchange="selectStatus(this)" {{ old('status_kamar') == $status ? 'checked' : '' }}>
                                                 <span class="pill-label" style="display:inline-block; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 500; border: 1.5px solid #e5e7eb; background: #f9fafb; color: #6b7280; transition: all 0.15s; user-select:none;">{{ $status }}</span>

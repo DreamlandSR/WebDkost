@@ -41,13 +41,13 @@ class Kamar extends Model
 
     public function bookings()
     {
-        return $this->mainImage();
+        return $this->hasMany(Booking::class, 'id_kamar', 'id_kamar');
     }
 
 
     public function reviews()
     {
-        return $this->hasMany(FasilitasKamar::class, 'id_kamar', 'id_kamar');
+        return $this->hasMany(Review::class, 'id_kamar', 'id_kamar');
     }
 
     // Auto rating
