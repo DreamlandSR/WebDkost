@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Booking;
 use App\Models\Keluhan;
 use Illuminate\Http\Request;
 
@@ -18,6 +19,18 @@ class KeluhanController extends Controller
 
         $data = base64_encode(file_get_contents($fullPath));
         return 'data:' . $mimeType . ';base64,' . $data;
+    }
+
+    private function getBookingAktif(int $userId, int $idKamar = null): ?Booking
+    {
+        $query = Booking::where('id_user', $userId)
+            ->where('status_booking', 'aktif');
+
+        if ($idKamar) {
+            $query->where('id_kamar', $idKamar);
+        }
+
+        return $query->first();
     }
 
     // ── GET: Semua keluhan milik user ──────────────────────
@@ -49,6 +62,14 @@ class KeluhanController extends Controller
             'deskripsi_masalah' => 'required|string|min:10',
             'foto_bukti'        => 'nullable|image|max:2048',
         ]);
+
+        $bookingAktif = $this->getBookingAktif($request->id_user, $request->id_kamar);
+        if (!$bookingAktif) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda harus memiliki kamar aktif untuk melaporkan keluhan.',
+            ], 403);
+        }
 
         $fotoPath = null;
         if ($request->hasFile('foto_bukti')) {
@@ -83,7 +104,6 @@ class KeluhanController extends Controller
             ], 404);
         }
 
-        // Hanya boleh edit jika masih pending
         if ($keluhan->status_keluhan !== 'pending') {
             return response()->json([
                 'success' => false,
@@ -96,9 +116,7 @@ class KeluhanController extends Controller
             'foto_bukti'        => 'nullable|image|max:2048',
         ]);
 
-        // Update foto jika ada yang baru
         if ($request->hasFile('foto_bukti')) {
-            // Hapus foto lama
             if ($keluhan->foto_bukti) {
                 \Storage::disk('public')->delete($keluhan->foto_bukti);
             }
@@ -113,6 +131,38 @@ class KeluhanController extends Controller
             'success' => true,
             'message' => 'Keluhan berhasil diperbarui.',
             'data'    => $keluhan,
+        ]);
+    }
+
+    // ── DELETE: Hapus keluhan (hanya jika masih pending) ───
+    public function destroy($id)
+    {
+        $keluhan = Keluhan::find($id);
+
+        if (!$keluhan) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Keluhan tidak ditemukan.',
+            ], 404);
+        }
+
+        if ($keluhan->status_keluhan !== 'pending') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Hanya keluhan yang masih pending yang dapat dihapus.',
+            ], 422);
+        }
+
+        // Hapus foto dari storage jika ada
+        if ($keluhan->foto_bukti) {
+            \Storage::disk('public')->delete($keluhan->foto_bukti);
+        }
+
+        $keluhan->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Keluhan berhasil dihapus.',
         ]);
     }
 }
