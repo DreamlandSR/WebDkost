@@ -37,25 +37,29 @@ header.py-5 {
     color: #fff;
 }
 
-.btn-outline-primary {
-    background-color: transparent !important;  /* HARUS transparan */
-    color: #00AB6B !important;                 /* Teks hijau */
+.btn-outline-green {
+    background-color: transparent !important;
+    /* HARUS transparan */
+    color: #00AB6B !important;
+    /* Teks hijau */
     border-color: #00AB6B !important;
     border-width: 2px !important;
     transition: all 0.2s ease !important;
 }
 
 /* State Hover dan Focus - Background jadi hijau, teks putih */
-.btn-outline-primary:hover,
-.btn-outline-primary:focus {
-    background-color: #00AB6B !important;      /* Hijau solid */
+.btn-outline-green:hover,
+.btn-outline-green:focus {
+    background-color: #00AB6B !important;
+    /* Hijau solid */
     color: white !important;
     border-color: #00AB6B !important;
 }
 
 /* State Active (SAAT DIKLIK) - Lebih gelap */
-.btn-outline-primary:active {
-    background-color: #008C56 !important;      /* Hijau lebih gelap */
+.btn-outline-green:active {
+    background-color: #008C56 !important;
+    /* Hijau lebih gelap */
     color: white !important;
     border-color: #008C56 !important;
     transform: none !important;
@@ -63,25 +67,27 @@ header.py-5 {
 }
 
 /* Untuk memastikan tidak ada efek dari Bootstrap */
-.btn-outline-primary:not(:disabled):not(.disabled):active {
+.btn-outline-green:not(:disabled):not(.disabled):active {
     background-color: #008C56 !important;
     color: white !important;
     border-color: #008C56 !important;
 }
 
 /* Pastikan teks tidak hilang */
-.btn-outline-primary:active,
-.btn-outline-primary:focus,
-.btn-outline-primary:hover {
+.btn-outline-green:active,
+.btn-outline-green:focus,
+.btn-outline-green:hover {
     opacity: 1 !important;
 }
 
 .feature {
-    width: 58px;
-    height: 58px;
+    width: 52px;
+    height: 52px;
+    aspect-ratio: 1 / 1;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     transition: background 0.25s ease;
 }
 
@@ -90,7 +96,8 @@ header.py-5 {
 }
 
 .feature i {
-    font-size: 1.35rem;
+    font-size: 1.25rem;
+    line-height: 1;
 }
 
 .feature-card {
@@ -123,6 +130,7 @@ header.py-5 {
         opacity: 0;
         transform: translateY(12px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -138,7 +146,7 @@ header.py-5 {
 }
 
 #android-download {
-    background: linear-gradient(120deg, rgba(0,171,107,0.12), #ffffff);
+    background: linear-gradient(120deg, rgba(0, 171, 107, 0.12), #ffffff);
     border-radius: 18px;
     border: 1px solid #d8f0e0;
 }
@@ -147,6 +155,7 @@ header.py-5 {
     .hero {
         text-align: center;
     }
+
     .d-sm-flex {
         justify-content: center !important;
     }
@@ -211,16 +220,16 @@ header.py-5 {
         margin: 1rem;
         border-radius: 12px;
     }
-    
+
     .download-card {
         max-width: 350px !important;
     }
-    
+
     .download-card .d-flex {
         flex-direction: column !important;
         text-align: center;
     }
-    
+
     .download-card .text-sm-start {
         text-align: center !important;
     }
@@ -230,7 +239,7 @@ header.py-5 {
     .download-card {
         max-width: 100% !important;
     }
-    
+
     .download-card .d-flex {
         gap: 1.5rem !important;
     }
@@ -241,34 +250,41 @@ header.py-5 {
     background: #f8f9fa;
     color: #334155;
 }
+
 .dk-footer .footer-title {
     color: #0f172a;
     font-weight: 700;
     margin-bottom: 0.8rem;
 }
+
 .dk-footer .footer-text,
 .dk-footer .footer-contact li,
 .dk-footer .footer-nav li,
 .dk-footer .news-item .text-muted {
     color: #4a5568;
 }
+
 .dk-footer .footer-link {
     color: #334155;
     text-decoration: none;
     font-weight: 500;
 }
+
 .dk-footer .footer-link:hover {
     color: #00ab6b;
     text-decoration: none;
 }
+
 .dk-footer .footer-nav li a {
     color: #4a5568;
     text-decoration: none;
 }
+
 .dk-footer .footer-nav li a:hover {
     color: #00ab6b;
     text-decoration: none;
 }
+
 .dk-footer .social-circle {
     width: 38px;
     height: 38px;
@@ -281,10 +297,12 @@ header.py-5 {
     text-decoration: none;
     transition: transform 0.2s ease;
 }
+
 .dk-footer .social-circle:hover {
     transform: translateY(-2px);
     background: #008c56;
 }
+
 .dk-footer .footer-contact i {
     color: #ffffff;
     background: #00ab6b;
@@ -297,23 +315,28 @@ header.py-5 {
     margin-right: 0.4rem;
     font-size: 0.8rem;
 }
+
 .dk-footer .footer-bottom {
     border-top: 1px solid rgba(52, 73, 94, 0.5);
     margin-top: 0.75rem;
     padding-top: 0.9rem;
 }
+
 .dk-footer small {
     color: #64748b;
 }
+
 @media (max-width: 767px) {
     .dk-footer {
         text-align: center;
     }
+
     .dk-footer .footer-contact li,
     .dk-footer .footer-nav li,
     .dk-footer .news-item {
         text-align: center;
     }
+
     .dk-footer .d-flex {
         justify-content: center;
     }
@@ -373,13 +396,14 @@ footer.footer-01 .bi {
 }
 
 footer.footer-01 .border-top {
-    border-color: rgba(52,73,94,0.5) !important;
+    border-color: rgba(52, 73, 94, 0.5) !important;
 }
 
 @media (max-width: 767px) {
     footer.footer-01 {
         text-align: left;
     }
+
     footer.footer-01 .ftco-footer-social {
         justify-content: flex-start;
     }
@@ -400,13 +424,13 @@ footer.footer-01 .border-top {
     position: relative;
     overflow: hidden;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .grid-item:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .grid-item img {
@@ -426,7 +450,7 @@ footer.footer-01 .border-top {
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
     color: white;
     padding: 30px 20px 20px;
     transform: translateY(100%);
@@ -479,10 +503,10 @@ footer.footer-01 .border-top {
         column-count: 1;
         padding: 10px;
     }
-    
+
     .grid-item .overlay {
         transform: translateY(0);
-        background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
     }
 }
 
@@ -495,7 +519,7 @@ footer.footer-01 .border-top {
 
 .kos-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.15) !important;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
 }
 
 .kos-card .card-img-top {
@@ -521,12 +545,12 @@ footer.footer-01 .border-top {
     color: #FFC107;
 }
 
-.kos-card .btn-outline-primary {
+.kos-card .btn-outline-green {
     transition: all 0.3s ease;
     font-size: 0.9rem;
 }
 
-.kos-card .btn-outline-primary:hover {
+.kos-card .btn-outline-green:hover {
     background-color: #00AB6B;
     color: white !important;
     border-color: #00AB6B !important;
@@ -537,9 +561,160 @@ footer.footer-01 .border-top {
     .kos-card .card-title {
         font-size: 1.1rem !important;
     }
-    
+
     .kos-card .badge {
         padding: 6px 10px;
         font-size: 0.75rem;
     }
+}
+
+/* ===== KAMAR DETAIL STYLES ===== */
+.gallery-thumb {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s, opacity 0.2s;
+    opacity: 0.7;
+}
+
+.gallery-thumb.active,
+.gallery-thumb:hover {
+    border-color: #00AB6B;
+    opacity: 1;
+}
+
+#mainImage {
+    width: 100%;
+    height: 340px;
+    object-fit: cover;
+    border-radius: 14px;
+    transition: opacity 0.25s;
+}
+
+.fas-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: #f8fffe;
+    border: 1px solid #e2f5ed;
+    border-radius: 10px;
+    font-size: 0.88rem;
+}
+
+.fas-item i {
+    font-size: 1.1rem;
+    color: #00AB6B;
+    width: 20px;
+    text-align: center;
+}
+
+.review-card {
+    border: 1px solid #f0f0f0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    background: #fff;
+}
+
+.review-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #e2f5ed;
+}
+
+.avatar-placeholder {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00AB6B, #008C56);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.rating-bar-bg {
+    height: 8px;
+    border-radius: 4px;
+    background: #eee;
+    flex: 1;
+}
+
+.rating-bar-fill {
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #00AB6B, #34d88b);
+}
+
+.price-display {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #00AB6B;
+    line-height: 1;
+}
+
+.detail-hero {
+    background-color: #00AB6B;
+    padding: 20px 0 0;
+}
+
+.rekomen-card {
+    border-radius: 12px;
+    overflow: hidden;
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.rekomen-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* ===== HERO BREADCRUMB MODERN ===== */
+.modern-breadcrumb {
+    background: transparent !important;
+    padding: 0 !important;
+}
+
+.modern-breadcrumb .breadcrumb-item+.breadcrumb-item::before {
+    color: rgba(255, 255, 255, 0.6) !important;
+    content: "›" !important;
+    font-size: 1.2rem;
+    line-height: 0.8;
+    vertical-align: middle;
+}
+
+/* Custom scrollbar for ulasan container to make it clean */
+#ulasanContainer {
+    max-height: 500px;
+    overflow-y: auto;
+}
+#ulasanContainer::-webkit-scrollbar {
+    width: 6px;
+}
+#ulasanContainer::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+#ulasanContainer::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+#ulasanContainer::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* ===== MODAL BACKDROP (TIDAK GELAP) ===== */
+.modal-backdrop.show {
+    opacity: 0.15 !important;
+    background-color: #000 !important;
 }

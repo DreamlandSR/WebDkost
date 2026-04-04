@@ -12,7 +12,7 @@
 <body>
     @include('templates.header')
 
-    <div class="container">
+    <div class="@yield('container_class', 'container')">
         @yield('content')
     </div>
 

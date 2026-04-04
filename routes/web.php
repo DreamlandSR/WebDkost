@@ -58,7 +58,9 @@ Route::get('storage/{path}', function ($path) {
 Route::get('/', [HomeController::class, 'index'])->name('index');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/product', [HomeController::class, 'product'])->name('product');
+Route::get('/kamar/{id_kamar}', [HomeController::class, 'detailKamar'])->name('kamar.detail');
 Route::get('/galeri', [ProductController::class, 'showGallery'])->name('produk.galeri');
+
 
 Route::get('/product-image/{id}', [ProductController::class, 'showImage'])->name('product.image');
 
