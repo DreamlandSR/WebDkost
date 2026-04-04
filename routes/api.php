@@ -75,29 +75,33 @@ Route::middleware('auth:sanctum')->group(function () {
     // Furnitur
     Route::get('/furnitur', [FurniturController::class, 'index']);
 
-    // Booking
-    Route::post('/booking',              [BookingController::class, 'store']);
-    Route::get('/booking/user/{userId}', [BookingController::class, 'indexByUser']);
-    Route::get('/booking/{id}',          [BookingController::class, 'show']);
-    Route::put('/booking/{id}/batal',    [BookingController::class, 'batal']);
+    // Booking — SPESIFIK di atas DINAMIS {id}
+    Route::get   ('booking/user/{userId}',           [BookingController::class, 'indexByUser']);
+    Route::get   ('booking/aktif/{userId}',           [BookingController::class, 'aktifByUser']);
+    Route::get   ('booking/{id}',                    [BookingController::class, 'show']);
+    Route::post  ('booking',                         [BookingController::class, 'store']);
+    Route::put   ('booking/{id}/batal',              [BookingController::class, 'batal']);  
+    Route::post  ('booking/{id}/furnitur',           [BookingController::class, 'tambahFurnitur']);
+    Route::post  ('booking/{id}/selesai',            [BookingController::class, 'akhiriSewa']);
+    // Tagihan — spesifik di atas {id}
+    Route::get   ('tagihan/booking/{bookingId}',     [TagihanController::class, 'indexByBooking']);
+    Route::get   ('tagihan/user/{userId}',           [TagihanController::class, 'indexByUser']);
+    Route::get   ('tagihan/cek-bulan/{bookingId}',   [TagihanController::class, 'cekBulanIni']);
+    Route::get   ('tagihan/{id}',                    [TagihanController::class, 'show']);
+    Route::delete('tagihan/{id}',                    [TagihanController::class, 'destroy']);
 
-    // Tagihan
-    Route::get('/tagihan/booking/{bookingId}', [TagihanController::class, 'indexByBooking']);
-    Route::get('/tagihan/{id}',                [TagihanController::class, 'show']);
-    Route::get('/tagihan/bulan-ini/{bookingId}',  [TagihanController::class, 'cekBulanIni']);  // ← baru
-    Route::delete('/tagihan/{id}',                [TagihanController::class, 'destroy']);       // ← baru
-
-    // Pembayaran — spesifik dulu, baru dinamis
-    Route::post('/pembayaran',                       [PembayaranController::class, 'store']);
-    Route::get('/pembayaran/status/{idTagihan}',     [PembayaranController::class, 'checkStatus']);
-    Route::get('/pembayaran/{id}',                   [PembayaranController::class, 'show']);
+    // Pembayaran — spesifik di atas {id}
+    Route::post  ('pembayaran',                      [PembayaranController::class, 'store']);
+    Route::get   ('pembayaran/{id}',                 [PembayaranController::class, 'show']);
+    Route::get   ('pembayaran/status/{idTagihan}',   [PembayaranController::class, 'checkStatus']);
 
     // Keluhan
     Route::post('/keluhan',              [KeluhanController::class, 'store']);
     Route::get('/keluhan/user/{userId}', [KeluhanController::class, 'indexByUser']);
-    Route::put('/keluhan/{id}', [KeluhanController::class, 'update']);
-    
-    // Review
+    Route::put('/keluhan/{id}',          [KeluhanController::class, 'update']);
+    Route::delete('/keluhan/{id}', [KeluhanController::class, 'destroy']);
+
+    // Review — spesifik di atas {id}
     Route::post('/review',                [ReviewController::class, 'store']);
     Route::get('/review/kamar/{kamarId}', [ReviewController::class, 'indexByKamar']);
     Route::put('/review/{id}',            [ReviewController::class, 'update']);

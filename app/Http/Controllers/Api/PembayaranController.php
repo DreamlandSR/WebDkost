@@ -7,6 +7,7 @@ use App\Models\Tagihan;
 use App\Models\Pendapatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 use Midtrans\Config;
 use Midtrans\Snap;
 use Midtrans\Notification;
@@ -46,9 +47,9 @@ class PembayaranController extends Controller
 
         if ($existing) {
             return response()->json([
-                'success'       => true,
-                'message'       => 'Gunakan token yang sudah ada.',
-                'data' => [
+                'success' => true,
+                'message' => 'Gunakan token yang sudah ada.',
+                'data'    => [
                     'id_pembayaran' => $existing->id_pembayaran,
                     'order_id'      => $existing->order_id,
                     'snap_token'    => $existing->snap_token,
@@ -60,6 +61,16 @@ class PembayaranController extends Controller
 
         $orderId = 'DKOST-' . $tagihan->id_tagihan . '-' . Str::upper(Str::random(6));
         $user    = $tagihan->booking->user;
+        $booking = $tagihan->booking;
+
+        // ── Hitung sisa waktu dari expired_at booking ──────
+        $now       = Carbon::now();
+        $expiredAt = $booking->expired_at
+            ? Carbon::parse($booking->expired_at)
+            : $now->copy()->addHours(24); // fallback jika null
+
+        // Minimal 1 menit agar Midtrans tidak reject
+        $sisaMenit = max((int) $now->diffInMinutes($expiredAt, false), 1);
 
         // Parameter untuk Midtrans Snap
         $params = [
@@ -68,8 +79,8 @@ class PembayaranController extends Controller
                 'gross_amount' => (int) $tagihan->total_tagihan,
             ],
             'customer_details' => [
-                'first_name' => $user->Nama ?? 'User',
-                'email'      => $user->Email ?? 'user@dkost.com',
+                'first_name' => $user->Nama       ?? 'User',
+                'email'      => $user->Email      ?? 'user@dkost.com',
                 'phone'      => $user->No_telepon ?? '08000000000',
             ],
             'item_details' => [[
@@ -78,6 +89,12 @@ class PembayaranController extends Controller
                 'quantity' => 1,
                 'name'     => 'Tagihan Kost Periode ' . ($tagihan->periode_bulan ?? '-'),
             ]],
+            // ── Sinkronkan expiry Midtrans dengan expired_at booking ──
+            'expiry' => [
+                'start_time' => $now->format('Y-m-d H:i:s O'), // waktu sekarang + timezone
+                'unit'       => 'minutes',
+                'duration'   => $sisaMenit,                     // sisa menit dari expired_at
+            ],
         ];
 
         // Ambil snap token dari Midtrans
@@ -180,6 +197,7 @@ class PembayaranController extends Controller
 
         if ($transactionStatus === 'capture') {
             $statusPembayaran = $fraudStatus === 'accept' ? 'settlement' : 'deny';
+            if ($statusPembayaran === 'settlement') $statusTagihan = 'lunas';
         } elseif ($transactionStatus === 'settlement') {
             $statusPembayaran = 'settlement';
             $statusTagihan    = 'lunas';
@@ -200,7 +218,7 @@ class PembayaranController extends Controller
         $tagihan = $pembayaran->tagihan;
         $tagihan->update(['status_tagihan' => $statusTagihan]);
 
-        // Jika lunas — update booking + catat pendapatan
+        // ── Jika lunas: update booking + catat pendapatan ──
         if ($statusPembayaran === 'settlement') {
             $tagihan->booking->update(['status_booking' => 'aktif']);
 
@@ -211,6 +229,16 @@ class PembayaranController extends Controller
                     'tgl_diterima' => now()->toDateString(),
                 ]
             );
+        }
+
+        // ── Jika expire: batalkan booking ──────────────────
+        if ($transactionStatus === 'expire') {
+            $booking = $tagihan->booking;
+            if ($booking && $booking->status_booking === 'menunggu_pembayaran') {
+                $booking->update(['status_booking' => 'batal']);
+                // Kembalikan kamar ke tersedia
+                $booking->kamar()->update(['status_kamar' => 'tersedia']);
+            }
         }
 
         return response()->json(['success' => true]);

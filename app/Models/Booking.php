@@ -7,8 +7,9 @@ class Booking extends Model {
     protected $primaryKey = 'id_booking';
     public $timestamps = false;
     protected $fillable = [
-        'id_user','id_kamar','tgl_booking','durasi_sewa_bulan',
-        'tgl_mulai_sewa','tgl_akhir_sewa','total_biaya_bulanan','status_booking'
+        'id_user', 'id_kamar', 'tgl_booking', 'expired_at',
+        'durasi_sewa_bulan', 'tgl_mulai_sewa', 'tgl_akhir_sewa',
+        'total_biaya_bulanan', 'status_booking',
     ];
 
     public function user()            { return $this->belongsTo(User::class,    'id_user',    'id_user'); }

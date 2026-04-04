@@ -64,7 +64,7 @@ class KamarController extends Controller
                 'tipe_kamar' => 'required|string|in:biasa,sedang,mewah',
                 'deskripsi' => 'nullable|string|max:500',
                 'harga' => 'required|numeric|min:0',
-                'status_kamar' => 'required|string|in:Tersedia,Terisi,Maintenance',
+                'status_kamar' => 'required|string|in:tersedia,terisi,maintenance',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
             
@@ -194,7 +194,7 @@ class KamarController extends Controller
                 'tipe_kamar' => 'required|string|in:biasa,sedang,mewah',
                 'deskripsi' => 'nullable|string|max:500',
                 'harga' => 'required|numeric|min:0',
-                'status_kamar' => 'required|string|in:Tersedia,Terisi,Maintenance',
+                'status_kamar' => 'required|string|in:tersedia,terisi,maintenance',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
             
