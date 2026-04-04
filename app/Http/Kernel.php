@@ -10,6 +10,27 @@ use Illuminate\Support\Facades\RateLimiter;
 
 class Kernel extends HttpKernel
 {
+    protected function schedule(Schedule $schedule): void
+    {
+        // ── Generate tagihan setiap tanggal 1, jam 00:01 ──────
+        $schedule->command('tagihan:generate')
+                 ->monthlyOn(1, '00:01')
+                 ->withoutOverlapping()
+                 ->runInBackground();
+ 
+        // ── Cek & batalkan booking expired setiap 5 menit ────
+        $schedule->command('booking:expire-check')
+                 ->everyFiveMinutes()
+                 ->withoutOverlapping()
+                 ->runInBackground();
+    }
+ 
+    protected function commands(): void
+    {
+        $this->load(__DIR__.'/Commands');
+        require base_path('routes/console.php');
+    }
+
     protected $middleware = [
         \Illuminate\Http\Middleware\HandleCors::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,

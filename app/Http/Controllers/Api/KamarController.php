@@ -48,10 +48,6 @@ class KamarController extends Controller
                 'status_kamar'    => $kamar->status_kamar,
                 'foto_primary' => $mainFoto ? asset('storage/' . $mainFoto->url_foto) : null,
                 'galeri' => $kamar->galeri->map(fn($g) => asset('storage/' . $g->url_foto)),
-                'fasilitas'       => $kamar->fasilitas->map(fn($f) => [
-                    'nama'      => $f->nama_fasilitas,
-                    'deskripsi' => $f->deskripsi_fasilitas,
-                ]),
                 'rating'          => $avgRating ? round($avgRating, 1) : null,
             ],
         ]);

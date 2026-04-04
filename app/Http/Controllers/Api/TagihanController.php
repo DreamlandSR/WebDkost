@@ -101,7 +101,7 @@ class TagihanController extends Controller
     }
 
     // ── Format tagihan untuk response ─────────────────────
-    private function formatTagihan(Tagihan $t): array
+private function formatTagihan(Tagihan $t): array
     {
         $booking  = $t->booking;
         $kamar    = $booking?->kamar;
@@ -116,9 +116,10 @@ class TagihanController extends Controller
             'total_tagihan'  => $t->total_tagihan,
             'tgl_jatuh_tempo'=> $t->tgl_jatuh_tempo,
             'status_tagihan' => $t->status_tagihan,
-            // Info kamar dari relasi
+            'status_booking' => $booking?->status_booking,
             'nama_kamar'     => $kamar ? 'Kos ' . ucfirst($kamar->tipe_kamar) . ' ' . $kamar->nomor_kamar : null,
-            'foto_kamar'     => $mainFoto ? url('api/image/' . $mainFoto->url_foto) : null,
+            // Hanya simpan path relatif, sama seperti formatBooking di BookingController
+            'foto_kamar'     => $mainFoto?->url_foto,
             'tgl_mulai_sewa' => $booking?->tgl_mulai_sewa,
             'tgl_akhir_sewa' => $booking?->tgl_akhir_sewa,
         ];
