@@ -43,7 +43,7 @@ class ChatbotController extends Controller
             $intent = $this->gemini->classifyIntent($request->message);
 
             // Tolak kalau tidak relevan
-            if ($intent['intent'] === 'tidak_relevan' || $intent['confidence'] < 0.4) {
+            if ($intent['intent'] === 'tidak_relevan' || $intent['confidence'] < 0.3) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Maaf, saya hanya bisa membantu pertanyaan seputar kos ini 😊',
@@ -103,6 +103,7 @@ class ChatbotController extends Controller
             'cek_fasilitas'      => $this->getFacilities($params),
             'lihat_review'       => $this->getReviews(),
             'cek_furnitur'       => $this->getFurniture(),
+            'info_umum'          => $this->getGeneralInfo(),
             default              => $this->getGeneralInfo(),
         };
     }

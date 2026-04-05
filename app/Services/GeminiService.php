@@ -25,7 +25,7 @@ class GeminiService
             ],
             'generationConfig' => [
                 'temperature'     => 0.1,
-                'maxOutputTokens' => 150,
+                'maxOutputTokens' => 500,
             ]
         ]);
 
@@ -42,26 +42,30 @@ class GeminiService
 
     private function buildPrompt(string $message): string
     {
-        return <<<PROMPT
-        Kamu classifier intent chatbot kos-kosan "Sinora". 
-        JANGAN jawab pertanyaan, HANYA klasifikasikan.
+    return <<<PROMPT
+    Kamu classifier intent chatbot kos-kosan "Sinora".
+    JANGAN jawab pertanyaan, HANYA klasifikasikan.
 
-        Pertanyaan: "{$message}"
+    Pertanyaan user: "{$message}"
 
-        Intent:
-        - cek_kamar_tersedia : tanya kamar kosong/available
-        - cek_harga          : tanya harga/biaya sewa  
-        - cek_fasilitas      : tanya fasilitas kamar
-        - lihat_review       : minta review/testimoni
-        - cek_furnitur       : tanya furniture
-        - info_umum          : pertanyaan umum kos
-        - tidak_relevan      : diluar topik kos
+    Pilih SATU intent yang paling cocok:
+    - cek_kamar_tersedia : tanya kamar kosong, available, kamar apa saja, ada kamar tidak
+    - cek_harga          : tanya harga, biaya, tarif, berapa harga
+    - cek_fasilitas      : tanya fasilitas, apa saja fasilitasnya
+    - lihat_review       : minta review, ulasan, testimoni, rating
+    - cek_furnitur       : tanya furnitur, furniture, kasur, meja, kursi, lemari
+    - info_umum          : salam, halo, hai, apa kabar, pertanyaan umum tentang kos
+    - tidak_relevan      : diluar topik kos sama sekali (cuaca, politik, dll)
 
-        Tipe kamar valid: biasa, sedang, mewah
+    Tipe kamar valid: biasa, sedang, mewah
 
-        Balas HANYA JSON (tanpa markdown):
-        {"intent":"nama_intent","confidence":0.0,"params":{"tipe_kamar":null}}
-        PROMPT;
+    PENTING: kata "furnitur" atau "furniture" SELALU intent cek_furnitur
+    PENTING: kata "halo", "hallo", "hai", "hi" SELALU intent info_umum
+    PENTING: kata "kamar" saja tanpa konteks = cek_kamar_tersedia
+
+    Balas HANYA JSON tanpa markdown:
+    {"intent":"nama_intent","confidence":0.9,"params":{"tipe_kamar":null}}
+    PROMPT;
     }
 
     private function parseResponse(string $text): array
