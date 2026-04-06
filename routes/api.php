@@ -11,6 +11,7 @@ use App\Http\Controllers\API\PembayaranController;
 use App\Http\Controllers\API\KeluhanController;
 use App\Http\Controllers\API\ReviewController;
 use App\Http\Controllers\API\GaleriKamarController;
+use App\Http\Controllers\ChatbotController;
 
 // ── PUBLIC ────────────────────────────────────────────────
 Route::post('/register',       [AuthController::class, 'register']);
@@ -106,4 +107,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/review/kamar/{kamarId}', [ReviewController::class, 'indexByKamar']);
     Route::put('/review/{id}',            [ReviewController::class, 'update']);
     Route::delete('/review/{id}',         [ReviewController::class, 'destroy']);
+
+
+    //chatbot 
+    Route::post('/chatbot/chat', [ChatbotController::class, 'chat'])
+     ->middleware('throttle:60,1'); // backup throttle Laravel
 });

@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+
+    // Tambahkan konfigurasi untuk Gemini API
+    'gemini' => [
+    'api_key' => env('GEMINI_API_KEY'),
+    ],
+
 ];
