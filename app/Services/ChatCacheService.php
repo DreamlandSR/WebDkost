@@ -40,4 +40,21 @@ class ChatCacheService
     {
         return Cache::get('sinora_db_' . $key);
     }
+
+    // ── User State (Pagination) ─────────────────────────────
+
+    public function setUserState(string $userId, array $state): void
+    {
+             Cache::put('sinora_state_' . $userId, $state, 600); // 10 menit
+    }
+
+    public function getUserState(string $userId): ?array
+    {
+             return Cache::get('sinora_state_' . $userId);
+    }
+
+    public function clearUserState(string $userId): void
+    {
+             Cache::forget('sinora_state_' . $userId);
+    }
 }
