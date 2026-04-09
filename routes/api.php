@@ -1,16 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\AuthController;
-use App\Http\Controllers\API\UserController;
-use App\Http\Controllers\API\KamarController;
-use App\Http\Controllers\API\FurniturController;
-use App\Http\Controllers\API\BookingController;
-use App\Http\Controllers\API\TagihanController;
-use App\Http\Controllers\API\PembayaranController;
-use App\Http\Controllers\API\KeluhanController;
-use App\Http\Controllers\API\ReviewController;
-use App\Http\Controllers\API\GaleriKamarController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\KamarController;
+use App\Http\Controllers\Api\FurniturController;
+use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\Api\TagihanController;
+use App\Http\Controllers\Api\PembayaranController;
+use App\Http\Controllers\Api\KeluhanController;
+use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\GaleriKamarController;
 use App\Http\Controllers\ChatbotController;
 
 // ── PUBLIC ────────────────────────────────────────────────

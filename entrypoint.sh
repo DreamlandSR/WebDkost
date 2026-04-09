@@ -1,16 +1,27 @@
 #!/bin/sh
+
 # Fix permissions
 chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
-# Paksa session & cache pakai file
-sed -i 's/SESSION_DRIVER=database/SESSION_DRIVER=file/' /var/www/.env
-sed -i 's/CACHE_STORE=database/CACHE_STORE=file/' /var/www/.env
+# Tunggu database siap
+echo "Waiting for database..."
+until php artisan db:show --no-interaction > /dev/null 2>&1; do
+    echo "Database not ready, waiting 2s..."
+    sleep 2
+done
+echo "Database ready!"
 
+# Migrate
 php artisan migrate --force
-php artisan config:clear
 
-# Jalankan scheduler tanpa cron
+# Clear semua cache - JANGAN gunakan config:cache di Docker dengan volume mount
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+php artisan cache:clear
+
+# Jalankan scheduler
 php artisan schedule:work &
 
 exec "$@"

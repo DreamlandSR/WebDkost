@@ -47,9 +47,6 @@ Route::get('/', [HomeController::class, 'index'])->name('index');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/product', [HomeController::class, 'product'])->name('product');
 Route::get('/kamar/{id_kamar}', [HomeController::class, 'detailKamar'])->name('kamar.detail');
-Route::get('/galeri', [ProductController::class, 'showGallery'])->name('produk.galeri');
-
-Route::get('/product-image/{id}', [ProductController::class, 'showImage'])->name('product.image');
 
 // ── Authenticated Routes ────────────────────────────────────
 Route::middleware('auth')->group(function () {
@@ -61,26 +58,17 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/ProfilePage', fn() => view("dashboard.profile"));
     Route::get('/PengaturanPage', fn() => view('dashboard.pengaturan'));
-    Route::get('/ProductPage', [ProductController::class, 'index'])->name('products.index');
 
     Route::get('/PengirimanPage', [PengirimanController::class, 'index'])->name('pengiriman.index');
     Route::get('/pengiriman/create', [PengirimanController::class, 'create'])->name('pengiriman.create');
     Route::post('/pengiriman', [PengirimanController::class, 'store'])->name('pengiriman.store');
     Route::put('/pengiriman/{pengiriman}/edit', [PengirimanController::class, 'update'])->name('pengiriman.update');
     Route::delete('/pengiriman/{pengiriman}', [PengirimanController::class, 'destroy'])->name('pengiriman.destroy');
-
-    Route::resource('/dashboard/products', ProductController::class);
-
-    Route::get('/payment/{orderId}', [PaymentController::class, 'show'])->name('payment.show');
-    Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
-    Route::get('/payment/pending', [PaymentController::class, 'pending'])->name('payment.pending');
-    Route::get('/payment/failed', [PaymentController::class, 'failed'])->name('payment.failed');
 });
 
 // ── Admin Routes ────────────────────────────────────────────
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::get('/admin/terlaris', [AdminController::class, 'produkTerlaris'])->name('admin.terlaris');
 
     Route::get('/laporan/keluhan', [\App\Http\Controllers\LaporanKeluhan::class, 'index'])->name('keluhan.page');
     Route::put('/laporan/keluhan/{id_keluhan}', [\App\Http\Controllers\LaporanKeluhan::class, 'updateStatus'])->name('keluhan.updateStatus');

@@ -39,25 +39,5 @@ export default defineConfig({
     hmr: {
         host: 'localhost',
     },
-    proxy: {
-        '/': { // Aturan proxy umum
-            target: process.env.VITE_APP_URL || 'http://Project.test', // Sesuaikan dengan URL backend Anda
-            changeOrigin: true,
-            bypass: (req, res, proxyOptions) => {
-                const viteAssetPatterns = [
-                    /^\/@vite\//,
-                    /^\/@id\//,
-                    /^\/__inspect\//,
-                    /^\/node_modules\//,
-                    /^\/resources\//,
-                    /\.(js|css|json|png|jpe?g|gif|svg|ico|webp|woff2?|ttf|eot)$/
-                ];
-                if (viteAssetPatterns.some(pattern => pattern.test(req.url))) {
-                    return req.url;
-                }
-                return null;
-            }
-        }
-    }
 }
 });
