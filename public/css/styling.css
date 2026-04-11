@@ -576,3 +576,46 @@ input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
+
+/* Auth Specific Minor Tweaks */
+.auth-logo-img {
+    max-width: 50px;
+}
+.auth-subtitle-text,
+.auth-alert-text {
+    font-size: 14px;
+}
+.auth-forgot-text,
+.auth-link-forgot {
+    font-size: 13px;
+}
+.auth-link-forgot {
+    color: #00a669;
+}
+.auth-password-toggle {
+    right: 15px !important;
+    cursor: pointer !important;
+    z-index: 10 !important;
+    line-height: 1 !important;
+}
+
+/* ============================================================
+   Auth Page — styling.css
+   ============================================================ */
+
+/* -- Toggle password icon -- */
+.auth-toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 20;        /* naikkan z-index */
+    line-height: 1;
+}
+
+/* Pastikan input tidak overlap icon */
+.auth-input-modern {
+    position: relative;
+    z-index: 1;
+}

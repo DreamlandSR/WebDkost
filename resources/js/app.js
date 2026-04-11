@@ -26,6 +26,7 @@ import './template';
 import './settings';
 import './todolist';
 import './dashboard';
+import './auth-toggle';
 
 import '../css/vertical-layout-light/style.css';
 
