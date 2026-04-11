@@ -17,7 +17,7 @@ window.dispatchEvent(new Event('scroll'));
 window.changeMainImage = function(el, url) {
     const mainImg = document.getElementById('mainImage');
     if (!mainImg) return;
-    
+
     mainImg.style.opacity = '0';
     setTimeout(() => {
         mainImg.src = url;
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     b.classList.remove('active', 'btn-success');
                     b.classList.add('btn-outline-secondary');
                 });
-                
+
                 // Aktifkan button yang di-klik
                 const target = e.currentTarget;
                 target.classList.add('active', 'btn-success');
@@ -90,4 +90,29 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+});
+
+/* ===== Toggle Password Visibility (Auth Forms) ===== */
+document.addEventListener('DOMContentLoaded', function () {
+    const toggles = document.querySelectorAll('.auth-toggle-password');
+    console.log('Toggles found:', toggles.length);
+
+    toggles.forEach(function (toggle) {
+        toggle.addEventListener('click', function () {
+            const inputId = this.dataset.target;
+            const input   = document.getElementById(inputId);
+            const eyeOn   = document.getElementById('eye-' + inputId);
+            const eyeOff  = document.getElementById('eye-off-' + inputId);
+
+            if (!input || !eyeOn || !eyeOff) {
+                console.warn('Element not found for target:', inputId);
+                return;
+            }
+
+            const isPassword = input.type === 'password';
+            input.type           = isPassword ? 'text'    : 'password';
+            eyeOn.style.display  = isPassword ? 'none'   : 'block';
+            eyeOff.style.display = isPassword ? 'block'  : 'none';
+        });
+    });
 });
