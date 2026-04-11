@@ -17,6 +17,8 @@ return new class extends Migration
             $table->timestamp('tgl_bayar')->nullable();
             $table->decimal('jumlah_bayar', 15, 2);
             $table->string('metode_pembayaran', 50)->nullable();
+            $table->string('bank', 20)->nullable();
+            $table->json('midtrans_response')->nullable();
             $table->enum('status_pembayaran', [
                 'pending',
                 'settlement',

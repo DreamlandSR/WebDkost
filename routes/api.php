@@ -95,6 +95,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post  ('pembayaran',                      [PembayaranController::class, 'store']);
     Route::get   ('pembayaran/{id}',                 [PembayaranController::class, 'show']);
     Route::get   ('pembayaran/status/{idTagihan}',   [PembayaranController::class, 'checkStatus']);
+    // routes/api.php
+    Route::get('pembayaran/pending/{idTagihan}', [PembayaranController::class, 'getPending']);
 
     // Keluhan
     Route::post('/keluhan',              [KeluhanController::class, 'store']);

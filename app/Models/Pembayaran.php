@@ -16,7 +16,9 @@ class Pembayaran extends Model
         'transaction_id_gateway',
         'tgl_bayar',
         'jumlah_bayar',
-        'metode_pembayaran',
+        'metode_pembayaran',    // ← tambahkan ini
+        'bank',                 // ← tambahkan ini
+        'midtrans_response',  
         'status_pembayaran',
     ];
 
