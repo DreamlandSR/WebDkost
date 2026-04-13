@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\OtpResetController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\PengirimanController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
@@ -86,6 +87,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard/kamar/{id_kamar}/edit', [\App\Http\Controllers\KamarController::class, 'edit'])->name('kamar.edit');
     Route::put('/dashboard/kamar/{id_kamar}', [\App\Http\Controllers\KamarController::class, 'update'])->name('kamar.update');
     Route::delete('/dashboard/kamar/{id_kamar}', [\App\Http\Controllers\KamarController::class, 'destroy'])->name('kamar.destroy');
+
+    // Kelola User
+    Route::get('/dashboard/user', [\App\Http\Controllers\UserController::class, 'index'])->name('user.index');
+    Route::post('/dashboard/user', [\App\Http\Controllers\UserController::class, 'store'])->name('user.store');
+    Route::get('/dashboard/user/{id_user}', [\App\Http\Controllers\UserController::class, 'show'])->name('user.show');
+    Route::put('/dashboard/user/{id_user}', [\App\Http\Controllers\UserController::class, 'update'])->name('user.update');
+    Route::delete('/dashboard/user/{id_user}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('user.destroy');
 
     // Halaman register hanya bisa diakses admin
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
