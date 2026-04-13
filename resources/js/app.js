@@ -27,8 +27,7 @@ import './settings';
 import './todolist';
 import './dashboard';
 import './auth-toggle';
-
-import '../css/vertical-layout-light/style.css';
+import './pages/dashboard.js';
 
 import Alpine from 'alpinejs';
 window.Alpine = Alpine;
