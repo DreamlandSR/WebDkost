@@ -17,6 +17,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Payment\MidtransController;
 use App\Http\Controllers\Api\GaleriKamarController;
+use App\Http\Controllers\BookingController;
 
 // ── CORS untuk storage files ────────────────────────────────
 Route::get('storage/{path}', function ($path) {
@@ -87,6 +88,15 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard/kamar/{id_kamar}/edit', [\App\Http\Controllers\KamarController::class, 'edit'])->name('kamar.edit');
     Route::put('/dashboard/kamar/{id_kamar}', [\App\Http\Controllers\KamarController::class, 'update'])->name('kamar.update');
     Route::delete('/dashboard/kamar/{id_kamar}', [\App\Http\Controllers\KamarController::class, 'destroy'])->name('kamar.destroy');
+
+    // Kelola Booking
+    Route::get('/dashboard/booking', [BookingController::class, 'index'])->name('booking.index');
+    Route::get('/dashboard/booking/create', [BookingController::class, 'create'])->name('booking.create');
+    Route::post('/dashboard/booking', [BookingController::class, 'store'])->name('booking.store');
+    Route::get('/dashboard/booking/{id_booking}', [BookingController::class, 'show'])->name('booking.show');
+    Route::get('/dashboard/booking/{id_booking}/edit', [BookingController::class, 'edit'])->name('booking.edit');
+    Route::put('/dashboard/booking/{id_booking}', [BookingController::class, 'update'])->name('booking.update');
+    Route::delete('/dashboard/booking/{id_booking}', [BookingController::class, 'destroy'])->name('booking.destroy');
 
     // Kelola User
     Route::get('/dashboard/user', [\App\Http\Controllers\UserController::class, 'index'])->name('user.index');
