@@ -18,6 +18,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Payment\MidtransController;
 use App\Http\Controllers\Api\GaleriKamarController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\FurnitureController;
 
 // ── CORS untuk storage files ────────────────────────────────
 Route::get('storage/{path}', function ($path) {
@@ -97,6 +98,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard/booking/{id_booking}/edit', [BookingController::class, 'edit'])->name('booking.edit');
     Route::put('/dashboard/booking/{id_booking}', [BookingController::class, 'update'])->name('booking.update');
     Route::delete('/dashboard/booking/{id_booking}', [BookingController::class, 'destroy'])->name('booking.destroy');
+
+    // Kelola Furnitur
+    Route::get('/dashboard/furnitur', [FurnitureController::class, 'index'])->name('furnitur.index');
+    Route::post('/dashboard/furnitur', [FurnitureController::class, 'store'])->name('furnitur.store');
+    Route::get('/dashboard/furnitur/{id_furnitur}', [FurnitureController::class, 'show'])->name('furnitur.show');
+    Route::put('/dashboard/furnitur/{id_furnitur}', [FurnitureController::class, 'update'])->name('furnitur.update');
+    Route::delete('/dashboard/furnitur/{id_furnitur}', [FurnitureController::class, 'destroy'])->name('furnitur.destroy');
 
     // Kelola User
     Route::get('/dashboard/user', [\App\Http\Controllers\UserController::class, 'index'])->name('user.index');
