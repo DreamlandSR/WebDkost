@@ -37,6 +37,18 @@ services:
         networks:
             - laravel
 
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: laravel_pma
+        restart: unless-stopped
+        ports:
+            - "9500:80"
+        environment:
+            PMA_HOST: laravel_db
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+        networks:
+            - laravel
+
 networks:
     laravel:
         driver: bridge
