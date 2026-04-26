@@ -5,6 +5,8 @@
 @import "../js/select.dataTables.min.css";
 @import "./vertical-layout-light/style.css";
 @import "./dashboard.css";
+@import "./navbar.css";
+
 
 @tailwind base;
 @tailwind components;

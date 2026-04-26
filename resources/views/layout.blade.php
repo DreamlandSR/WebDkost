@@ -15,6 +15,9 @@
 
     <!-- Layout Content -->
     @yield('content')
+
+    @include('layouts.sections.mobile-bottombar')
+
     @stack('scripts')
 
 </body>

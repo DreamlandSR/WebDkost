@@ -15,7 +15,7 @@
                         <h4 class="fw-bold mb-0 text-dark" style="font-size: 26px;">
                             Selamat datang, {{ Auth::user()->nama ?? 'Ryan' }}!
                         </h4>
-                        <div class="d-flex align-items-center gap-2 dashboard-header-date">
+                        <div class="d-flex align-items-center gap-3 dashboard-header-date">
                             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
                                 viewBox="0 0 24 24">
                                 <path d="M19 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z" />
