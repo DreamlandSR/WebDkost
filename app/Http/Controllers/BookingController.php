@@ -8,7 +8,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\DB; // Tambahkan ini untuk debugging
 
 class BookingController extends Controller
 {
@@ -37,7 +36,7 @@ class BookingController extends Controller
             });
         }
         
-        $bookings = $query->orderBy('id_booking', 'desc')->paginate(10);
+        $bookings = $query->orderBy('id_booking', 'desc')->paginate(5);
         $users = User::where('role', 'Penyewa')->get();
         
         // Untuk dropdown filter, tampilkan kamar yang tersedia
@@ -76,92 +75,84 @@ class BookingController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        try {
-            $validated = $request->validate([
-                'id_user' => 'required|exists:users,id_user',
-                'id_kamar' => 'required|exists:kamar,id_kamar',
-                'tgl_mulai_sewa' => 'required|date|after_or_equal:today',
-                'durasi_sewa_bulan' => 'required|integer|min:1|max:24',
-                'total_biaya_bulanan' => 'required|numeric|min:0',
-                'status_booking' => 'required|string|in:menunggu_pembayaran,aktif,selesai,batal,expired',
-            ]);
-            
-            // 🔥 KONVERSI DURASI KE INTEGER
-            $durasi = (int) $validated['durasi_sewa_bulan'];
-            
-            // Cek ketersediaan kamar (status kamar harus tersedia)
-            $kamar = Kamar::find($validated['id_kamar']);
-            if (!$kamar || $kamar->status_kamar !== 'tersedia') {
-                return redirect()->back()
-                    ->with('error', 'Kamar yang dipilih tidak tersedia!')
-                    ->withInput();
-            }
-            
-            // Cek apakah kamar sudah dibooking di periode tersebut
-            $tgl_mulai = \Carbon\Carbon::parse($validated['tgl_mulai_sewa']);
-            $tgl_akhir = $tgl_mulai->copy()->addMonths($durasi)->subDay();
-            
-            $existingBooking = Booking::where('id_kamar', $validated['id_kamar'])
-                ->whereIn('status_booking', ['menunggu_pembayaran', 'aktif'])
-                ->where(function($q) use ($tgl_mulai, $tgl_akhir) {
-                    $q->whereBetween('tgl_mulai_sewa', [$tgl_mulai, $tgl_akhir])
-                      ->orWhereBetween('tgl_akhir_sewa', [$tgl_mulai, $tgl_akhir])
-                      ->orWhere(function($sub) use ($tgl_mulai, $tgl_akhir) {
-                          $sub->where('tgl_mulai_sewa', '<=', $tgl_mulai)
-                               ->where('tgl_akhir_sewa', '>=', $tgl_akhir);
-                      });
-                })
-                ->exists();
-            
-            if ($existingBooking) {
-                return redirect()->back()
-                    ->with('error', 'Kamar sudah dibooking untuk periode tersebut!')
-                    ->withInput();
-            }
-            
-            // Hitung tanggal akhir
-            $tgl_akhir = $tgl_mulai->copy()->addMonths($durasi)->subDay();
-            
-            // Simpan booking
-            $booking = Booking::create([
-                'id_user' => $validated['id_user'],
-                'id_kamar' => $validated['id_kamar'],
-                'tgl_booking' => now()->format('Y-m-d'),
-                'durasi_sewa_bulan' => $durasi,
-                'tgl_mulai_sewa' => $validated['tgl_mulai_sewa'],
-                'tgl_akhir_sewa' => $tgl_akhir->format('Y-m-d'),
-                'total_biaya_bulanan' => $validated['total_biaya_bulanan'],
-                'status_booking' => $validated['status_booking'],
-            ]);
-            
-            // ✅ PERBAIKAN 1: Update status kamar dengan kutip yang benar
-            if ($validated['status_booking'] === 'aktif') {
-                // Gunakan query builder dengan string value yang benar
-                DB::table('kamar')
-                    ->where('id_kamar', $kamar->id_kamar)
-                    ->update(['status_kamar' => 'tidak_tersedia']);
-            }
-            
-            Log::info('Booking created successfully', ['id' => $booking->id_booking]);
-            
-            return redirect()->route('booking.index')
-                ->with('success', 'Booking berhasil dibuat!');
-                
-        } catch (ValidationException $e) {
+   public function store(Request $request)
+{
+    try {
+        $validated = $request->validate([
+            'id_user' => 'required|exists:users,id_user',
+            'id_kamar' => 'required|exists:kamar,id_kamar',
+            'tgl_mulai_sewa' => 'required|date|after_or_equal:today',
+            'durasi_sewa_bulan' => 'required|integer|min:1|max:24',
+            'total_biaya_bulanan' => 'required|numeric|min:0',
+            'status_booking' => 'required|string|in:menunggu_pembayaran,aktif,selesai,batal,expired',
+        ]);
+        
+        $durasi = (int) $validated['durasi_sewa_bulan'];
+        $kamar = Kamar::find($validated['id_kamar']);
+        
+        if (!$kamar || $kamar->status_kamar !== 'tersedia') {
             return redirect()->back()
-                ->withErrors($e->validator)
-                ->withInput();
-                
-        } catch (\Exception $e) {
-            Log::error('Error storing booking: ' . $e->getMessage());
-            
-            return redirect()->back()
-                ->with('error', 'Gagal membuat booking: ' . $e->getMessage())
+                ->with('error', 'Kamar yang dipilih tidak tersedia!')
                 ->withInput();
         }
+        
+        // Cek apakah kamar sudah dibooking
+        $tgl_mulai = \Carbon\Carbon::parse($validated['tgl_mulai_sewa']);
+        $tgl_akhir = $tgl_mulai->copy()->addMonths($durasi)->subDay();
+        
+        $existingBooking = Booking::where('id_kamar', $validated['id_kamar'])
+            ->whereIn('status_booking', ['menunggu_pembayaran', 'aktif'])
+            ->where(function($q) use ($tgl_mulai, $tgl_akhir) {
+                $q->whereBetween('tgl_mulai_sewa', [$tgl_mulai, $tgl_akhir])
+                  ->orWhereBetween('tgl_akhir_sewa', [$tgl_mulai, $tgl_akhir])
+                  ->orWhere(function($sub) use ($tgl_mulai, $tgl_akhir) {
+                      $sub->where('tgl_mulai_sewa', '<=', $tgl_mulai)
+                           ->where('tgl_akhir_sewa', '>=', $tgl_akhir);
+                  });
+            })
+            ->exists();
+        
+        if ($existingBooking) {
+            return redirect()->back()
+                ->with('error', 'Kamar sudah dibooking untuk periode tersebut!')
+                ->withInput();
+        }
+        
+        $tgl_akhir = $tgl_mulai->copy()->addMonths($durasi)->subDay();
+        
+        $booking = Booking::create([
+            'id_user' => $validated['id_user'],
+            'id_kamar' => $validated['id_kamar'],
+            'tgl_booking' => now()->format('Y-m-d'),
+            'durasi_sewa_bulan' => $durasi,
+            'tgl_mulai_sewa' => $validated['tgl_mulai_sewa'],
+            'tgl_akhir_sewa' => $tgl_akhir->format('Y-m-d'),
+            'total_biaya_bulanan' => $validated['total_biaya_bulanan'],
+            'status_booking' => $validated['status_booking'],
+        ]);
+        
+        // 🔥 INI YANG PENTING: Update status kamar jadi terisi
+        $kamar->status_kamar = 'terisi';
+        $kamar->save();
+        
+        Log::info('Booking created successfully', ['id' => $booking->id_booking]);
+        
+        return redirect()->route('booking.index')
+            ->with('success', 'Booking berhasil dibuat!');
+            
+    } catch (ValidationException $e) {
+        return redirect()->back()
+            ->withErrors($e->validator)
+            ->withInput();
+            
+    } catch (\Exception $e) {
+        Log::error('Error storing booking: ' . $e->getMessage());
+        
+        return redirect()->back()
+            ->with('error', 'Gagal membuat booking: ' . $e->getMessage())
+            ->withInput();
     }
+}
 
     /**
      * Display the specified resource.
@@ -234,175 +225,111 @@ class BookingController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id_booking)
-    {
-        try {
-            $booking = Booking::findOrFail($id_booking);
-            
-            $validated = $request->validate([
-                'id_user' => 'required|exists:users,id_user',
-                'id_kamar' => 'required|exists:kamar,id_kamar',
-                'tgl_mulai_sewa' => 'required|date',
-                'durasi_sewa_bulan' => 'required|integer|min:1|max:24',
-                'total_biaya_bulanan' => 'required|numeric|min:0',
-                'status_booking' => 'required|string|in:menunggu_pembayaran,aktif,selesai,batal,expired',
-            ]);
-            
-            // 🔥 KONVERSI DURASI KE INTEGER
-            $durasi = (int) $validated['durasi_sewa_bulan'];
-            
-            // Simpan data lama untuk keperluan update status kamar
-            $oldStatus = $booking->status_booking;
-            $oldKamarId = $booking->id_kamar;
-            
-            // Cek ketersediaan kamar jika berbeda dengan kamar lama
-            if ($request->id_kamar != $booking->id_kamar) {
-                $kamarBaru = Kamar::find($request->id_kamar);
-                if (!$kamarBaru || $kamarBaru->status_kamar !== 'tersedia') {
-                    return redirect()->back()
-                        ->with('error', 'Kamar yang dipilih tidak tersedia!')
-                        ->withInput();
-                }
-                
-                // Cek apakah kamar baru sudah dibooking di periode tersebut
-                $tgl_mulai = \Carbon\Carbon::parse($validated['tgl_mulai_sewa']);
-                $tgl_akhir = $tgl_mulai->copy()->addMonths($durasi)->subDay();
-                
-                $existingBooking = Booking::where('id_kamar', $request->id_kamar)
-                    ->where('id_booking', '!=', $id_booking)
-                    ->whereIn('status_booking', ['menunggu_pembayaran', 'aktif'])
-                    ->where(function($q) use ($tgl_mulai, $tgl_akhir) {
-                        $q->whereBetween('tgl_mulai_sewa', [$tgl_mulai, $tgl_akhir])
-                          ->orWhereBetween('tgl_akhir_sewa', [$tgl_mulai, $tgl_akhir])
-                          ->orWhere(function($sub) use ($tgl_mulai, $tgl_akhir) {
-                              $sub->where('tgl_mulai_sewa', '<=', $tgl_mulai)
-                                   ->where('tgl_akhir_sewa', '>=', $tgl_akhir);
-                          });
-                    })
-                    ->exists();
-                
-                if ($existingBooking) {
-                    return redirect()->back()
-                        ->with('error', 'Kamar sudah dibooking untuk periode tersebut!')
-                        ->withInput();
-                }
+  public function update(Request $request, $id_booking)
+{
+    try {
+        $booking = Booking::findOrFail($id_booking);
+        
+        $validated = $request->validate([
+            'id_user' => 'required|exists:users,id_user',
+            'id_kamar' => 'required|exists:kamar,id_kamar',
+            'tgl_mulai_sewa' => 'required|date',
+            'durasi_sewa_bulan' => 'required|integer|min:1|max:24',
+            'total_biaya_bulanan' => 'required|numeric|min:0',
+            'status_booking' => 'required|string|in:menunggu_pembayaran,aktif,selesai,batal,expired',
+        ]);
+        
+        $durasi = (int) $validated['durasi_sewa_bulan'];
+        $oldKamarId = $booking->id_kamar;
+        
+        // Jika ganti kamar
+        if ($request->id_kamar != $booking->id_kamar) {
+            // Kembalikan status kamar lama ke tersedia
+            $oldKamar = Kamar::find($oldKamarId);
+            if ($oldKamar) {
+                $oldKamar->status_kamar = 'tersedia';
+                $oldKamar->save();
             }
             
-            // Hitung tgl_akhir_sewa
-            $tgl_mulai = \Carbon\Carbon::parse($validated['tgl_mulai_sewa']);
-            $tgl_akhir = $tgl_mulai->copy()->addMonths($durasi)->subDay();
-            
-            // Update booking
-            $booking->update([
-                'id_user' => $validated['id_user'],
-                'id_kamar' => $validated['id_kamar'],
-                'tgl_mulai_sewa' => $validated['tgl_mulai_sewa'],
-                'tgl_akhir_sewa' => $tgl_akhir->format('Y-m-d'),
-                'durasi_sewa_bulan' => $durasi,
-                'total_biaya_bulanan' => $validated['total_biaya_bulanan'],
-                'status_booking' => $validated['status_booking'],
-            ]);
-            
-            // ✅ PERBAIKAN 2: Update status kamar berdasarkan perubahan
-            if ($oldKamarId != $validated['id_kamar']) {
-                // === KAMAR LAMA ===
-                // Cek apakah masih ada booking aktif di kamar lama
-                $masihAdaBookingAktif = Booking::where('id_kamar', $oldKamarId)
-                    ->whereIn('status_booking', ['menunggu_pembayaran', 'aktif'])
-                    ->exists();
-                    
-                if (!$masihAdaBookingAktif) {
-                    DB::table('kamar')
-                        ->where('id_kamar', $oldKamarId)
-                        ->update(['status_kamar' => 'tersedia']);
-                }
-                
-                // === KAMAR BARU ===
-                // Set tidak tersedia jika booking aktif
-                if ($validated['status_booking'] === 'aktif') {
-                    DB::table('kamar')
-                        ->where('id_kamar', $validated['id_kamar'])
-                        ->update(['status_kamar' => 'tidak_tersedia']);
-                }
-            } else {
-                // === KAMAR SAMA ===
-                // Update status berdasarkan booking
-                if ($validated['status_booking'] === 'aktif' && $oldStatus !== 'aktif') {
-                    // Booking menjadi aktif -> kamar tidak tersedia
-                    DB::table('kamar')
-                        ->where('id_kamar', $validated['id_kamar'])
-                        ->update(['status_kamar' => 'tidak_tersedia']);
-                } elseif ($validated['status_booking'] !== 'aktif' && $oldStatus === 'aktif') {
-                    // Booking tidak aktif lagi (selesai/batal/expired) -> cek apakah masih ada booking aktif lain
-                    $masihAdaBookingAktif = Booking::where('id_kamar', $validated['id_kamar'])
-                        ->where('id_booking', '!=', $id_booking)
-                        ->whereIn('status_booking', ['menunggu_pembayaran', 'aktif'])
-                        ->exists();
-                        
-                    if (!$masihAdaBookingAktif) {
-                        DB::table('kamar')
-                            ->where('id_kamar', $validated['id_kamar'])
-                            ->update(['status_kamar' => 'tersedia']);
-                    }
-                }
+            // Cek ketersediaan kamar baru
+            $kamarBaru = Kamar::find($request->id_kamar);
+            if (!$kamarBaru || $kamarBaru->status_kamar !== 'tersedia') {
+                return redirect()->back()
+                    ->with('error', 'Kamar baru tidak tersedia!')
+                    ->withInput();
             }
-            
-            Log::info('Booking updated successfully', ['id' => $booking->id_booking]);
-            
-            return redirect()->route('booking.index')
-                ->with('success', 'Booking berhasil diperbarui!');
-                
-        } catch (ValidationException $e) {
-            return redirect()->back()
-                ->withErrors($e->validator)
-                ->withInput();
-                
-        } catch (\Exception $e) {
-            Log::error('Error updating booking: ' . $e->getMessage());
-            
-            return redirect()->back()
-                ->with('error', 'Gagal memperbarui booking: ' . $e->getMessage())
-                ->withInput();
         }
+        
+        $tgl_mulai = \Carbon\Carbon::parse($validated['tgl_mulai_sewa']);
+        $tgl_akhir = $tgl_mulai->copy()->addMonths($durasi)->subDay();
+        
+        $booking->update([
+            'id_user' => $validated['id_user'],
+            'id_kamar' => $validated['id_kamar'],
+            'tgl_mulai_sewa' => $validated['tgl_mulai_sewa'],
+            'tgl_akhir_sewa' => $tgl_akhir->format('Y-m-d'),
+            'durasi_sewa_bulan' => $durasi,
+            'total_biaya_bulanan' => $validated['total_biaya_bulanan'],
+            'status_booking' => $validated['status_booking'],
+        ]);
+        
+        // 🔥 Update status kamar berdasarkan status booking
+        $kamarSekarang = Kamar::find($validated['id_kamar']);
+        if ($validated['status_booking'] === 'aktif') {
+            $kamarSekarang->status_kamar = 'terisi';
+        } elseif (in_array($validated['status_booking'], ['selesai', 'batal', 'expired'])) {
+            $kamarSekarang->status_kamar = 'tersedia';
+        }
+        $kamarSekarang->save();
+        
+        Log::info('Booking updated successfully', ['id' => $booking->id_booking]);
+        
+        return redirect()->route('booking.index')
+            ->with('success', 'Booking berhasil diperbarui!');
+            
+    } catch (ValidationException $e) {
+        return redirect()->back()
+            ->withErrors($e->validator)
+            ->withInput();
+            
+    } catch (\Exception $e) {
+        Log::error('Error updating booking: ' . $e->getMessage());
+        
+        return redirect()->back()
+            ->with('error', 'Gagal memperbarui booking: ' . $e->getMessage())
+            ->withInput();
     }
+}
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy($id_booking)
-    {
-        try {
-            $booking = Booking::findOrFail($id_booking);
-            
-            // ✅ PERBAIKAN 3: Update status kamar jika booking ini membuat kamar tidak tersedia
-            if (in_array($booking->status_booking, ['menunggu_pembayaran', 'aktif'])) {
-                $masihAdaBookingLain = Booking::where('id_kamar', $booking->id_kamar)
-                    ->where('id_booking', '!=', $id_booking)
-                    ->whereIn('status_booking', ['menunggu_pembayaran', 'aktif'])
-                    ->exists();
-                    
-                if (!$masihAdaBookingLain) {
-                    DB::table('kamar')
-                        ->where('id_kamar', $booking->id_kamar)
-                        ->update(['status_kamar' => 'tersedia']);
-                }
-            }
-            
-            $booking->delete();
-            
-            Log::info('Booking deleted successfully', ['id' => $id_booking]);
-            
-            return redirect()->route('booking.index')
-                ->with('success', 'Booking berhasil dihapus!');
-                
-        } catch (\Exception $e) {
-            Log::error('Error deleting booking: ' . $e->getMessage());
-            
-            return redirect()->back()
-                ->with('error', 'Gagal menghapus booking: ' . $e->getMessage());
+{
+    try {
+        $booking = Booking::findOrFail($id_booking);
+        
+        // 🔥 Kembalikan status kamar ke tersedia
+        $kamar = Kamar::find($booking->id_kamar);
+        if ($kamar) {
+            $kamar->status_kamar = 'tersedia';
+            $kamar->save();
         }
+        
+        $booking->delete();
+        
+        Log::info('Booking deleted successfully', ['id' => $id_booking]);
+        
+        return redirect()->route('booking.index')
+            ->with('success', 'Booking berhasil dihapus!');
+            
+    } catch (\Exception $e) {
+        Log::error('Error deleting booking: ' . $e->getMessage());
+        
+        return redirect()->back()
+            ->with('error', 'Gagal menghapus booking: ' . $e->getMessage());
     }
-
+}
     /**
      * Get status badge styling
      */

@@ -23,7 +23,7 @@ class FurnitureController extends Controller
                 $query->where('nama_furnitur', 'like', '%' . $search . '%');
             }
             
-            $furnitur = $query->orderBy('id_furnitur', 'desc')->paginate(10);
+            $furnitur = $query->orderBy('id_furnitur', 'desc')->paginate(5);
             
             return view('dashboard.furniture.index', compact('furnitur'));
             

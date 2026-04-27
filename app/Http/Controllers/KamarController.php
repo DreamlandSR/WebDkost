@@ -18,14 +18,12 @@ class KamarController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Kamar::with('galeri'); // Eager loading untuk menghindari N+1 query
+            $query = Kamar::with('galeri');
             
-            // Filter berdasarkan status
             if ($request->filled('status') && $request->status !== 'Semua') {
                 $query->where('status_kamar', $request->status);
             }
             
-            // Search berdasarkan nomor kamar atau tipe kamar
             if ($request->filled('search')) {
                 $search = $request->search;
                 $query->where(function($q) use ($search) {
@@ -34,7 +32,7 @@ class KamarController extends Controller
                 });
             }
             
-            $kamars = $query->orderBy('id_kamar', 'desc')->paginate(10);
+            $kamars = $query->orderBy('id_kamar', 'desc')->paginate(5);
             
             return view('dashboard.kamar.index', compact('kamars'));
             
@@ -58,14 +56,15 @@ class KamarController extends Controller
     public function store(Request $request)
     {
         try {
-            // Validasi input
+            // Validasi input dengan multiple images
             $validated = $request->validate([
                 'nomor_kamar' => 'required|string|max:50|unique:kamar,nomor_kamar',
                 'tipe_kamar' => 'required|string|in:biasa,sedang,mewah',
                 'deskripsi' => 'nullable|string|max:500',
                 'harga' => 'required|numeric|min:0',
                 'status_kamar' => 'required|string|in:tersedia,terisi,maintenance',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'images' => 'nullable|array',
+                'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi multiple
             ]);
             
             // Simpan ke tabel kamar
@@ -77,17 +76,20 @@ class KamarController extends Controller
                 'status_kamar' => $validated['status_kamar'],
             ]);
             
-            // Handle upload gambar jika ada
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs('kamar', $imageName, 'public');
-                
-                GaleriKamar::create([
-                    'id_kamar' => $kamar->id_kamar,
-                    'url_foto' => $imagePath,
-                    'is_main' => 1,
-                ]);
+            // Handle upload multiple gambar
+            if ($request->hasFile('images')) {
+                $isFirst = true;
+                foreach ($request->file('images') as $image) {
+                    $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                    $imagePath = $image->storeAs('kamar', $imageName, 'public');
+                    
+                    GaleriKamar::create([
+                        'id_kamar' => $kamar->id_kamar,
+                        'url_foto' => $imagePath,
+                        'is_main' => $isFirst ? 1 : 0, // Gambar pertama jadi utama
+                    ]);
+                    $isFirst = false;
+                }
             }
             
             Log::info('Kamar created successfully', ['id' => $kamar->id_kamar]);
@@ -132,6 +134,7 @@ class KamarController extends Controller
                     'image_url' => $kamar->galeri ? asset('storage/' . $kamar->galeri->firstWhere('is_main', 1)?->url_foto) : null,
                     'galeri' => $kamar->galeri ? $kamar->galeri->map(function($item) {
                         return [
+                            'id' => $item->id_galeri,
                             'foto' => asset('storage/' . $item->url_foto),
                             'is_main' => $item->is_main
                         ];
@@ -166,7 +169,13 @@ class KamarController extends Controller
                     'deskripsi' => $kamar->deskripsi,
                     'harga' => $kamar->harga_per_bulan,
                     'status' => $kamar->status_kamar,
-                    'image_url' => $kamar->galeri ? asset('storage/' . $kamar->galeri->firstWhere('is_main', 1)?->url_foto) : null,
+                    'galeri' => $kamar->galeri->map(function($item) {
+                        return [
+                            'id' => $item->id_galeri,
+                            'url' => asset('storage/' . $item->url_foto),
+                            'is_main' => $item->is_main
+                        ];
+                    }),
                 ],
             ]);
             
@@ -188,14 +197,18 @@ class KamarController extends Controller
         try {
             $kamar = Kamar::findOrFail($id_kamar);
             
-            // Validasi input
+            // Validasi input dengan multiple images
             $validated = $request->validate([
                 'nomor_kamar' => 'required|string|max:50|unique:kamar,nomor_kamar,' . $id_kamar . ',id_kamar',
                 'tipe_kamar' => 'required|string|in:biasa,sedang,mewah',
                 'deskripsi' => 'nullable|string|max:500',
                 'harga' => 'required|numeric|min:0',
                 'status_kamar' => 'required|string|in:tersedia,terisi,maintenance',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'images' => 'nullable|array',
+                'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+                'delete_images' => 'nullable|array', // ID gambar yang akan dihapus
+                'delete_images.*' => 'integer|exists:galeri_kamar,id_galeri',
+                'set_main_image' => 'nullable|integer|exists:galeri_kamar,id_galeri', // Set gambar utama
             ]);
             
             // Update data kamar
@@ -207,27 +220,47 @@ class KamarController extends Controller
                 'status_kamar' => $validated['status_kamar'],
             ]);
             
-            // Handle upload gambar baru
-            if ($request->hasFile('image')) {
-                // Hapus gambar lama yang merupakan main image
-                $oldImage = $kamar->galeri()->where('is_main', 1)->first();
-                if ($oldImage) {
-                    if (Storage::disk('public')->exists($oldImage->url_foto)) {
-                        Storage::disk('public')->delete($oldImage->url_foto);
+            // Hapus gambar yang dipilih
+            if ($request->has('delete_images')) {
+                foreach ($request->delete_images as $imageId) {
+                    $image = GaleriKamar::where('id_galeri', $imageId)
+                        ->where('id_kamar', $id_kamar)
+                        ->first();
+                    if ($image) {
+                        if (Storage::disk('public')->exists($image->url_foto)) {
+                            Storage::disk('public')->delete($image->url_foto);
+                        }
+                        $image->delete();
                     }
-                    $oldImage->delete();
                 }
+            }
+            
+            // Upload multiple gambar baru
+            if ($request->hasFile('images')) {
+                $currentImagesCount = GaleriKamar::where('id_kamar', $id_kamar)->count();
+                $isMain = ($currentImagesCount == 0); // Jika belum ada gambar, yang baru jadi utama
                 
-                // Upload gambar baru
-                $image = $request->file('image');
-                $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs('kamar', $imageName, 'public');
-                
-                GaleriKamar::create([
-                    'id_kamar' => $kamar->id_kamar,
-                    'url_foto' => $imagePath,
-                    'is_main' => 1,
-                ]);
+                foreach ($request->file('images') as $image) {
+                    $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                    $imagePath = $image->storeAs('kamar', $imageName, 'public');
+                    
+                    GaleriKamar::create([
+                        'id_kamar' => $kamar->id_kamar,
+                        'url_foto' => $imagePath,
+                        'is_main' => $isMain ? 1 : 0,
+                    ]);
+                    $isMain = false;
+                }
+            }
+            
+            // Set gambar utama
+            if ($request->has('set_main_image')) {
+                // Reset semua gambar ke is_main = 0
+                GaleriKamar::where('id_kamar', $id_kamar)->update(['is_main' => 0]);
+                // Set gambar yang dipilih jadi utama
+                GaleriKamar::where('id_galeri', $request->set_main_image)
+                    ->where('id_kamar', $id_kamar)
+                    ->update(['is_main' => 1]);
             }
             
             Log::info('Kamar updated successfully', ['id' => $kamar->id_kamar]);
@@ -265,7 +298,7 @@ class KamarController extends Controller
                 $image->delete();
             }
             
-            // Hapus data kamar (fasilitas akan terhapus otomatis karena foreign key cascade)
+            // Hapus data kamar
             $kamar->delete();
             
             Log::info('Kamar deleted successfully', ['id' => $id_kamar]);
@@ -282,7 +315,93 @@ class KamarController extends Controller
     }
     
     /**
-     * Get kamar details for API (optional)
+     * Delete single image from gallery (AJAX)
+     */
+    public function deleteImage($id_galeri)
+    {
+        try {
+            $image = GaleriKamar::findOrFail($id_galeri);
+            $kamarId = $image->id_kamar;
+            $wasMain = $image->is_main;
+            
+            // Hapus file fisik
+            if (Storage::disk('public')->exists($image->url_foto)) {
+                Storage::disk('public')->delete($image->url_foto);
+            }
+            
+            // Hapus record
+            $image->delete();
+            
+            // Jika yang dihapus adalah gambar utama, set gambar lain jadi utama
+            if ($wasMain) {
+                $newMainImage = GaleriKamar::where('id_kamar', $kamarId)->first();
+                if ($newMainImage) {
+                    $newMainImage->is_main = 1;
+                    $newMainImage->save();
+                }
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Gambar berhasil dihapus'
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error deleting image: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus gambar'
+            ], 500);
+        }
+    }
+    
+    /**
+     * Set main image (AJAX)
+     */
+    public function setMainImage($id_galeri)
+    {
+        try {
+            $image = GaleriKamar::findOrFail($id_galeri);
+            
+            // Reset semua gambar kamar ini jadi bukan utama
+            GaleriKamar::where('id_kamar', $image->id_kamar)->update(['is_main' => 0]);
+            
+            // Set gambar ini jadi utama
+            $image->is_main = 1;
+            $image->save();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Gambar utama berhasil diubah'
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error setting main image: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengubah gambar utama'
+            ], 500);
+        }
+    }
+    
+    /**
+     * Get status badge HTML (helper method)
+     */
+    private function getStatusBadge($status)
+    {
+        $badges = [
+            'tersedia' => '<span class="badge rounded-pill" style="background-color: #ecfdf5; color: #00a669; font-weight: 600; padding: 6px 12px;">Tersedia</span>',
+            'terisi' => '<span class="badge rounded-pill" style="background-color: #fef2f2; color: #ef4444; font-weight: 600; padding: 6px 12px;">Terisi</span>',
+            'maintenance' => '<span class="badge rounded-pill" style="background-color: #fef3c7; color: #d97706; font-weight: 600; padding: 6px 12px;">Maintenance</span>',
+        ];
+        
+        return $badges[$status] ?? '<span class="badge rounded-pill" style="background-color: #f3f4f6; color: #6b7280;">' . $status . '</span>';
+    }
+    
+    /**
+     * Get kamar details for API
      */
     public function getKamarDetail($id_kamar)
     {
@@ -306,7 +425,11 @@ class KamarController extends Controller
                         ? asset('storage/' . $kamar->galeri->firstWhere('is_main', 1)->url_foto) 
                         : null,
                     'all_images' => $kamar->galeri->map(function($item) {
-                        return asset('storage/' . $item->url_foto);
+                        return [
+                            'id' => $item->id_galeri,
+                            'url' => asset('storage/' . $item->url_foto),
+                            'is_main' => $item->is_main
+                        ];
                     }),
                 ],
             ]);
@@ -322,29 +445,12 @@ class KamarController extends Controller
     }
     
     /**
-     * Get status badge HTML (helper method)
-     */
-    private function getStatusBadge($status)
-    {
-        $badges = [
-            'Tersedia' => '<span class="badge rounded-pill" style="background-color: #ecfdf5; color: #00a669; font-weight: 600; padding: 6px 12px;">Tersedia</span>',
-            'Terisi' => '<span class="badge rounded-pill" style="background-color: #fef2f2; color: #ef4444; font-weight: 600; padding: 6px 12px;">Terisi</span>',
-            'Maintenance' => '<span class="badge rounded-pill" style="background-color: #fef3c7; color: #d97706; font-weight: 600; padding: 6px 12px;">Maintenance</span>',
-        ];
-        
-        return $badges[$status] ?? '<span class="badge rounded-pill" style="background-color: #f3f4f6; color: #6b7280;">' . $status . '</span>';
-    }
-    
-    /**
-     * Export kamar data (optional)
+     * Export kamar data
      */
     public function export()
     {
         try {
             $kamars = Kamar::with('fasilitas')->get();
-            
-            // Logic untuk export data (Excel, CSV, PDF)
-            // Bisa ditambahkan sesuai kebutuhan
             
             return response()->json([
                 'success' => true,
