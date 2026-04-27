@@ -34,7 +34,7 @@ class UserController extends Controller
                 });
             }
             
-            $users = $query->orderBy('id_user', 'desc')->paginate(10);
+            $users = $query->orderBy('id_user', 'desc')->paginate(5);
             
             return view('dashboard.user.index', compact('users'));
             

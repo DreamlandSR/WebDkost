@@ -2,6 +2,106 @@
 
 @section('content')
     @include('layouts.sections.navbar')
+      <style>
+    /* Pastikan carousel container memiliki posisi relative dan overflow visible */
+    .carousel {
+        position: relative !important;
+        overflow: visible !important;
+    }
+    
+    /* Force button untuk selalu terlihat */
+    .carousel-control-prev,
+    .carousel-control-next {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 44px !important;
+        height: 44px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        opacity: 1 !important;
+        background: transparent !important;
+        z-index: 1060 !important;
+        pointer-events: auto !important;
+    }
+    
+    /* Posisi button */
+    .carousel-control-prev {
+        left: -10px !important; /* Geser sedikit ke luar */
+    }
+    
+    .carousel-control-next {
+        right: -10px !important; /* Geser sedikit ke luar */
+    }
+    
+    /* Style icon dengan warna hijau */
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        background-color: #00a669 !important;
+        border-radius: 50% !important;
+        width: 40px !important;
+        height: 40px !important;
+        background-size: 50% 50% !important;
+        display: inline-block !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
+        background-image: none !important; /* Hapus default background image */
+        position: relative !important;
+    }
+    
+    /* Buat icon manual menggunakan pseudo-element */
+    .carousel-control-prev-icon::after {
+        content: "‹" !important;
+        font-size: 32px !important;
+        font-weight: bold !important;
+        color: white !important;
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        line-height: 1 !important;
+    }
+    
+    .carousel-control-next-icon::after {
+        content: "›" !important;
+        font-size: 32px !important;
+        font-weight: bold !important;
+        color: white !important;
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        line-height: 1 !important;
+    }
+    
+    /* Hover effect */
+    .carousel-control-prev-icon:hover,
+    .carousel-control-next-icon:hover {
+        background-color: #008a57 !important;
+        transform: scale(1.1);
+    }
+    
+    /* Untuk mobile */
+    @media (max-width: 768px) {
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            width: 32px !important;
+            height: 32px !important;
+        }
+        
+        .carousel-control-prev-icon::after,
+        .carousel-control-next-icon::after {
+            font-size: 24px !important;
+        }
+        
+        .carousel-control-prev {
+            left: -5px !important;
+        }
+        
+        .carousel-control-next {
+            right: -5px !important;
+        }
+    }
+</style>
 
     <div class="container-scroller">
         <div class="container-fluid page-body-wrapper">
@@ -284,24 +384,24 @@
                                             onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none';">{{ old('deskripsi') }}</textarea>
                                     </div>
 
-                                    <!-- Image Upload -->
+                                    <!-- Multiple Image Upload -->
                                     <div class="mb-3">
                                         <label class="d-flex align-items-center mb-2" style="font-size: 13px; font-weight: 600; color: #374151; gap: 8px;">
                                             <span style="background: #ecfdf5; color: #00a669; border-radius: 6px; width: 22px; height: 22px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;"><i class="ti-image"></i></span>
-                                            Foto Kamar
+                                            Foto Kamar 
                                         </label>
                                         <div class="image-input-wrapper">
-                                            <input type="file" name="image" id="imageInput" accept="image/*" style="display:none;" onchange="previewImage(event)">
+                                            <input type="file" name="images[]" id="imageInput" accept="image/*" multiple style="display:none;">
                                             <label for="imageInput" class="image-upload-label" style="display:block; border: 2px dashed #e5e7eb; border-radius: 10px; padding: 20px; text-align:center; cursor:pointer; transition: 0.2s;"
                                                 onmouseover="this.style.borderColor='#00a669'; this.style.backgroundColor='#f9fafb';"
                                                 onmouseout="this.style.borderColor='#e5e7eb'; this.style.backgroundColor='white';">
                                                 <i class="ti-image" style="font-size: 32px; color: #9ca3af; display:block; margin-bottom:8px;"></i>
                                                 <p style="margin:0; color: #6b7280; font-size: 13px;">Klik atau drag gambar ke sini</p>
-                                                <p style="margin:4px 0 0 0; color: #9ca3af; font-size: 12px;">PNG, JPG, GIF (max 2MB)</p>
+                                                <p style="margin:4px 0 0 0; color: #9ca3af; font-size: 12px;">Bisa pilih banyak (Hold Ctrl/Cmd) | PNG, JPG, GIF (max 2MB each)</p>
                                             </label>
-                                            <div id="imagePreview"></div>
+                                                <div id="imagePreview" style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 15px; min-height: 100px;"></div>
+                                            </div>
                                         </div>
-                                    </div>
 
                                     <!-- Buttons -->
                                     <div class="d-flex justify-content-end" style="gap: 12px;">
@@ -327,7 +427,7 @@
 
                 <!-- Modal Detail -->
                 <div class="modal fade" id="detailModal{{ $kamar->id_kamar }}" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" style="max-width: 600px;">
+                    <div class="modal-dialog modal-dialog-centered modal-lg" style="max-width: 700px;">
                         <div class="modal-content border-0 shadow-lg" style="border-radius: 14px; overflow: hidden;">
                             <div style="background: #fff; padding: 22px 26px 18px; border-bottom: 1px solid #f0f1f3;">
                                 <div class="d-flex justify-content-between align-items-center">
@@ -347,16 +447,155 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="modal-body" style="padding: 26px; background: #fff;">
-                                <div class="row g-4">
-                                    @php $mainImage = $kamar->galeri ? $kamar->galeri->firstWhere('is_main', 1) : null; @endphp
-                                    @if($mainImage)
-                                    <div class="col-12">
-                                        <div style="background: #f9fafb; border: 1px solid #f0f1f3; border-radius: 10px; overflow: hidden;">
-                                            <img src="{{ asset('storage/' . $mainImage->url_foto) }}" alt="{{ $kamar->nomor_kamar }}" style="width: 100%; height: 250px; object-fit: cover;">
+                            
+                            <div class="modal-body" style="padding: 26px; background: #fff; max-height: 80vh; overflow-y: auto;">
+                                
+                                <!-- GALLERY CAROUSEL - Menampilkan semua gambar -->
+                                @php
+                                    $galeri = $kamar->galeri;
+                                    $hasImages = $galeri && $galeri->count() > 0;
+                                @endphp
+                                
+                                @if($hasImages)
+                                    <div class="mb-4">
+                                        <div id="carouselDetail{{ $kamar->id_kamar }}" class="carousel slide" data-bs-ride="carousel" style="border-radius: 12px; overflow: hidden; background: #f9fafb;">
+                                            
+                                            <!-- Indicators -->
+                                            @if($galeri->count() > 1)
+                                            <div class="carousel-indicators" style="margin-bottom: 5px;">
+                                                @foreach($galeri as $index => $gambar)
+                                                    <button type="button" data-bs-target="#carouselDetail{{ $kamar->id_kamar }}" 
+                                                        data-bs-slide-to="{{ $index }}" 
+                                                        class="{{ $index == 0 ? 'active' : '' }}"
+                                                        style="width: 8px; height: 8px; border-radius: 50%; background-color: #fff; opacity: 0.7; border: none; margin: 0 4px;">
+                                                    </button>
+                                                @endforeach
+                                            </div>
+                                            @endif
+                                            
+                                            <!-- Carousel Inner -->
+                                            <div class="carousel-inner">
+                                                @foreach($galeri as $index => $gambar)
+                                                    <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
+                                                        <img src="{{ asset('storage/' . $gambar->url_foto) }}" 
+                                                            class="d-block w-100" 
+                                                            alt="Foto {{ $kamar->nomor_kamar }} - {{ $index + 1 }}"
+                                                            style="height: 350px; object-fit: cover;">
+                                                        <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.5); border-radius: 8px; padding: 5px 10px; bottom: 10px;">
+                                                            <small style="color: white;">
+                                                                @if($gambar->is_main)
+                                                                    <i class="ti-star" style="color: #ffc107;"></i> Gambar Utama
+                                                                @else
+                                                                    Foto {{ $index + 1 }}
+                                                                @endif
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                            
+                                   <!-- Custom Button Manual (Tanpa Bootstrap API) -->
+                                        @if($galeri->count() > 1)
+                                        <button type="button" 
+                                            onclick="manualPrev{{ $kamar->id_kamar }}()"
+                                            style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); 
+                                                width: 40px; height: 40px; background: #00a669; border: none; 
+                                                border-radius: 50%; color: white; font-size: 24px; font-weight: bold;
+                                                cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center;
+                                                box-shadow: 0 2px 6px rgba(0,0,0,0.3);"
+                                            onmouseover="this.style.background='#008a57'"
+                                            onmouseout="this.style.background='#00a669'">
+                                            ‹
+                                        </button>
+                                        <button type="button" 
+                                            onclick="manualNext{{ $kamar->id_kamar }}()"
+                                            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); 
+                                                width: 40px; height: 40px; background: #00a669; border: none; 
+                                                border-radius: 50%; color: white; font-size: 24px; font-weight: bold;
+                                                cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center;
+                                                box-shadow: 0 2px 6px rgba(0,0,0,0.3);"
+                                            onmouseover="this.style.background='#008a57'"
+                                            onmouseout="this.style.background='#00a669'">
+                                            ›
+                                        </button>
+
+                                        <script>
+                                        // Fungsi manual untuk navigasi carousel
+                                        function manualPrev{{ $kamar->id_kamar }}() {
+                                            const carousel = document.querySelector('#carouselDetail{{ $kamar->id_kamar }} .carousel-inner');
+                                            const items = document.querySelectorAll('#carouselDetail{{ $kamar->id_kamar }} .carousel-item');
+                                            const activeIndex = Array.from(items).findIndex(item => item.classList.contains('active'));
+                                            
+                                            if (activeIndex > 0) {
+                                                items[activeIndex].classList.remove('active');
+                                                items[activeIndex - 1].classList.add('active');
+                                            } else {
+                                                // Loop ke slide terakhir
+                                                items[activeIndex].classList.remove('active');
+                                                items[items.length - 1].classList.add('active');
+                                            }
+                                            
+                                            // Update indicator dots
+                                            updateIndicators{{ $kamar->id_kamar }}();
+                                        }
+
+                                        function manualNext{{ $kamar->id_kamar }}() {
+                                            const carousel = document.querySelector('#carouselDetail{{ $kamar->id_kamar }} .carousel-inner');
+                                            const items = document.querySelectorAll('#carouselDetail{{ $kamar->id_kamar }} .carousel-item');
+                                            const activeIndex = Array.from(items).findIndex(item => item.classList.contains('active'));
+                                            
+                                            if (activeIndex < items.length - 1) {
+                                                items[activeIndex].classList.remove('active');
+                                                items[activeIndex + 1].classList.add('active');
+                                            } else {
+                                                // Loop ke slide pertama
+                                                items[activeIndex].classList.remove('active');
+                                                items[0].classList.add('active');
+                                            }
+                                            
+                                            // Update indicator dots
+                                            updateIndicators{{ $kamar->id_kamar }}();
+                                        }
+
+                                        function updateIndicators{{ $kamar->id_kamar }}() {
+                                            const items = document.querySelectorAll('#carouselDetail{{ $kamar->id_kamar }} .carousel-item');
+                                            const indicators = document.querySelectorAll('#carouselDetail{{ $kamar->id_kamar }} .carousel-indicators button');
+                                            const activeIndex = Array.from(items).findIndex(item => item.classList.contains('active'));
+                                            
+                                            indicators.forEach((indicator, index) => {
+                                                if (index === activeIndex) {
+                                                    indicator.classList.add('active');
+                                                } else {
+                                                    indicator.classList.remove('active');
+                                                }
+                                            });
+                                        }
+                                        </script>
+                                        @endif
                                         </div>
+                                        
+                                        <!-- Thumbnail Gallery -->
+                                        @if($galeri->count() > 1)
+                                        <div class="d-flex justify-content-center gap-2 mt-3 flex-wrap">
+                                            @foreach($galeri as $index => $gambar)
+                                                <img src="{{ asset('storage/' . $gambar->url_foto) }}" 
+                                                    class="img-thumbnail" 
+                                                    style="width: 60px; height: 50px; object-fit: cover; cursor: pointer; border-radius: 6px; {{ $index == 0 ? 'border: 2px solid #00a669;' : '' }}"
+                                                    onclick="goToSlide{{ $kamar->id_kamar }}({{ $index }})"
+                                                    alt="Thumb {{ $index + 1 }}">
+                                            @endforeach
+                                        </div>
+                                        @endif
                                     </div>
-                                    @endif
+                                @else
+                                    <div class="mb-4 text-center p-5" style="background: #f9fafb; border-radius: 12px; border: 1px dashed #e5e7eb;">
+                                        <i class="ti-image" style="font-size: 48px; color: #d1d5db;"></i>
+                                        <p class="mt-2 text-muted">Belum ada foto untuk kamar ini</p>
+                                    </div>
+                                @endif
+                                
+                                <!-- Info Kamar -->
+                                <div class="row g-4">
                                     <div class="col-6">
                                         <div class="p-3" style="background: #f9fafb; border: 1px solid #f0f1f3; border-radius: 10px;">
                                             <p class="text-muted mb-1" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Nomor Kamar</p>
@@ -366,13 +605,13 @@
                                     <div class="col-6">
                                         <div class="p-3" style="background: #f9fafb; border: 1px solid #f0f1f3; border-radius: 10px;">
                                             <p class="text-muted mb-1" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Tipe</p>
-                                            <p class="mb-0 fw-bold" style="color: #111827; font-size: 14px;">{{ $kamar->tipe_kamar }}</p>
+                                            <p class="mb-0 fw-bold" style="color: #111827; font-size: 14px;">{{ ucfirst($kamar->tipe_kamar) }}</p>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="p-3" style="background: #f9fafb; border: 1px solid #f0f1f3; border-radius: 10px;">
                                             <p class="text-muted mb-1" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Status</p>
-                                            <p class="mb-0 fw-bold" style="color: #111827; font-size: 14px;">{{ $kamar->status_kamar }}</p>
+                                            <p class="mb-0 fw-bold" style="color: #111827; font-size: 14px;">{{ ucfirst($kamar->status_kamar) }}</p>
                                         </div>
                                     </div>
                                     <div class="col-6">
@@ -387,8 +626,23 @@
                                             <p class="mb-0" style="color: #4b5563; font-size: 13.5px; line-height: 1.6;">{{ $kamar->deskripsi ?? '-' }}</p>
                                         </div>
                                     </div>
+                                    
+                                    <!-- Info jumlah gambar -->
+                                    @if($hasImages)
+                                    <div class="col-12">
+                                        <div class="p-2 text-center" style="background: #ecfdf5; border-radius: 8px;">
+                                            <small style="color: #00a669;">
+                                                <i class="ti-image"></i> {{ $galeri->count() }} foto tersedia
+                                                @if($galeri->count() > 1)
+                                                    - Geser untuk melihat semua
+                                                @endif
+                                            </small>
+                                        </div>
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
+                            
                             <div class="modal-footer border-0 bg-white p-4 pt-0">
                                 <button type="button" class="btn w-100 shadow-sm" data-bs-dismiss="modal"
                                     style="background: #374151; color: white; border-radius: 8px; padding: 10px; font-weight: 600; font-size: 13.5px; border: none;">
@@ -398,6 +652,17 @@
                         </div>
                     </div>
                 </div>
+
+                <script>
+                // Fungsi untuk navigasi thumbnail
+                function goToSlide{{ $kamar->id_kamar }}(index) {
+                    const carousel = document.getElementById('carouselDetail{{ $kamar->id_kamar }}');
+                    if (carousel) {
+                        const bsCarousel = bootstrap.Carousel.getOrCreateInstance(carousel);
+                        bsCarousel.to(index);
+                    }
+                }
+                </script>
 
                 <!-- Modal Edit -->
                 <div class="modal fade" id="editModal{{ $kamar->id_kamar }}" tabindex="-1" aria-hidden="true">
@@ -499,28 +764,48 @@
                                             onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none';">{{ $kamar->deskripsi }}</textarea>
                                     </div>
 
-                                    <!-- Image Upload -->
+                                    <!-- Multiple Image Upload + Gallery -->
                                     <div class="mb-3">
                                         <label class="d-flex align-items-center mb-2" style="font-size: 13px; font-weight: 600; color: #374151; gap: 8px;">
                                             <span style="background: #eff6ff; color: #3b82f6; border-radius: 6px; width: 22px; height: 22px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;"><i class="ti-image"></i></span>
-                                            Foto Kamar
+                                            Galeri Foto
                                         </label>
-                                        @php $mainImage = $kamar->galeri ? $kamar->galeri->firstWhere('is_main', 1) : null; @endphp
-                                        @if($mainImage)
-                                        <div style="margin-bottom: 10px; text-align: center;">
-                                            <img src="{{ asset('storage/' . $mainImage->url_foto) }}" alt="{{ $kamar->nomor_kamar }}" style="max-width: 150px; max-height: 100px; border-radius: 8px; border: 1px solid #e5e7eb;">
-                                            <p style="font-size: 12px; color: #6b7280; margin: 6px 0 0 0;">Foto saat ini</p>
+                                        
+                                        <!-- Existing Gallery -->
+                                        @if($kamar->galeri && $kamar->galeri->count() > 0)
+                                        <div class="mb-3">
+                                            <p style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">Foto yang sudah ada ({{ $kamar->galeri->count() }} foto):</p>
+                                            <div class="existing-gallery" id="gallery-{{ $kamar->id_kamar }}" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                                                @foreach($kamar->galeri as $gambar)
+                                                <div class="gallery-item" id="gallery-item-{{ $gambar->id_galeri }}" style="position: relative; width: 100px; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; background: #f9fafb;">
+                                                    <img src="{{ asset('storage/' . $gambar->url_foto) }}" alt="Gallery" style="width: 100%; height: 80px; object-fit: cover;">
+                                                    <div style="padding: 5px; text-align: center; background: white;">
+                                                        @if($gambar->is_main)
+                                                            <span style="font-size: 10px; background: #00a669; color: white; padding: 2px 6px; border-radius: 10px;">Utama</span>
+                                                        @else
+                                                            <button type="button" class="btn-set-main" data-id="{{ $gambar->id_galeri }}" data-kamar="{{ $kamar->id_kamar }}" style="font-size: 10px; background: #3b82f6; color: white; border: none; padding: 2px 6px; border-radius: 10px; cursor: pointer;">Jadi Utama</button>
+                                                        @endif
+                                                        <button type="button" class="btn-delete-image" data-id="{{ $gambar->id_galeri }}" data-kamar="{{ $kamar->id_kamar }}" style="font-size: 10px; background: #ef4444; color: white; border: none; padding: 2px 6px; border-radius: 10px; cursor: pointer; margin-left: 5px;">Hapus</button>
+                                                    </div>
+                                                </div>
+                                                @endforeach
+                                            </div>
                                         </div>
                                         @endif
+                                        
+                                        <!-- Hidden inputs for delete images -->
+                                        <div id="deleteImagesContainer{{ $kamar->id_kamar }}"></div>
+                                        
+                                        <!-- Upload New Images -->
                                         <div class="image-input-wrapper">
-                                            <input type="file" name="image" id="imageInput{{ $kamar->id_kamar }}" accept="image/*" style="display:none;" onchange="previewImageEdit(event, {{ $kamar->id_kamar }})">
+                                            <input type="file" name="images[]" id="imageInput{{ $kamar->id_kamar }}" accept="image/*" multiple style="display:none;">
                                             <label for="imageInput{{ $kamar->id_kamar }}" class="image-upload-label" style="display:block; border: 2px dashed #e5e7eb; border-radius: 10px; padding: 15px; text-align:center; cursor:pointer; transition: 0.2s;"
                                                 onmouseover="this.style.borderColor='#3b82f6'; this.style.backgroundColor='#f9fafb';"
                                                 onmouseout="this.style.borderColor='#e5e7eb'; this.style.backgroundColor='white';">
                                                 <i class="ti-image" style="font-size: 24px; color: #9ca3af; display:block; margin-bottom:6px;"></i>
-                                                <p style="margin:0; color: #6b7280; font-size: 12px;">Klik atau drag untuk ubah</p>
+                                                <p style="margin:0; color: #6b7280; font-size: 12px;">Tambah foto baru (bisa pilih banyak)</p>
                                             </label>
-                                            <div id="imagePreviewEdit{{ $kamar->id_kamar }}"></div>
+                                            <div id="imagePreviewEdit{{ $kamar->id_kamar }}" class="row mt-3" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
                                         </div>
                                     </div>
 
@@ -569,279 +854,305 @@
 
                 @endforeach
 
-                <script>
-// TAMBAHKAN INI DI AWAL SCRIPT UNTUK DEBUGGING
-console.log('Script loaded successfully');
-console.log('Jumlah kamar:', {{ $kamars->count() }});
+<script>
+// ========== MULTIPLE IMAGE FUNCTIONS ==========
 
-// Tambahkan event listener untuk semua form edit dengan debugging
-document.querySelectorAll('form[id^="formEditKamar"]').forEach(form => {
-    console.log('Form edit ditemukan:', form.id);
-    console.log('Action URL:', form.action);
-    console.log('Method:', form.method);
+// Preview multiple images for CREATE modal - VERSI FINAL
+function previewMultipleImages(event) {
+    console.log('previewMultipleImages called', event);
     
-    form.addEventListener('submit', function(e) {
-        console.log('Form ' + this.id + ' disubmit');
-        
-        // Cek data yang akan dikirim
-        const formData = new FormData(this);
-        console.log('Data yang dikirim:');
-        for (let pair of formData.entries()) {
-            console.log(pair[0] + ': ' + pair[1]);
+    // Ambil files dari event parameter
+    let files = [];
+    
+    // Cek apakah event adalah Event object atau langsung FileList
+    if (event && event.target && event.target.files) {
+        // Event dari change input
+        files = Array.from(event.target.files);
+    } else if (event && event instanceof FileList) {
+        // Langsung FileList
+        files = Array.from(event);
+    } else if (event && event.length !== undefined) {
+        // Array-like object
+        files = Array.from(event);
+    } else {
+        console.error('Parameter tidak dikenali:', event);
+        return;
+    }
+    
+    const preview = document.getElementById('imagePreview');
+    
+    if (!preview) {
+        console.error('Element #imagePreview tidak ditemukan');
+        return;
+    }
+    
+    // KOSONGKAN preview
+    preview.innerHTML = '';
+    
+    if (files.length === 0) {
+        console.log('Tidak ada file yang dipilih');
+        preview.style.display = 'none';
+        return;
+    }
+    
+    console.log('Jumlah file yang dipilih:', files.length);
+    preview.style.display = 'flex';
+    
+    // Filter hanya file gambar yang valid
+    const validFiles = files.filter(file => {
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+        const isValid = validTypes.includes(file.type);
+        if (!isValid) {
+            console.warn(`File bukan gambar: ${file.name} (${file.type})`);
+            showNotification(`File "${file.name}" bukan format gambar yang didukung`, 'error');
         }
-        
-        // Validasi field yang required
-        const nomorKamar = this.querySelector('input[name="nomor_kamar"]');
-        const tipeKamar = this.querySelector('input[name="tipe_kamar"]:checked');
-        const statusKamar = this.querySelector('input[name="status_kamar"]:checked');
-        const harga = this.querySelector('input[name="harga"]');
-        
-        let errors = [];
-        
-        if (!nomorKamar.value.trim()) {
-            errors.push('Nomor kamar harus diisi!');
-            nomorKamar.style.border = '2px solid #ef4444';
-            nomorKamar.focus();
-        } else {
-            nomorKamar.style.border = '';
-        }
-        
-        if (!tipeKamar) {
-            errors.push('Tipe kamar harus dipilih!');
-        }
-        
-        if (!statusKamar) {
-            errors.push('Status kamar harus dipilih!');
-        }
-        
-        if (!harga.value || harga.value <= 0) {
-            errors.push('Harga harus diisi dan lebih dari 0!');
-            harga.style.border = '2px solid #ef4444';
-        } else {
-            harga.style.border = '';
-        }
-        
-        if (errors.length > 0) {
-            e.preventDefault();
-            alert('❌ Gagal menyimpan:\n\n' + errors.join('\n'));
-            console.log('Validation errors:', errors);
-            return false;
-        }
-        
-        // Konfirmasi sebelum submit
-        if (!confirm('Apakah Anda yakin ingin menyimpan perubahan?')) {
-            e.preventDefault();
-            return false;
-        }
-        
-        // Loading state
-        const submitButton = this.querySelector('button[type="submit"]');
-        if (submitButton && !submitButton.disabled) {
-            const originalText = submitButton.innerHTML;
-            submitButton.disabled = true;
-            submitButton.innerHTML = '<i class="ti-reload"></i> Menyimpan...';
-            
-            // Simpan original text untuk restore jika terjadi error
-            this.setAttribute('data-original-text', originalText);
-        }
-        
-        console.log('Form akan disubmit ke:', this.action);
-        return true;
+        return isValid;
     });
     
-    // Tambahkan event listener untuk error response
-    form.addEventListener('submit-error', function(e) {
-        console.error('Submit error:', e.detail);
-        alert('❌ Terjadi kesalahan:\n\n' + (e.detail.message || 'Silakan coba lagi'));
+    if (validFiles.length === 0) {
+        preview.innerHTML = '<div style="color: #ef4444; font-size: 12px; padding: 10px;">Tidak ada file gambar yang valid</div>';
+        return;
+    }
+    
+    // Proses setiap file yang valid
+    validFiles.forEach((file, index) => {
+        const reader = new FileReader();
         
-        const submitButton = this.querySelector('button[type="submit"]');
-        if (submitButton && submitButton.disabled) {
-            submitButton.disabled = false;
-            submitButton.innerHTML = this.getAttribute('data-original-text') || 'Simpan Perubahan';
-        }
-    });
-});
-
-// Tambahkan interceptor untuk AJAX/fetch errors (jika menggunakan)
-const originalFetch = window.fetch;
-window.fetch = function(...args) {
-    return originalFetch.apply(this, args).then(response => {
-        if (!response.ok) {
-            console.error('Fetch error:', response.status, response.statusText);
-            if (response.status === 419) {
-                alert('❌ Sesi telah berakhir. Silakan refresh halaman.');
-            } else if (response.status === 500) {
-                alert('❌ Terjadi kesalahan server. Silakan coba lagi.');
-            }
-        }
-        return response;
-    }).catch(error => {
-        console.error('Network error:', error);
-        alert('❌ Koneksi error. Periksa koneksi internet Anda.');
-        throw error;
-    });
-};
-
-// Tambahkan event listener untuk form tambah
-const tambahForm = document.getElementById('formTambahKamar');
-if (tambahForm) {
-    tambahForm.addEventListener('submit', function(e) {
-        console.log('Form tambah disubmit');
+        // Buat container untuk setiap gambar
+        const imageContainer = document.createElement('div');
+        imageContainer.style.cssText = `
+            width: 100px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            position: relative;
+            flex-shrink: 0;
+        `;
         
-        // Validasi file upload
-        const fileInput = this.querySelector('input[name="image"]');
-        if (fileInput && fileInput.files.length > 0) {
-            const file = fileInput.files[0];
-            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-            
-            if (!validTypes.includes(file.type)) {
-                e.preventDefault();
-                alert('❌ Tipe file tidak didukung. Gunakan JPG, PNG, atau GIF.');
-                return false;
-            }
-            
-            if (file.size > 2 * 1024 * 1024) {
-                e.preventDefault();
-                alert('❌ Ukuran file terlalu besar. Maksimal 2MB.');
-                return false;
-            }
-        }
+        // Tambahkan loading state
+        imageContainer.innerHTML = `
+            <div style="width: 100%; height: 80px; background: #f3f4f6; display: flex; align-items: center; justify-content: center;">
+                <i class="ti-reload" style="font-size: 20px; color: #9ca3af; animation: spin 1s linear infinite;"></i>
+            </div>
+            <div style="padding: 6px; text-align: center; background: #f9fafb; border-top: 1px solid #f0f0f0;">
+                <small style="font-size: 10px; color: #6b7280; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    ${file.name.substring(0, 12)}${file.name.length > 12 ? '...' : ''}
+                </small>
+            </div>
+        `;
         
-        return true;
+        reader.onload = function(e) {
+            // Update dengan gambar yang sudah di-load
+            const img = imageContainer.querySelector('div:first-child');
+            if (img) {
+                img.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 80px; object-fit: cover;">`;
+                img.style.background = 'none';
+            }
+        };
+        
+        reader.readAsDataURL(file);
+        preview.appendChild(imageContainer);
     });
 }
 
-// Tambahkan event listener untuk menampilkan error dari session
-document.addEventListener('DOMContentLoaded', function() {
-    // Tampilkan error jika ada
-    const errorAlert = document.querySelector('.custom-alert.error');
-    if (errorAlert) {
-        console.log('Error alert ditemukan:', errorAlert.innerText);
-        setTimeout(() => {
-            errorAlert.style.display = 'none';
-        }, 5000);
+// Preview multiple images for EDIT modal - VERSI FINAL
+function previewMultipleImagesEdit(event, id) {
+    console.log('previewMultipleImagesEdit called for id:', id, event);
+    
+    let files = [];
+    if (event && event.target && event.target.files) {
+        files = Array.from(event.target.files);
+    } else if (event && event instanceof FileList) {
+        files = Array.from(event);
+    } else if (event && event.length !== undefined) {
+        files = Array.from(event);
+    } else {
+        console.error('Parameter tidak dikenali');
+        return;
     }
     
-    // Tampilkan success jika ada
-    const successAlert = document.querySelector('.custom-alert.success');
-    if (successAlert) {
-        console.log('Success alert ditemukan:', successAlert.innerText);
-        setTimeout(() => {
-            successAlert.style.display = 'none';
-        }, 3000);
+    const preview = document.getElementById('imagePreviewEdit' + id);
+    
+    if (!preview) {
+        console.error('Element #imagePreviewEdit' + id + ' tidak ditemukan');
+        return;
     }
     
-    // Tambahkan style untuk field error
-    const errorFields = document.querySelectorAll('.is-invalid');
-    errorFields.forEach(field => {
-        field.style.border = '2px solid #ef4444';
+    if (files.length === 0) {
+        console.log('Tidak ada file yang dipilih');
+        return;
+    }
+    
+    console.log('Jumlah file untuk edit:', files.length);
+    
+    // Filter valid files
+    const validFiles = files.filter(file => {
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+        const isValid = validTypes.includes(file.type);
+        if (!isValid) {
+            console.warn(`File bukan gambar: ${file.name}`);
+        }
+        return isValid;
     });
-});
-
-// Fungsi untuk menampilkan error modal
-function showErrorModal(message) {
-    // Buat modal error jika belum ada
-    let errorModal = document.getElementById('errorModal');
-    if (!errorModal) {
-        errorModal = document.createElement('div');
-        errorModal.id = 'errorModal';
-        errorModal.className = 'modal fade';
-        errorModal.setAttribute('tabindex', '-1');
-        errorModal.innerHTML = `
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header" style="background: #ef4444; color: white;">
-                        <h5 class="modal-title">⚠️ Error</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" style="color: white;"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p id="errorMessage" style="color: #ef4444;"></p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    </div>
+    
+    validFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        const imageDiv = document.createElement('div');
+        imageDiv.style.cssText = 'width: 100px; margin: 5px; display: inline-block; position: relative;';
+        
+        imageDiv.innerHTML = `
+            <div style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; background: #f3f4f6;">
+                <div style="width: 100%; height: 80px; display: flex; align-items: center; justify-content: center;">
+                    <i class="ti-reload" style="font-size: 20px; color: #9ca3af; animation: spin 1s linear infinite;"></i>
+                </div>
+                <div style="padding: 4px; text-align: center; background: #f9fafb;">
+                    <small style="font-size: 10px; color: #6b7280;">${file.name.substring(0, 15)}</small>
                 </div>
             </div>
         `;
-        document.body.appendChild(errorModal);
-    }
-    
-    document.getElementById('errorMessage').innerText = message;
-    const modal = new bootstrap.Modal(errorModal);
-    modal.show();
+        
+        reader.onload = function(e) {
+            const imgContainer = imageDiv.querySelector('div:first-child div:first-child');
+            if (imgContainer) {
+                imgContainer.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 80px; object-fit: cover;">`;
+            }
+        };
+        
+        reader.readAsDataURL(file);
+        preview.appendChild(imageDiv);
+    });
 }
 
-// Fungsi untuk menampilkan success modal
-function showSuccessModal(message) {
-    let successModal = document.getElementById('successModal');
-    if (!successModal) {
-        successModal = document.createElement('div');
-        successModal.id = 'successModal';
-        successModal.className = 'modal fade';
-        successModal.setAttribute('tabindex', '-1');
-        successModal.innerHTML = `
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header" style="background: #00a669; color: white;">
-                        <h5 class="modal-title">✓ Sukses</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" style="color: white;"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p id="successMessage" style="color: #00a669;"></p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(successModal);
-    }
+// ========== AJAX FUNCTIONS FOR EDIT MODAL ==========
+
+// Delete image via AJAX
+async function deleteImage(imageId, kamarId) {
+    if (!confirm('Yakin ingin menghapus gambar ini?')) return;
     
-    document.getElementById('successMessage').innerText = message;
-    const modal = new bootstrap.Modal(successModal);
-    modal.show();
+    try {
+        const response = await fetch(`/kamar/image/${imageId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            const imageElement = document.getElementById(`gallery-item-${imageId}`);
+            if (imageElement) imageElement.remove();
+            
+            const container = document.getElementById(`deleteImagesContainer${kamarId}`);
+            if (container) {
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'delete_images[]';
+                hiddenInput.value = imageId;
+                container.appendChild(hiddenInput);
+            }
+            
+            showNotification('Gambar berhasil dihapus', 'success');
+        } else {
+            showNotification('Gagal menghapus gambar', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Terjadi kesalahan', 'error');
+    }
 }
 
-// Override alert untuk debugging
-const originalAlert = window.alert;
-window.alert = function(message) {
-    console.log('Alert:', message);
-    originalAlert(message);
-};
+// Set main image via AJAX
+async function setMainImage(imageId, kamarId) {
+    try {
+        const response = await fetch(`/kamar/image/${imageId}/main`, {
+            method: 'PUT',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            location.reload();
+        } else {
+            showNotification('Gagal mengubah gambar utama', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Terjadi kesalahan', 'error');
+    }
+}
 
+// Notification function - PASTIKAN ADA
+function showNotification(message, type = 'success') {
+    // Hapus notifikasi yang sudah ada
+    const existingNotifications = document.querySelectorAll('.custom-notification');
+    existingNotifications.forEach(notif => notif.remove());
+    
+    const notification = document.createElement('div');
+    notification.className = `custom-alert ${type} custom-notification`;
+    notification.style.cssText = `
+        position: fixed; 
+        top: 20px; 
+        right: 20px; 
+        z-index: 9999; 
+        min-width: 300px;
+        animation: slideIn 0.3s ease-out;
+    `;
+    notification.innerHTML = `
+        <div class="custom-alert-icon">
+            <i class="${type === 'success' ? 'ti-check' : 'ti-alert'}"></i>
+        </div>
+        <div class="custom-alert-content">${message}</div>
+        <button type="button" class="custom-alert-close" onclick="this.parentElement.remove()">
+            <i class="ti-close"></i>
+        </button>
+    `;
+    
+    document.body.appendChild(notification);
+    setTimeout(() => {
+        if (notification && notification.remove) notification.remove();
+    }, 3000);
+}
 
-                    function selectTipe(radio) {
-                        document.querySelectorAll('#tambahKamarModal .pill-label').forEach(el => {
-                            el.style.background = '#f9fafb';
-                            el.style.color = '#6b7280';
-                            el.style.borderColor = '#e5e7eb';
-                            el.style.fontWeight = '500';
-                        });
-                        const lbl = radio.nextElementSibling;
-                        lbl.style.background = '#ecfdf5';
-                        lbl.style.color = '#00a669';
-                        lbl.style.borderColor = '#00a669';
-                        lbl.style.fontWeight = '600';
-                    }
+// ========== FORM FUNCTIONS ==========
 
-                    function selectStatus(radio) {
-                        document.querySelectorAll('#tambahKamarModal .status-pill .pill-label').forEach(el => {
-                            el.style.background = '#f9fafb';
-                            el.style.color = '#6b7280';
-                            el.style.borderColor = '#e5e7eb';
-                            el.style.fontWeight = '500';
-                        });
-                        const lbl = radio.nextElementSibling;
-                        lbl.style.background = '#ecfdf5';
-                        lbl.style.color = '#00a669';
-                        lbl.style.borderColor = '#00a669';
-                        lbl.style.fontWeight = '600';
-                    }
+function selectTipe(radio) {
+    document.querySelectorAll('#tambahKamarModal .pill-label').forEach(el => {
+        el.style.background = '#f9fafb';
+        el.style.color = '#6b7280';
+        el.style.borderColor = '#e5e7eb';
+        el.style.fontWeight = '500';
+    });
+    const lbl = radio.nextElementSibling;
+    lbl.style.background = '#ecfdf5';
+    lbl.style.color = '#00a669';
+    lbl.style.borderColor = '#00a669';
+    lbl.style.fontWeight = '600';
+}
 
-                    function updateEditPill(radio, type, id) {
+function selectStatus(radio) {
+    document.querySelectorAll('#tambahKamarModal .status-pill .pill-label').forEach(el => {
+        el.style.background = '#f9fafb';
+        el.style.color = '#6b7280';
+        el.style.borderColor = '#e5e7eb';
+        el.style.fontWeight = '500';
+    });
+    const lbl = radio.nextElementSibling;
+    lbl.style.background = '#ecfdf5';
+    lbl.style.color = '#00a669';
+    lbl.style.borderColor = '#00a669';
+    lbl.style.fontWeight = '600';
+}
+
+function updateEditPill(radio, type, id) {
     if (type === 'tipe') {
-        // Reset semua tipe
         document.querySelectorAll('.pill-label-tipe-' + id).forEach(el => {
             el.classList.remove('pill-active-edit');
             el.style.background = '#f9fafb';
@@ -849,7 +1160,6 @@ window.alert = function(message) {
             el.style.borderColor = '#e5e7eb';
             el.style.fontWeight = '500';
         });
-        // Set yang dipilih
         const selectedLabel = radio.nextElementSibling;
         selectedLabel.classList.add('pill-active-edit');
         selectedLabel.style.background = '#ecfdf5';
@@ -858,7 +1168,6 @@ window.alert = function(message) {
         selectedLabel.style.fontWeight = '600';
     } 
     else if (type === 'status') {
-        // Reset semua status
         document.querySelectorAll('.pill-label-status-' + id).forEach(el => {
             el.classList.remove('pill-active-edit');
             el.style.background = '#f9fafb';
@@ -866,7 +1175,6 @@ window.alert = function(message) {
             el.style.borderColor = '#e5e7eb';
             el.style.fontWeight = '500';
         });
-        // Set yang dipilih
         const selectedLabel = radio.nextElementSibling;
         selectedLabel.classList.add('pill-active-edit');
         selectedLabel.style.background = '#ecfdf5';
@@ -876,97 +1184,140 @@ window.alert = function(message) {
     }
 }
 
-                    function previewImage(event) {
-                        const file = event.target.files[0];
-                        const preview = document.getElementById('imagePreview');
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = function(e) {
-                                preview.innerHTML = `<div style="margin-top: 10px; text-align: center;"><img src="${e.target.result}" alt="Preview" style="max-width: 150px; max-height: 120px; border-radius: 8px; border: 1px solid #e5e7eb;"></div>`;
-                            };
-                            reader.readAsDataURL(file);
-                        } else {
-                            preview.innerHTML = '';
-                        }
-                    }
+// ========== MODAL RESET ==========
+// MODAL RESET - Perbaiki
+const tambahModal = document.getElementById('tambahKamarModal');
+if (tambahModal) {
+    tambahModal.addEventListener('hidden.bs.modal', function () {
+        const form = this.querySelector('form');
+        if (form) form.reset();
+        
+        // Reset radio button styles
+        document.querySelectorAll('#tambahKamarModal .pill-label').forEach(el => {
+            el.style.background = '#f9fafb';
+            el.style.color = '#6b7280';
+            el.style.borderColor = '#e5e7eb';
+            el.style.fontWeight = '500';
+        });
+        document.querySelectorAll('#tambahKamarModal .status-pill .pill-label').forEach(el => {
+            if (el.style) {
+                el.style.background = '#f9fafb';
+                el.style.color = '#6b7280';
+                el.style.borderColor = '#e5e7eb';
+            }
+        });
+        document.querySelectorAll('#tambahKamarModal input[type="radio"]').forEach(r => r.checked = false);
+        
+        // RESET PREVIEW GAMBAR
+        const preview = document.getElementById('imagePreview');
+        if (preview) {
+            preview.innerHTML = '';
+            preview.style.display = 'none';
+        }
+        
+        // RESET FILE INPUT
+        const fileInput = document.getElementById('imageInput');
+        if (fileInput) {
+            fileInput.value = '';
+        }
+    });
+}
 
-                    function previewImageEdit(event, id) {
-                        const file = event.target.files[0];
-                        const preview = document.getElementById('imagePreviewEdit' + id);
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = function(e) {
-                                preview.innerHTML = `<div style="margin-top: 10px; text-align: center;"><img src="${e.target.result}" alt="Preview" style="max-width: 150px; max-height: 100px; border-radius: 8px; border: 1px solid #e5e7eb;"></div>`;
-                            };
-                            reader.readAsDataURL(file);
-                        } else {
-                            preview.innerHTML = '';
-                        }
-                    }
+// ========== FORM SUBMIT HANDLERS ==========
 
-                    // Reset modal tambah saat ditutup
-                    const tambahModal = document.getElementById('tambahKamarModal');
-                    if (tambahModal) {
-                        tambahModal.addEventListener('hidden.bs.modal', function () {
-                            // Reset form
-                            const form = this.querySelector('form');
-                            if (form) form.reset();
-                            
-                            // Reset radio buttons style
-                            document.querySelectorAll('#tambahKamarModal .pill-label').forEach(el => {
-                                el.style.background = '#f9fafb';
-                                el.style.color = '#6b7280';
-                                el.style.borderColor = '#e5e7eb';
-                                el.style.fontWeight = '500';
-                            });
-                            document.querySelectorAll('#tambahKamarModal input[type="radio"]').forEach(r => r.checked = false);
-                            
-                            // Reset preview gambar
-                            document.getElementById('imagePreview').innerHTML = '';
-                            
-                            // Reset file input
-                            const fileInput = document.getElementById('imageInput');
-                            if (fileInput) fileInput.value = '';
-                        });
-                    }
+document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        const submitButton = this.querySelector('button[type="submit"]');
+        if (submitButton && !submitButton.disabled) {
+            const originalText = submitButton.innerHTML;
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="ti-reload"></i> Menyimpan...';
+            
+            setTimeout(() => {
+                if (submitButton.disabled) {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalText;
+                }
+            }, 5000);
+        }
+    });
+});
 
-                    // Loading state untuk form submit
-                    document.querySelectorAll('form').forEach(form => {
-                        form.addEventListener('submit', function(e) {
-                            const submitButton = this.querySelector('button[type="submit"]');
-                            if (submitButton && !submitButton.disabled) {
-                                const originalText = submitButton.innerHTML;
-                                submitButton.disabled = true;
-                                submitButton.innerHTML = '<i class="ti-reload"></i> Menyimpan...';
-                                
-                                // Optional: restore button after timeout if needed
-                                setTimeout(() => {
-                                    if (submitButton.disabled) {
-                                        submitButton.disabled = false;
-                                        submitButton.innerHTML = originalText;
-                                    }
-                                }, 5000);
-                            }
-                        });
-                    });
+// Konfirmasi hapus
+document.querySelectorAll('form[id^="formHapus"]').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        if (!confirm('Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.')) {
+            e.preventDefault();
+        }
+    });
+});
 
-                    // Konfirmasi hapus
-                    document.querySelectorAll('form[id^="formHapus"]').forEach(form => {
-                        form.addEventListener('submit', function(e) {
-                            if (!confirm('Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.')) {
-                                e.preventDefault();
-                            }
-                        });
-                    });
+// ========== AUTO HIDE ALERTS ==========
 
-                    // Auto hide alert after 3 seconds
-                    setTimeout(function() {
-                        const alerts = document.querySelectorAll('.custom-alert');
-                        alerts.forEach(alert => {
-                            alert.style.display = 'none';
-                        });
-                    }, 3000);
-                </script>
+setTimeout(function() {
+    const alerts = document.querySelectorAll('.custom-alert');
+    alerts.forEach(alert => {
+        alert.style.display = 'none';
+    });
+}, 3000);
+
+// ========== EVENT LISTENERS ==========
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, setting up event listeners');
+    
+    // File input untuk CREATE modal
+    const createFileInput = document.getElementById('imageInput');
+    if (createFileInput) {
+        console.log('Create file input ditemukan');
+        createFileInput.removeAttribute('onchange');
+        createFileInput.addEventListener('change', function(e) {
+            console.log('File input create berubah, files:', e.target.files);
+            if (e.target.files && e.target.files.length > 0) {
+                previewMultipleImages(e);
+            } else {
+                const preview = document.getElementById('imagePreview');
+                if (preview) preview.innerHTML = '';
+            }
+        });
+    } else {
+        console.warn('Create file input TIDAK ditemukan');
+    }
+    
+    // File input untuk EDIT modals
+    document.querySelectorAll('input[id^="imageInput"]').forEach(input => {
+        if (input.id !== 'imageInput') {
+            console.log('Edit file input ditemukan:', input.id);
+            input.removeAttribute('onchange');
+            const kamarId = input.id.replace('imageInput', '');
+            input.addEventListener('change', function(e) {
+                console.log(`File input edit ${kamarId} berubah, files:`, e.target.files);
+                if (e.target.files && e.target.files.length > 0) {
+                    previewMultipleImagesEdit(e, kamarId);
+                }
+            });
+        }
+    });
+    
+    // Delete image buttons
+    document.querySelectorAll('.btn-delete-image').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const imageId = this.dataset.id;
+            const kamarId = this.dataset.kamar;
+            deleteImage(imageId, kamarId);
+        });
+    });
+    
+    // Set main image buttons
+    document.querySelectorAll('.btn-set-main').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const imageId = this.dataset.id;
+            const kamarId = this.dataset.kamar;
+            setMainImage(imageId, kamarId);
+        });
+    });
+});
+</script>
 
                 <style>
                     .pill-active-edit {
