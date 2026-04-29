@@ -24,7 +24,13 @@ class Kernel extends ConsoleKernel
                  ->everyFiveMinutes()
                  ->withoutOverlapping()
                  ->runInBackground();
-    }
+
+        // Cek tagihan yang akan jatuh tempo setiap hari jam 08:00         
+        $schedule->command('tagihan:cek-jatuh-tempo')
+                 ->dailyAt('08:00')
+                 ->timezone('Asia/Jakarta')
+                 ->withoutOverlapping();
+    }        
 
     // ── Commands ───────────────────────────────────────────
     protected function commands(): void
