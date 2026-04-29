@@ -24,7 +24,8 @@
                             </div>
                         </div>
                     </div>
-
+                    
+                    {{--  
                     <div class="row mb-4">
                         <div class="col-lg-12 d-flex justify-content-end">
                             <button type="button" class="btn-tambah shadow-sm" data-bs-toggle="modal" data-bs-target="#tambahUserModal">
@@ -32,6 +33,7 @@
                             </button>
                         </div>
                     </div>
+                    --}}
 
                     @if(session('success'))
                     <div class="custom-alert success" id="successAlert">
@@ -112,8 +114,10 @@
                                                         @endif
                                                     </td>
                                                     <td class="border-bottom-1 border-top-0 border-start-0 border-end-0 py-4 px-3 text-center bg-transparent text-nowrap" style="border-color: #f1f2f6;">
+                                                        {{--  
                                                         <a href="#" data-bs-toggle="modal" data-bs-target="#editModal{{ $user->id_user }}" class="badge rounded-pill text-white text-decoration-none px-4 py-2 me-1" style="background-color: #6366f1; font-size: 13px; font-weight: 500; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9';" onmouseout="this.style.opacity='1';">Edit</a>
                                                         <a href="#" data-bs-toggle="modal" data-bs-target="#hapusModal{{ $user->id_user }}" class="badge rounded-pill text-white text-decoration-none px-4 py-2 me-1" style="background-color: #ef4444; font-size: 13px; font-weight: 500; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9';" onmouseout="this.style.opacity='1';">Hapus</a>
+                                                        --}}
                                                         <a href="#" data-bs-toggle="modal" data-bs-target="#detailModal{{ $user->id_user }}" class="badge rounded-pill text-white text-decoration-none px-4 py-2" style="background-color: #3b82f6; font-size: 13px; font-weight: 500; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9';" onmouseout="this.style.opacity='1';">Detail</a>
                                                     </td>
                                                 </tr>
