@@ -117,14 +117,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/chatbot/chat', [ChatbotController::class, 'chat'])
      ->middleware('throttle:60,1'); // backup throttle Laravel
 
-
-    Route::middleware('auth:sanctum')->group(function () {
+    
+    // Notifikasi
     Route::get('notifikasi',             [NotifikasiController::class, 'index']);
     Route::post('notifikasi/{id}/baca',  [NotifikasiController::class, 'tandaiBaca']);
     Route::post('notifikasi/baca-semua', [NotifikasiController::class, 'tandaiSemuaBaca']);
     Route::post('fcm-token',             [NotifikasiController::class, 'simpanFcmToken']);
-    });
+    
 
+    
     // Kalau mau testing uncomment route ini, nanti commend lagi setelah testing selesai
     // Route::get('/test-notif', function () {
     // $user = \App\Models\User::first();

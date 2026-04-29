@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Notifikasi;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class NotifikasiController extends Controller
 {
@@ -54,10 +55,17 @@ class NotifikasiController extends Controller
     // Flutter kirim FCM token setelah login / token diperbarui
     public function simpanFcmToken(Request $request): JsonResponse
     {
+        Log::info('simpanFcmToken dipanggil');
+        Log::info('User: ' . json_encode($request->user()));
+        Log::info('Headers: ' . json_encode($request->headers->all()));
+
         $request->validate(['fcm_token' => 'required|string']);
+        $user = $request->user();
 
-        $request->user()->update(['fcm_token' => $request->fcm_token]);
-
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+        $user->update(['fcm_token' => $request->fcm_token]);
         return response()->json(['message' => 'FCM token tersimpan']);
     }
 }
