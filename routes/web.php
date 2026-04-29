@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\OtpResetController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TagihanController;
 use App\Http\Controllers\PengirimanController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
@@ -114,6 +115,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard/user/{id_user}', [\App\Http\Controllers\UserController::class, 'show'])->name('user.show');
     Route::put('/dashboard/user/{id_user}', [\App\Http\Controllers\UserController::class, 'update'])->name('user.update');
     Route::delete('/dashboard/user/{id_user}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('user.destroy');
+
+    // Kelola Tagihan
+    Route::get('/dashboard/tagihan', [TagihanController::class, 'index'])->name('tagihan.index');
+    Route::post('/dashboard/tagihan', [TagihanController::class, 'store'])->name('tagihan.store');
+    Route::get('/dashboard/tagihan/{id_tagihan}', [TagihanController::class, 'show'])->name('tagihan.show');
+    Route::put('/dashboard/tagihan/{id_tagihan}', [TagihanController::class, 'update'])->name('tagihan.update');
+    Route::delete('/dashboard/tagihan/{id_tagihan}', [TagihanController::class, 'destroy'])->name('tagihan.destroy');
 
     // Halaman register hanya bisa diakses admin
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');

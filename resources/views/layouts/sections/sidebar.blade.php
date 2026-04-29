@@ -52,6 +52,12 @@
             </a>
         </li>
         <li class="nav-item">
+            <a class="nav-link {{ request()->is('dashboard/tagihan*') ? 'active' : '' }}" href="{{ url('/dashboard/tagihan') }}">
+                <i class="ti-receipt"></i>
+                <span class="menu-title">Kelola Tagihan</span>
+            </a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link {{ request()->is('dashboard/booking*') ? 'active' : '' }}" href="{{ url('/dashboard/booking') }}">
                 <i class="ti-calendar"></i>
                 <span class="menu-title">Kelola Booking</span>
