@@ -11,7 +11,9 @@ use App\Http\Controllers\Api\PembayaranController;
 use App\Http\Controllers\Api\KeluhanController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\GaleriKamarController;
+use App\Http\Controllers\Api\NotifikasiController;
 use App\Http\Controllers\ChatbotController;
+
 
 // ── PUBLIC ────────────────────────────────────────────────
 Route::post('/register',       [AuthController::class, 'register']);
@@ -114,4 +116,32 @@ Route::middleware('auth:sanctum')->group(function () {
     //chatbot 
     Route::post('/chatbot/chat', [ChatbotController::class, 'chat'])
      ->middleware('throttle:60,1'); // backup throttle Laravel
+
+    
+    // Notifikasi
+    Route::get('notifikasi',             [NotifikasiController::class, 'index']);
+    Route::post('notifikasi/{id}/baca',  [NotifikasiController::class, 'tandaiBaca']);
+    Route::post('notifikasi/baca-semua', [NotifikasiController::class, 'tandaiSemuaBaca']);
+    Route::post('fcm-token',             [NotifikasiController::class, 'simpanFcmToken']);
+    
+
+    
+    // Kalau mau testing uncomment route ini, nanti commend lagi setelah testing selesai
+    // Route::get('/test-notif', function () {
+    // $user = \App\Models\User::first();
+    
+    // $notif = \App\Models\Notifikasi::create([
+    //     'user_id'      => $user->id_user,
+    //     'judul'        => 'Reminder Tagihan',
+    //     'pesan'        => 'Anda memiliki tagihan yang akan jatuh tempo pada tanggal 22 - 04 - 2026, Segera lakukan perpanjangan sewa',
+    //     'tipe'         => 'tagihan',
+    //     'sudah_dibaca' => false,
+    // ]);
+
+    // return response()->json([
+    //     'message' => 'Berhasil!',
+    //     'data'    => $notif,
+    // ]);
+    // });
+
 });
