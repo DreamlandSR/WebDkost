@@ -6,15 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\Notifikasi;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class NotifikasiController extends Controller
 {
     // GET /api/notifikasi
-    // Ambil semua notifikasi milik user yang login
     public function index(Request $request): JsonResponse
     {
-        $notifikasis = Notifikasi::byUser($request->user()->id)
+        $notifikasis = Notifikasi::byUser($request->user()->id_user)
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -25,10 +25,9 @@ class NotifikasiController extends Controller
     }
 
     // POST /api/notifikasi/{id}/baca
-    // Tandai 1 notifikasi sudah dibaca
     public function tandaiBaca(Request $request, int $id): JsonResponse
     {
-        $notif = Notifikasi::byUser($request->user()->id)->findOrFail($id);
+        $notif = Notifikasi::byUser($request->user()->id_user)->findOrFail($id);
         $notif->update([
             'sudah_dibaca' => true,
             'dibaca_at'    => now(),
@@ -38,10 +37,9 @@ class NotifikasiController extends Controller
     }
 
     // POST /api/notifikasi/baca-semua
-    // Tandai semua notifikasi sudah dibaca
     public function tandaiSemuaBaca(Request $request): JsonResponse
     {
-        Notifikasi::byUser($request->user()->id)
+        Notifikasi::byUser($request->user()->id_user)
             ->belumDibaca()
             ->update([
                 'sudah_dibaca' => true,
@@ -51,21 +49,35 @@ class NotifikasiController extends Controller
         return response()->json(['message' => 'Semua notifikasi telah dibaca']);
     }
 
-    // POST /api/fcm-token
-    // Flutter kirim FCM token setelah login / token diperbarui
-    public function simpanFcmToken(Request $request): JsonResponse
+    // POST /api/onesignal/login
+    // Flutter memanggil ini setelah login supaya OneSignal tahu siapa usernya
+    public function setExternalId(Request $request): JsonResponse
     {
-        Log::info('simpanFcmToken dipanggil');
-        Log::info('User: ' . json_encode($request->user()));
-        Log::info('Headers: ' . json_encode($request->headers->all()));
+        $request->validate([
+            'onesignal_player_id' => 'required|string', // subscription_id dari Flutter SDK
+        ]);
 
-        $request->validate(['fcm_token' => 'required|string']);
-        $user = $request->user();
+        $user     = $request->user();
+        $playerId = $request->onesignal_player_id;
 
-        if (!$user) {
-            return response()->json(['message' => 'Unauthenticated'], 401);
+        // Panggil OneSignal API untuk set external_id = id_user
+        $response = Http::withHeaders([
+            'Authorization' => 'Key ' . config('services.onesignal.rest_api_key'),
+            'Content-Type'  => 'application/json',
+        ])->patch("https://onesignal.com/api/v1/apps/" . config('services.onesignal.app_id') . "/subscriptions/{$playerId}", [
+            'subscription' => [
+                'external_id' => (string) $user->id_user,
+            ],
+        ]);
+
+        if ($response->failed()) {
+            Log::error('OneSignal setExternalId gagal', [
+                'status' => $response->status(),
+                'body'   => $response->body(),
+            ]);
+            return response()->json(['message' => 'Gagal menghubungkan ke OneSignal'], 500);
         }
-        $user->update(['fcm_token' => $request->fcm_token]);
-        return response()->json(['message' => 'FCM token tersimpan']);
+
+        return response()->json(['message' => 'OneSignal terhubung']);
     }
 }

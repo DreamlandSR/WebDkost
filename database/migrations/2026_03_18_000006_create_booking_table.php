@@ -13,6 +13,7 @@ return new class extends Migration
             $table->integer('id_user');
             $table->integer('id_kamar');
             $table->date('tgl_booking');
+            $table->date('expired_at');
             $table->integer('durasi_sewa_bulan');
             $table->date('tgl_mulai_sewa')->nullable();
             $table->date('tgl_akhir_sewa')->nullable();
