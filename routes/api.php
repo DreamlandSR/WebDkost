@@ -122,7 +122,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('notifikasi',             [NotifikasiController::class, 'index']);
     Route::post('notifikasi/{id}/baca',  [NotifikasiController::class, 'tandaiBaca']);
     Route::post('notifikasi/baca-semua', [NotifikasiController::class, 'tandaiSemuaBaca']);
-    Route::post('fcm-token',             [NotifikasiController::class, 'simpanFcmToken']);
+    Route::post('onesignal/login', [NotifikasiController::class, 'setExternalId']);
     
 
     
