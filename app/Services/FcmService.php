@@ -12,8 +12,8 @@ class FcmService
 
     public function __construct()
     {
-        $this->projectId        = config('services.fcm.project_id');
-        $this->serviceAccountPath = config('services.fcm.service_account_path');
+        $this->projectId        = config('services.fcm.project_id') ?? '';
+        $this->serviceAccountPath = config('services.fcm.service_account_path') ?? '';
     }
 
     // ── Kirim ke 1 user ───────────────────────────────────────

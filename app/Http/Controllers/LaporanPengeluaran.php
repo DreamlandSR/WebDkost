@@ -4,9 +4,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\pengeluaran;
+use App\Exports\PengeluaranExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class laporanPengeluaran extends Controller
 {
+    public function exportExcel()
+    {
+        return Excel::download(new PengeluaranExport, 'Laporan_Pengeluaran.xlsx');
+    }
+
     public function index(Request $request)
     {
         $query = pengeluaran::query();
