@@ -13,16 +13,15 @@
                     {{-- Header --}}
                     <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
                         <h4 class="fw-bold mb-0 text-dark" style="font-size: 26px;">
-                            Selamat datang, {{ Auth::user()->nama ?? 'Ryan' }}!
+                            Selamat datang, {{ Auth::user()->nama ?? 'Admin' }}!
                         </h4>
-                        <div class="d-flex align-items-center gap-3 dashboard-header-date">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
-                                viewBox="0 0 24 24">
-                                <path d="M19 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z" />
-                                <path d="M16 2v4M8 2v4M3 10h18" />
-                            </svg>
-                            <span>{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('d M, Y') }}</span>
-                        </div>
+                        <div class="d-flex align-items-center dashboard-header-date">
+                        <svg width="18" height="18" class="mx-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M19 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z" />
+                            <path d="M16 2v4M8 2v4M3 10h18" />
+                        </svg>
+                        <span>{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('d F, Y') }}</span>
+                    </div>
                     </div>
 
                     {{-- Info Kos Cards --}}
@@ -277,54 +276,43 @@
                     {{-- Pengeluaran --}}
                     @php
                         $colors = [
+                            '#6979f8',
+                            '#00a669',
+                            '#ffb259',
+                            '#2979ff',
                             '#ff4757',
-                            '#ffa502',
-                            '#2ed573',
-                            '#1e90ff',
-                            '#5352ed',
-                            '#ff7f50',
-                            '#a83279',
-                            '#00b894',
+                            '#9c88ff',
+                            '#44bd32',
+                            '#e84118',
                         ];
 
-                        $dummyPengeluaran = [
-                            (object) ['nominal' => 1500000, 'kategori' => 'Listrik', 'color' => '#6979f8'],
-                            (object) ['nominal' => 125000, 'kategori' => 'Sapu', 'color' => '#00a669'],
-                            (object) ['nominal' => 300000, 'kategori' => 'PDAM', 'color' => '#ffb259'],
-                            (object) ['nominal' => 100000, 'kategori' => 'Selang', 'color' => '#2979ff'],
-                            (object) ['nominal' => 250000, 'kategori' => 'Dapur', 'color' => '#ff4757'],
-                            (object) ['nominal' => 85000, 'kategori' => 'Cikrak', 'color' => '#9c88ff'],
-                            (object) ['nominal' => 149000, 'kategori' => 'Dapur', 'color' => '#44bd32'],
-                            (object) ['nominal' => 75000, 'kategori' => 'Sampah', 'color' => '#e84118'],
-                        ];
-
-                        $listPengeluaran =
-                            !empty($pengeluaranBulanan) && count($pengeluaranBulanan) > 0
-                                ? $pengeluaranBulanan
-                                : $dummyPengeluaran;
+                        $hasPengeluaran = !empty($pengeluaranBulanan) && count($pengeluaranBulanan) > 0;
+                        $listPengeluaran = $hasPengeluaran ? $pengeluaranBulanan : [];
 
                         $totalPengeluaran = 0;
                         $chartLabels = [];
                         $chartData = [];
                         $chartColors = [];
 
-                        foreach ($listPengeluaran as $index => $item) {
-                            $totalPengeluaran += $item->nominal;
-                            if ($index < 4) {
-                                $chartLabels[] = $item->kategori;
-                                $chartData[] = $item->nominal;
-                                $chartColors[] = $item->color ?? $colors[$index % 8];
+                        if ($hasPengeluaran) {
+                            foreach ($listPengeluaran as $index => $item) {
+                                $totalPengeluaran += $item->nominal;
+                                if ($index < 4) {
+                                    $chartLabels[] = $item->kategori;
+                                    $chartData[] = $item->nominal;
+                                    $chartColors[] = $item->color ?? $colors[$index % 8];
+                                }
                             }
-                        }
 
-                        if (count($listPengeluaran) > 4) {
-                            $lainnya = 0;
-                            for ($i = 4; $i < count($listPengeluaran); $i++) {
-                                $lainnya += $listPengeluaran[$i]->nominal;
+                            if (count($listPengeluaran) > 4) {
+                                $lainnya = 0;
+                                for ($i = 4; $i < count($listPengeluaran); $i++) {
+                                    $lainnya += $listPengeluaran[$i]->nominal;
+                                }
+                                $chartLabels[] = 'Lainnya';
+                                $chartData[] = $lainnya;
+                                $chartColors[] = '#cbd5e1';
                             }
-                            $chartLabels[] = 'Lainnya';
-                            $chartData[] = $lainnya;
-                            $chartColors[] = '#cbd5e1';
                         }
 
                         $totalFormatted = 'Rp ' . number_format($totalPengeluaran, 0, ',', '.');
@@ -337,62 +325,132 @@
                                 <div>
                                     <h5 class="fw-bold mb-1 pengeluaran-card__title">Pengeluaran Bulanan</h5>
                                     <div class="text-muted pengeluaran-card__subtitle">Rincian transaksi dan biaya
-                                        operasional</div>
+                                        operasional bulan {{ $currentMonth }}</div>
                                 </div>
-                                <a href="{{ url('/laporan/pengeluaran') }}" class="pengeluaran-card__link">
-                                    Lihat Laporan
-                                </a>
+                                <div class="d-flex align-items-center gap-3">
+                                    <a href="{{ route('pengeluaran.export') }}" class="btn btn-success d-flex align-items-center gap-2 shadow-sm" style="border-radius: 8px; font-size: 13px; font-weight: 600; padding: 8px 16px; background-color: #00a669; border: none;">
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        Unduh Excel
+                                    </a>
+                                    <a href="{{ url('/laporan/pengeluaran') }}" class="pengeluaran-card__link">
+                                        Lihat Laporan
+                                    </a>
+                                </div>
                             </div>
 
-                            <div class="row align-items-center">
-                                {{-- List Items --}}
-                                <div class="col-md-8 pe-md-4">
-                                    <div class="row g-3">
-                                        @foreach ($listPengeluaran as $index => $item)
-                                            @if ($index < 8)
-                                                @php $color = $item->color ?? $colors[$index % 8]; @endphp
-                                                <div class="col-md-6 mb-2">
-                                                    <div class="pengeluaran-item shadow-sm">
-                                                        <div class="pengeluaran-item__icon-wrap"
-                                                            style="background: {{ $color }}15;">
-                                                            <div class="pengeluaran-item__dot"
-                                                                style="background: {{ $color }}; box-shadow: 0 0 8px {{ $color }}60;">
+                            @if ($hasPengeluaran)
+                                {{-- Ada Data: tampilkan list + donut chart --}}
+                                <div class="row align-items-center">
+                                    {{-- List Items --}}
+                                    <div class="col-md-8 pe-md-4">
+                                        <div class="row g-3">
+                                            @foreach ($listPengeluaran as $index => $item)
+                                                @if ($index < 8)
+                                                    @php $color = $item->color ?? $colors[$index % 8]; @endphp
+                                                    <div class="col-md-6 mb-2">
+                                                        <div class="pengeluaran-item shadow-sm">
+                                                            <div class="pengeluaran-item__icon-wrap"
+                                                                style="background: {{ $color }}15;">
+                                                                <div class="pengeluaran-item__dot"
+                                                                    style="background: {{ $color }}; box-shadow: 0 0 8px {{ $color }}60;">
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-grow-1">
+                                                                <div class="text-muted pengeluaran-item__label">
+                                                                    {{ $item->kategori }}</div>
+                                                                <div class="pengeluaran-item__nominal">Rp
+                                                                    {{ number_format($item->nominal, 0, ',', '.') }}
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                        <div class="flex-grow-1">
-                                                            <div class="text-muted pengeluaran-item__label">
-                                                                {{ $item->kategori }}</div>
-                                                            <div class="pengeluaran-item__nominal">Rp
-                                                                {{ number_format($item->nominal, 0, ',', '.') }}</div>
-                                                        </div>
                                                     </div>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    {{-- Donut Chart --}}
+                                    <div
+                                        class="col-md-4 d-flex flex-column align-items-center justify-content-center mt-5 mt-md-0 border-start ps-md-4">
+                                        <div class="donut-wrapper">
+                                            <canvas id="pengeluaranChart"
+                                                style="position: relative; z-index: 2;"></canvas>
+                                            <div class="donut-center">
+                                                <div class="donut-center__icon-wrap">
+                                                    <i class="ti-wallet" style="color: #4a54e1; font-size: 18px;"></i>
                                                 </div>
-                                            @endif
-                                        @endforeach
+                                                <div class="text-muted donut-center__label">Total {{ $currentMonth }}
+                                                </div>
+                                                <div class="donut-center__total">{{ $totalFormatted }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="text-center">
+                                            <span class="donut-summary-badge fw-medium">
+                                                <i class="ti-stats-down" style="color: #ff4757;"></i>
+                                                Ringkasan Pengeluaran
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
 
-                                {{-- Donut Chart --}}
-                                <div
-                                    class="col-md-4 d-flex flex-column align-items-center justify-content-center mt-5 mt-md-0 border-start ps-md-4">
-                                    <div class="donut-wrapper">
-                                        <canvas id="pengeluaranChart" style="position: relative; z-index: 2;"></canvas>
-                                        <div class="donut-center">
-                                            <div class="donut-center__icon-wrap">
-                                                <i class="ti-wallet" style="color: #4a54e1; font-size: 18px;"></i>
-                                            </div>
-                                            <div class="text-muted donut-center__label">Total {{ $currentMonth }}</div>
-                                            <div class="donut-center__total">{{ $totalFormatted }}</div>
+                            @else
+                                {{-- Kosong: tampilan empty state menarik --}}
+                                <div class="pengeluaran-empty-state">
+                                    {{-- Animasi ikon dompet kosong --}}
+                                    <div class="pengeluaran-empty-state__icon-wrap">
+                                        <div class="pengeluaran-empty-state__rings">
+                                            <div class="ring ring--1"></div>
+                                            <div class="ring ring--2"></div>
+                                            <div class="ring ring--3"></div>
+                                        </div>
+                                        <div class="pengeluaran-empty-state__icon">
+                                            <svg width="44" height="44" viewBox="0 0 24 24" fill="none"
+                                                stroke="#6979f8" stroke-width="1.5" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                                                <line x1="1" y1="10" x2="23" y2="10" />
+                                                <path d="M17 14h.01" />
+                                            </svg>
                                         </div>
                                     </div>
-                                    <div class="text-center">
-                                        <span class="donut-summary-badge fw-medium">
-                                            <i class="ti-stats-down" style="color: #ff4757;"></i>
-                                            Ringkasan Pengeluaran
-                                        </span>
+
+                                    {{-- Teks --}}
+                                    <h6 class="pengeluaran-empty-state__title">Belum Ada Pengeluaran</h6>
+                                    <p class="pengeluaran-empty-state__desc">
+                                        Tidak ada catatan pengeluaran untuk bulan
+                                        <strong>{{ $currentMonth }}</strong>.<br>
+                                        Tambahkan pengeluaran baru melalui menu laporan.
+                                    </p>
+
+                                    {{-- Placeholder Skeleton Item --}}
+                                    <div class="pengeluaran-empty-state__skeleton">
+                                        @for ($i = 0; $i < 4; $i++)
+                                            <div class="skeleton-item">
+                                                <div class="skeleton-dot"></div>
+                                                <div class="skeleton-lines">
+                                                    <div class="skeleton-line skeleton-line--label"></div>
+                                                    <div class="skeleton-line skeleton-line--value"></div>
+                                                </div>
+                                            </div>
+                                        @endfor
                                     </div>
+
+                                    {{-- CTA Button --}}
+                                    <a href="{{ url('/laporan/pengeluaran') }}"
+                                        class="pengeluaran-empty-state__cta">
+                                        <svg width="16" height="16" fill="none" stroke="currentColor"
+                                            stroke-width="2" viewBox="0 0 24 24">
+                                            <line x1="12" y1="5" x2="12" y2="19" />
+                                            <line x1="5" y1="12" x2="19" y2="12" />
+                                        </svg>
+                                        Tambah Pengeluaran
+                                    </a>
                                 </div>
-                            </div>
+                            @endif
 
                         </div>
                     </div>

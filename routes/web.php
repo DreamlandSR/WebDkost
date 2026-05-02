@@ -78,6 +78,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/laporan/keluhan/{id_keluhan}', [\App\Http\Controllers\LaporanKeluhan::class, 'updateStatus'])->name('keluhan.updateStatus');
 
     Route::get('/laporan/pengeluaran', [\App\Http\Controllers\LaporanPengeluaran::class, 'index'])->name('pengeluaran.page');
+    Route::get('/laporan/pengeluaran/export', [\App\Http\Controllers\LaporanPengeluaran::class, 'exportExcel'])->name('pengeluaran.export');
     Route::post('/laporan/pengeluaran/store', [\App\Http\Controllers\LaporanPengeluaran::class, 'store'])->name('pengeluaran.store');
     Route::put('/laporan/pengeluaran/{id}', [\App\Http\Controllers\LaporanPengeluaran::class, 'update'])->name('pengeluaran.update');
     Route::delete('/laporan/pengeluaran/{id}', [\App\Http\Controllers\LaporanPengeluaran::class, 'destroy'])->name('pengeluaran.destroy');

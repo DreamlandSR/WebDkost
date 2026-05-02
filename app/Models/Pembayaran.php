@@ -18,7 +18,7 @@ class Pembayaran extends Model
         'jumlah_bayar',
         'metode_pembayaran',    // ← tambahkan ini
         'bank',                 // ← tambahkan ini
-        'midtrans_response',  
+        'midtrans_response',
         'status_pembayaran',
     ];
 
@@ -27,3 +27,6 @@ class Pembayaran extends Model
         return $this->belongsTo(Tagihan::class, 'id_tagihan', 'id_tagihan');
     }
 }
+
+
+
