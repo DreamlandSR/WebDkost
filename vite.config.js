@@ -35,9 +35,16 @@ export default defineConfig({
     css: {
         url: true,
     },
+
     server: {
-    hmr: {
-        host: 'localhost',
+        host: '0.0.0.0', // Membuka akses ke semua interface jaringan dalam kontainer
+        port: 5173,
+        strictPort: true,
+        hmr: {
+            host: 'localhost', // Browser di Windows tetap mengakses via 'localhost'
+        },
+        watch: {
+            usePolling: true, // WAJIB untuk WSL: agar Vite peka terhadap perubahan file
+        },
     },
-}
 });

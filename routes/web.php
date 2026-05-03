@@ -127,6 +127,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Halaman register hanya bisa diakses admin
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/register', [RegisteredUserController::class, 'store']);
+    Route::post('/register/verify-otp', [RegisteredUserController::class, 'verifyOtp'])->name('register.verify-otp');
+    Route::get('/register/success', [RegisteredUserController::class, 'showSuccess'])->name('register.success');
     Route::get('/AdminPage', [AdminController::class, 'index'])->name('admin');
 });
 

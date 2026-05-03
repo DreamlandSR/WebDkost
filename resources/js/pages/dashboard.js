@@ -175,3 +175,15 @@ function initPengeluaranChart() {
         },
     });
 }
+
+/**
+ * Helper - Input Email Lowercase
+ */
+function initEmailHandler() {
+    const emailInput = document.getElementById('email');
+    if (emailInput) {
+        emailInput.addEventListener('input', function () {
+            this.value = this.value.toLowerCase();
+        });
+    }
+}
