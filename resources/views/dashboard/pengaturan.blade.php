@@ -29,7 +29,7 @@
                                         <div class="position-relative d-inline-block" style="margin-top: -50px; margin-bottom: 20px;">
                                             <div class="rounded-circle p-1 bg-white shadow-sm">
                                                 <div class="rounded-circle overflow-hidden border" style="width: 100px; height: 100px;">
-                                                    <img src="{{ asset(empty(Auth::user()->avatar) ? 'img/Batik 2.jpg' : 'storage/avatars/' . Auth::user()->avatar) }}"
+                                                    <img src="{{ asset(empty(Auth::user()->avatar) ? 'img/gambar1.png' : 'storage/avatars/' . Auth::user()->avatar) }}"
                                                         alt="Profile" class="w-100 h-100" style="object-fit: cover;" />
                                                 </div>
                                             </div>

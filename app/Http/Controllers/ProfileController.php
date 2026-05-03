@@ -16,13 +16,15 @@ class ProfileController extends Controller
 
         $request->validate([
             'nama' => 'required|string|max:100',
-            'email' => 'required|email',
-            'no_hp' => 'nullable|string|max:20',
+            'email' => 'required|email|unique:users,email,' . $user->id_user . ',id_user',
+            'no_telepon' => 'nullable|string|max:20', // Sesuaikan dengan kolom db: no_telepon
+            'alamat' => 'nullable|string', // Tambahkan validasi alamat
         ]);
 
         $user->nama = $request->input('nama');
         $user->email = $request->input('email');
-        $user->no_hp = $request->input('no_hp');
+        $user->no_telepon = $request->input('no_telepon'); // Sesuaikan dengan kolom db
+        $user->alamat = $request->input('alamat'); // Simpan alamat
 
         $user->save();
 

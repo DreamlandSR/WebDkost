@@ -29,7 +29,7 @@
                     <div class="row g-4 mb-5 mt-2">
 
                         {{-- Kamar Tersedia --}}
-                        <div class="col-md-4">
+                        <div class="col-md-4 mb-2">
                             <div class="card info-card info-card--purple shadow h-100">
                                 <svg class="info-card__bg-shape" width="160" height="160" viewBox="0 0 100 100">
                                     <circle cx="50" cy="50" r="45" fill="#ffffff" />
@@ -55,7 +55,7 @@
                         </div>
 
                         {{-- Kamar Terisi --}}
-                        <div class="col-md-4">
+                        <div class="col-md-4 mb-2">
                             <div class="card info-card info-card--green shadow h-100">
                                 <svg class="info-card__bg-shape" style="bottom: -30px; right: -30px;" width="160"
                                     height="160" viewBox="0 0 100 100">
@@ -81,7 +81,7 @@
                         </div>
 
                         {{-- Pendapatan Bulanan --}}
-                        <div class="col-md-4">
+                        <div class="col-md-4 mb-2">
                             <div class="card info-card info-card--orange shadow h-100">
                                 <svg class="info-card__bg-shape" style="bottom: -20px; right: -20px; opacity: 0.15;"
                                     width="160" height="160" viewBox="0 0 100 100">
@@ -327,8 +327,8 @@
                                     <div class="text-muted pengeluaran-card__subtitle">Rincian transaksi dan biaya
                                         operasional bulan {{ $currentMonth }}</div>
                                 </div>
-                                <div class="d-flex align-items-center gap-3">
-                                    <a href="{{ route('pengeluaran.export') }}" class="btn btn-success d-flex align-items-center gap-2 shadow-sm" style="border-radius: 8px; font-size: 13px; font-weight: 600; padding: 8px 16px; background-color: #00a669; border: none;">
+                                <div class="d-flex align-items-center">
+                                    <a href="{{ route('pengeluaran.export') }}" class="btn btn-success d-flex align-items-center gap-2 shadow-sm" style="border-radius: 8px; font-size: 12px; font-weight: 600; padding: 8px 16px; background-color: #00a669; border: none;">
                                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                             <polyline points="7 10 12 15 17 10"></polyline>

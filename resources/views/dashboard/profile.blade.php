@@ -16,7 +16,7 @@
                             {{-- Avatar Section (Static) --}}
                             <div class="text-center mb-3">
                                 <div class="rounded-circle p-1 bg-white shadow-sm border d-inline-block" style="width: 120px; height: 120px; overflow: hidden;">
-                                    <img src="{{ Auth::user()->avatar ? asset('storage/avatars/' . Auth::user()->avatar) : asset('img/Batik 2.jpg') }}"
+                                    <img src="{{ asset(empty(Auth::user()->avatar) ? 'img/gambar1.png' : 'storage/avatars/' . Auth::user()->avatar) }}"
                                          class="w-100 h-100" style="object-fit: cover;" alt="Profile Photo" id="preview">
                                 </div>
                                 <h3 class="fw-bold mt-3 mb-4" style="color: #64748b; font-size: 24px;">Pengaturan Akun</h3>
@@ -73,6 +73,17 @@
                                                name="email" id="email" value="{{ old('email', Auth::user()->email) }}"
                                                style="background: #fcfcfc; font-size: 14px; border: 1.5px solid #eaeaea;">
                                         @error('email')
+                                            <div class="text-danger small mt-1" style="font-size: 12px;">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    {{-- Alamat --}}
+                                    <div class="col-12">
+                                        <label for="alamat" class="form-label mb-2 mt-4 fw-semibold d-block text-start" style="color: #00c985; font-size: 14px;">Alamat</label>
+                                        <textarea class="form-control rounded-3 py-2 px-3 border-light-subtle shadow-none transition-all"
+                                                name="alamat" id="alamat" rows="3"
+                                                style="background: #fcfcfc; font-size: 14px; border: 1.5px solid #eaeaea;">{{ old('alamat', Auth::user()->alamat ?? '') }}</textarea>
+                                        @error('alamat')
                                             <div class="text-danger small mt-1" style="font-size: 12px;">{{ $message }}</div>
                                         @enderror
                                     </div>
