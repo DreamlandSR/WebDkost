@@ -48,8 +48,10 @@ class PembayaranController extends Controller
         $request->validate([
             'id_tagihan'   => 'required|exists:tagihan,id_tagihan',
             'payment_type' => 'required|string|in:bank_transfer,qris,gopay,shopeepay',
-            'bank'         => 'nullable|string|in:bca,bni,bri,mandiri',
+            'bank'         => 'nullable|string|in:bca,bni,bri,permata',
         ]);
+
+        
 
         $tagihan = Tagihan::with('booking.user')->find($request->id_tagihan);
 
@@ -120,6 +122,7 @@ class PembayaranController extends Controller
 
         // ── Tambahkan detail per metode ────────────────────
         switch ($request->payment_type) {
+
             case 'bank_transfer':
                 $payload['payment_type']  = 'bank_transfer';
                 $payload['bank_transfer'] = ['bank' => $request->bank];
