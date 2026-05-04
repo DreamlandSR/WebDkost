@@ -119,7 +119,7 @@ class BookingController extends Controller
             'nominal_dasar'   => $totalBiaya,
             'nominal_denda'   => 0,
             'total_tagihan'   => $totalBiaya,
-            'tgl_jatuh_tempo' => $tglMulai->copy()->addDays(7)->toDateString(),
+            'tgl_jatuh_tempo' => $expiredAt->toDateString(),
             'status_tagihan'  => 'belum_bayar',
         ]);
 

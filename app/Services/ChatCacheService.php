@@ -23,11 +23,14 @@ class ChatCacheService
     public function setCachedResponse(string $intent, array $params, array $response): void
     {
         // Intent yang boleh di-cache (datanya jarang berubah)
-        $cacheableIntents = ['cek_fasilitas', 'lihat_review', 'info_umum', 'cek_furnitur'];
+        // cek_kamar_rating diberikan TTL 5 menit karena melibatkan rata-rata rating yang bisa berubah
+        $cacheableIntents = ['cek_kamar_tersedia', 'cek_kamar_rating', 'cek_fasilitas', 'lihat_review', 'info_umum', 'cek_furnitur', 'cek_harga'];
 
         if (in_array($intent, $cacheableIntents)) {
             $key = 'sinora_resp_' . md5($intent . json_encode($params));
-            Cache::put($key, $response, 3600); // 1 jam
+            // cek_kamar_rating cache hanya 5 menit karena rating bisa berubah setiap saat
+            $ttl = ($intent === 'cek_kamar_rating') ? 300 : 3600;
+            Cache::put($key, $response, $ttl);
         }
     }
 
