@@ -6,6 +6,8 @@
 @import "./vertical-layout-light/style.css";
 @import "./dashboard.css";
 @import "./navbar.css";
+@import "./pengeluaran.css";
+
 
 
 @tailwind base;
