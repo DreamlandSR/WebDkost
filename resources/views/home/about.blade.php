@@ -1,8 +1,10 @@
 @extends('templates.layout')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/override.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/about-page.css') }}">
+    {{-- Vite CSS --}}
+    @vite([
+        'resources/css/app.css',
+    ])
 @endsection
 
 @section('content')
@@ -110,3 +112,7 @@
     @include('templates.main_footer')
     @include('templates.footer')
 @endsection
+
+@push('scripts')
+    @vite(['resources/js/app.js'])
+@endpush

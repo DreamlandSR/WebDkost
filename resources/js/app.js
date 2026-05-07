@@ -29,6 +29,7 @@ import './dashboard';
 import './auth-toggle';
 import './pages/dashboard.js';
 import './pengeluaran.js';
+import './landingpage.js';
 
 import Alpine from 'alpinejs';
 window.Alpine = Alpine;
