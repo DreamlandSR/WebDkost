@@ -1,26 +1,28 @@
 <?php
+
 namespace App\Mail;
 
+use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Queue\SerializesModels;
 
 class OtpMail extends Mailable
 {
+    use Queueable, SerializesModels;
+
     public string $otp;
+    public string $subjectLine;
 
-    public function __construct(string $otp)
+    // ← parameter kedua subject (default agar tidak breaking change)
+    public function __construct(string $otp, string $subject = 'Kode OTP D\'Kost')
     {
-        $this->otp = $otp;
-    }  // ← kurung ini yang hilang!
-
-    public function envelope(): Envelope
-    {
-        return new Envelope(subject: "Kode OTP D'Kost");
+        $this->otp         = $otp;
+        $this->subjectLine = $subject;
     }
 
-    public function content(): Content
+    public function build(): self
     {
-        return new Content(view: 'emails.otp');
+        return $this->subject($this->subjectLine)
+                    ->view('emails.otp');
     }
 }

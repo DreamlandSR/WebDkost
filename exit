@@ -1,0 +1,37 @@
+=== BOOKING AKTIF ===
+Total: 1 booking
+
+Booking #21
+  User     : 3
+  Kamar    : 3
+  Mulai    : 2026-05-04
+  Akhir    : 2026-07-04
+  Biaya/bln: Rp 1.175.000
+  Tagihan  : 2 tagihan
+
+=== SEMUA TAGIHAN ===
+Tagihan #22
+  Booking  : #21
+  Periode  : 2026-05-01
+  Total    : Rp 50.000
+  Denda    : Rp 0
+  Jatuh    : 2026-05-11
+  Status   : lunas
+
+Tagihan #21
+  Booking  : #21
+  Periode  : 2026-05-01
+  Total    : Rp 2.300.000
+  Denda    : Rp 0
+  Jatuh    : 2026-05-05
+  Status   : lunas
+
+=== SIMULASI SCHEDULER (DRY RUN) ===
+Cek Booking #21...
+  [SKIP] Tagihan bulan ini sudah ada
+
+=== JALANKAN SCHEDULER ASLI ===
+Selesai: 0 tagihan dibuat, 0 booking ditandai selesai.
+=== VERIFIKASI HASIL ===
+Tagihan baru #21 → Booking #21 | lunas | Rp 2.300.000
+Tagihan baru #22 → Booking #21 | lunas | Rp 50.000

@@ -96,6 +96,7 @@ class BookingController extends Controller
             'durasi_sewa_bulan'   => $request->durasi_sewa_bulan,
             'tgl_mulai_sewa'      => $tglMulai->toDateString(),
             'tgl_akhir_sewa'      => $tglAkhir->toDateString(),
+            'harga_per_bulan'     => $kamar->harga_per_bulan,
             'total_biaya_bulanan' => $totalBiaya,
             'status_booking'      => 'menunggu_pembayaran',
         ]);

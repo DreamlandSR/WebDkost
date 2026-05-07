@@ -21,6 +21,9 @@ Route::post('/login',          [AuthController::class, 'login']);
 Route::post('/lupa-password',  [AuthController::class, 'lupaPassword']);
 Route::post('/cek-otp',        [AuthController::class, 'cekOtp']);
 Route::post('/ganti-password', [AuthController::class, 'gantiPassword']);
+Route::post('/verifikasi-email', [AuthController::class, 'verifikasiEmail']);  // ← baru
+Route::post('/google-login',     [AuthController::class, 'googleLogin']);
+Route::post('/resend-otp-register', [AuthController::class, 'resendOtpRegister']);      // ← baru
 
 Route::get('/cek-api', function () {
     return response()->json(['message' => 'API D\'Kost terhubung!']);
