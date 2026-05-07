@@ -105,23 +105,6 @@
         </div>
     </div>
 </section>
-
-        <!-- Call to Action Section - Seperti beranda -->
-        <section class="about-cta-section">
-            <div class="container">
-                <div class="about-cta-card text-center">
-                    <h3 class="about-cta-title">Temukan Kos Impian Anda Sekarang</h3>
-                    <p class="about-cta-text">
-                        D'Kost merupakan platform pemesanan kos online dan terpercaya. 
-                        Dilengkapi fasilitas lengkap dengan harga terjangkau untuk semua kalangan.
-                    </p>
-                    <div class="about-cta-buttons">
-                        <a href="#" class="btn btn-primary btn-lg">Mulai Sekarang</a>
-                        <a href="#" class="btn btn-outline-green btn-lg ms-3">Selengkapnya</a>
-                    </div>
-                </div>
-            </div>
-        </section>
     </main>
 
     @include('templates.main_footer')
