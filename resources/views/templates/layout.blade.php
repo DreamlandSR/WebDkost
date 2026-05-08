@@ -10,36 +10,41 @@
 </head>
 
 <body>
-    @include('templates.header')
+<div class="page-wrapper">
 
-    <div class="@yield('container_class', 'container')">
+    <div class="@yield('container_class', '')">
         @yield('content')
     </div>
 
-    @include('templates.footer')
+</div>
 
     <script>
+        // Cek elemen ada dulu sebelum pakai
         const carousel = document.getElementById('productCarousel');
-        const nameElem = document.getElementById('productName');
-        const descElem = document.getElementById('productDesc');
-        const textBox = document.getElementById('productText');
+        if (carousel) {
+            const nameElem = document.getElementById('productName');
+            const descElem = document.getElementById('productDesc');
+            const textBox = document.getElementById('productText');
 
-        const updateText = () => {
-            const activeItem = carousel.querySelector('.carousel-item.active');
-            const name = activeItem.getAttribute('data-name');
-            const desc = activeItem.getAttribute('data-description');
+            const updateText = () => {
+                const activeItem = carousel.querySelector('.carousel-item.active');
+                if (!activeItem) return;
+                const name = activeItem.getAttribute('data-name');
+                const desc = activeItem.getAttribute('data-description');
 
-            nameElem.textContent = name;
-            descElem.textContent = desc;
+                if (nameElem) nameElem.textContent = name;
+                if (descElem) descElem.textContent = desc;
 
-            // Animasi ulang teks
-            textBox.classList.remove('fade-in');
-            void textBox.offsetWidth; // trigger reflow
-            textBox.classList.add('fade-in');
-        };
+                if (textBox) {
+                    textBox.classList.remove('fade-in');
+                    void textBox.offsetWidth;
+                    textBox.classList.add('fade-in');
+                }
+            };
 
-        const bsCarousel = new bootstrap.Carousel(carousel);
-        carousel.addEventListener('slid.bs.carousel', updateText);
+            const bsCarousel = new bootstrap.Carousel(carousel);
+            carousel.addEventListener('slid.bs.carousel', updateText);
+        }
     </script>
 
 </body>

@@ -12,6 +12,7 @@ return new class extends Migration
             $table->integer('id_user')->autoIncrement();
             $table->string('nama', 255);
             $table->string('email', 255)->unique();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('password', 255);
             $table->string('no_telepon', 20)->nullable();
             $table->text('alamat')->nullable();

@@ -6,7 +6,10 @@
 @import "./vertical-layout-light/style.css";
 @import "./dashboard.css";
 @import "./navbar.css";
+@import "./about-page.css";
 @import "./pengeluaran.css";
+@import "./landing.css";
+
 
 @tailwind base;
 @tailwind components;

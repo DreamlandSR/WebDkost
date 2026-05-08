@@ -27,6 +27,3 @@
     <script src="{{ asset('/js/Chart.roundedBarCharts.js') }}"></script>
     <!-- End custom js for this page -->
 <?php endif; ?>
-
-</body>
-</html>

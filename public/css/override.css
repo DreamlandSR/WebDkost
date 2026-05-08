@@ -1,415 +1,884 @@
+/* ============================================
+   D'KOST — Modern Override CSS
+   Green theme, Poppins font, full-width layout
+   ============================================ */
+
 :root {
     --dk-primary: #00ab6b;
     --dk-primary-hover: #008c56;
+    --dk-primary-light: rgba(0, 171, 107, 0.08);
     --dk-icon-bg: #00ab6b;
-    --dk-body: #f5fdf9;
-    --dk-text: #1f2a24;
+    --dk-body: #ffffff;
+    --dk-text: #2d3436;
+    --dk-text-light: #636e72;
+    --dk-gray-light: #f8faf9;
+    --dk-gray-border: #e8efeb;
+    --dk-radius: 16px;
+    --dk-radius-lg: 24px;
+    --dk-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    --dk-shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* Tambahkan di file CSS kamu */
+.move-up {
+    margin-top: -150px !important;
+    /* Sesuaikan angkanya */
+}
+
+.moveup {
+    margin-top: -50px !important;
+    /* Sesuaikan angkanya */
 }
 
 body {
-    background: var(--dk-body) !important;
+    background: #f0f2f1 !important;
     color: var(--dk-text) !important;
     font-family: "Poppins", "Segoe UI", sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
 }
 
-a {
-    color: #0f2f24;
+/* ============================================
+   PAGE WRAPPER — membungkus seluruh halaman
+   agar tidak pecah saat zoom out
+   ============================================ */
+.page-wrapper {
+    max-width: 1440px;
+    margin: 0 auto;
+    background: var(--dk-body);
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.08);
+    position: relative;
 }
 
-.hero {
-    background: linear-gradient(180deg, rgba(0, 171, 107, 0.08), rgba(255, 255, 255, 0));
+.page-wrapper section,
+.page-wrapper header {
+    background-clip: padding-box;
 }
 
-header.py-5 {
-    background: #fff;
+
+
+/* ============================================
+   TYPOGRAPHY — Poppins, bold headings
+   ============================================ */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #0a1c14;
+}
+
+.display-5 {
+    font-size: 3.2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #0a2e21, #00ab6b);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: none;
+}
+
+.fw-bolder {
+    font-weight: 800 !important;
+    letter-spacing: -0.01em;
+}
+
+.lead {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.7;
+    color: var(--dk-text-light);
+}
+
+/* ============================================
+   BUTTONS — Rounded pill-style
+   ============================================ */
+.btn {
+    border-radius: 60px !important;
+    padding: 0.65rem 1.8rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.95rem;
+    border: 2px solid transparent;
+}
+
+.btn-lg {
+    padding: 0.85rem 2.2rem !important;
+    font-size: 1rem;
+}
+
+.btn-sub {
+    background: var(--dk-primary) !important;
+    border-color: var(--dk-primary) !important;
+    height: 50px;
+    border-radius: 15px !important;
+    text-align: center !important;
+    padding-top: 12px !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(0, 171, 107, 0.2);
 }
 
 .btn-primary {
     background: var(--dk-primary) !important;
     border-color: var(--dk-primary) !important;
-    color: #fff !important;
+    padding-top: 12px !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(0, 171, 107, 0.2);
 }
 
 .btn-primary:hover,
 .btn-primary:focus {
     background: var(--dk-primary-hover) !important;
     border-color: var(--dk-primary-hover) !important;
-    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 171, 107, 0.3);
 }
 
 .btn-outline-green {
-    background-color: transparent !important;
-    /* HARUS transparan */
-    color: #00AB6B !important;
-    /* Teks hijau */
-    border-color: #00AB6B !important;
-    border-width: 2px !important;
-    transition: all 0.2s ease !important;
+    background: transparent !important;
+    color: var(--dk-primary) !important;
+    border: 2px solid var(--dk-primary) !important;
+    padding: 0.65rem 1.8rem;
 }
 
-/* State Hover dan Focus - Background jadi hijau, teks putih */
 .btn-outline-green:hover,
 .btn-outline-green:focus {
-    background-color: #00AB6B !important;
-    /* Hijau solid */
+    background: var(--dk-primary) !important;
     color: white !important;
-    border-color: #00AB6B !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 171, 107, 0.2);
 }
 
-/* State Active (SAAT DIKLIK) - Lebih gelap */
-.btn-outline-green:active {
-    background-color: #008C56 !important;
-    /* Hijau lebih gelap */
-    color: white !important;
-    border-color: #008C56 !important;
-    transform: none !important;
-    box-shadow: none !important;
+/* ============================================
+   NAVBAR
+   ============================================ */
+.navbar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0;
+    right: 0;
+    z-index: 1050 !important;
+    padding: 12px 0 !important;
+    transition: all 0.35s ease !important;
+    background: transparent !important;
+    max-width: 1920px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-/* Untuk memastikan tidak ada efek dari Bootstrap */
-.btn-outline-green:not(:disabled):not(.disabled):active {
-    background-color: #008C56 !important;
-    color: white !important;
-    border-color: #008C56 !important;
+.navbar.scrolled {
+    background: rgba(255, 255, 255, 0.96) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+    padding: 8px 0 !important;
 }
 
-/* Pastikan teks tidak hilang */
-.btn-outline-green:active,
-.btn-outline-green:focus,
-.btn-outline-green:hover {
-    opacity: 1 !important;
+.navbar-brand small {
+    font-weight: 700;
+    font-size: 1.1rem !important;
 }
 
+.navbar .nav-link {
+    font-weight: 500 !important;
+    font-size: 0.9rem !important;
+    color: var(--dk-text) !important;
+    transition: color 0.3s;
+}
+
+.navbar .nav-link:hover {
+    color: var(--dk-primary) !important;
+}
+
+.navbar .btn-primary {
+    padding: 8px 24px !important;
+    font-size: 0.85rem !important;
+}
+
+/* ============================================
+   HERO / HEADER
+   ============================================ */
+header.py-5 {
+    background: white;
+    padding-top: 80px !important;
+    padding-bottom: 20px !important;
+    margin-bottom: 0;
+    border-radius: 0;
+    width: 100%;
+    min-height: 700px;
+    display: flex;
+    align-items: center;
+}
+
+/* Full-viewport sections */
+#section-andalan {
+    min-height: 700px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--dk-gray-light);
+}
+
+#section-terbaik {
+    min-height: 700px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: white;
+}
+
+/* ============================================
+   CARDS — Rounded, consistent height
+   ============================================ */
+.card {
+    border-radius: var(--dk-radius) !important;
+    border: none;
+    background: #ffffff;
+    transition: all 0.35s cubic-bezier(0.2, 0, 0, 1);
+    box-shadow: var(--dk-shadow);
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--dk-shadow-hover);
+}
+
+.card-img-top {
+    border-top-left-radius: var(--dk-radius);
+    border-top-right-radius: var(--dk-radius);
+    object-fit: cover;
+}
+
+/* Card image wrapper — konsisten height */
+.card-img-wrapper {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.card-img-wrapper .card-img-top {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Kos Terbaik product cards — konsisten width */
+.product-card {
+    flex: 0 0 auto;
+    width: 270px;
+}
+
+.product-card .card {
+    border-radius: var(--dk-radius) !important;
+    overflow: hidden;
+}
+
+.product-card .card-body {
+    padding: 1.2rem;
+}
+
+.product-card .card-title {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.product-card .badge {
+    background: var(--dk-primary-light) !important;
+    color: #1e5a3a !important;
+    padding: 5px 10px;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 0.75rem;
+}
+
+.product-card .badge i {
+    color: #f5b042;
+}
+
+/* ============================================
+   FEATURE ICONS
+   ============================================ */
 .feature {
-    width: 52px;
-    height: 52px;
-    aspect-ratio: 1 / 1;
+    width: 56px;
+    height: 56px;
+    background: var(--dk-primary-light) !important;
+    border-radius: 16px !important;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    transition: background 0.25s ease;
-}
-
-.bg-icon {
-    background: var(--dk-icon-bg) !important;
+    padding: 0 !important;
+    margin-bottom: 1.2rem;
+    transition: all 0.25s;
 }
 
 .feature i {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
+    color: var(--dk-primary);
+}
+
+.feature.bg-icon {
+    background: var(--dk-icon-bg) !important;
+}
+
+.feature.bg-icon i {
+    color: white;
+}
+
+.feature:hover {
+    transform: scale(1.05);
+}
+
+/* ============================================
+   CAROUSEL & PRODUCT TEXT
+   ============================================ */
+.carousel-item img {
+    border-radius: var(--dk-radius-lg);
+}
+
+.carousel-inner {
+    overflow: hidden;
+    border-radius: var(--dk-radius-lg) !important;
+}
+
+.carousel {
+    max-width: 500px;
+    /* Atur lebar maksimal yang kamu inginkan */
+    margin-left: auto;
+    margin-right: auto;
+    margin-right: 30px !important;
+    /* Agar carousel tetap di tengah jika lebih kecil dari kolomnya */
+}
+
+.carousel-inner img {
+    width: 100%;
+    object-fit: cover;
+    height: 300px;
+}
+
+.carousel-item {
+    transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+}
+
+/* Product text */
+#productText .badge {
+    background: #e6f7ef !important;
+    color: #007a4d !important;
+    font-size: 0.75rem;
+    padding: 6px 14px;
+    border-radius: 40px;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+#productText h2 {
+    font-size: 1.8rem;
+    margin: 0.75rem 0 0.5rem;
+}
+
+#productHarga {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--dk-primary) !important;
+}
+
+.rounded.shadow {
+    border-radius: var(--dk-radius-lg) !important;
+    box-shadow: var(--dk-shadow) !important;
+}
+
+/* Carousel controls */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    padding: 20px;
+    background-size: 45%;
+    transition: background-color 0.3s;
+}
+
+.carousel-control-prev:hover .carousel-control-prev-icon,
+.carousel-control-next:hover .carousel-control-next-icon {
+    background-color: var(--dk-primary);
+}
+
+.carousel-caption {
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.65), transparent);
+    border-radius: 14px;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    text-align: left;
+    padding: 12px 16px;
+}
+
+.carousel-caption h6 {
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+/* Kos Terbaik arrows */
+#prevBtn,
+#nextBtn {
+    color: var(--dk-primary);
+    transition: 0.2s;
+    font-size: 2rem;
+}
+
+#prevBtn:hover,
+#nextBtn:hover {
+    color: var(--dk-primary-hover);
+    transform: scale(1.05);
+}
+
+/* Horizontal scroll */
+#carouselContainer {
+    display: flex;
+    scroll-behavior: smooth;
+    padding-bottom: 0.5rem;
+    gap: 0;
+    transition: transform 0.5s ease-in-out;
+}
+
+/* ============================================
+   TESTIMONIAL / ABOUT
+   ============================================ */
+.bg-light {
+    background-color: var(--dk-gray-light) !important;
+}
+
+
+.py-5.my-5.bg-light {
+    background: var(--dk-gray-light) !important;
+    align-items: center;
+}
+
+.py-5.my-5.bg-light>.container-fluid {
+    background: white;
+    border-radius: var(--dk-radius-lg);
+    padding: 2.8rem 2rem;
+    box-shadow: var(--dk-shadow);
+    border: 1px solid var(--dk-gray-border);
+}
+
+.fst-italic {
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: #3d5043;
+    line-height: 1.6;
+}
+
+
+/* ============================================
+   DETAIL KAMAR — Gallery
+   ============================================ */
+#mainImage {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    border-radius: 12px;
+    display: block;
+}
+
+.gallery-thumb {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    opacity: 0.7;
+}
+
+.gallery-thumb:hover {
+    opacity: 1;
+    border-color: var(--dk-primary);
+}
+
+.gallery-thumb.active {
+    border-color: var(--dk-primary);
+    opacity: 1;
+}
+
+/* ============================================
+   DETAIL KAMAR — Rating Bar
+   ============================================ */
+.rating-bar-bg {
+    flex: 1;
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.rating-bar-fill {
+    height: 100%;
+    background: var(--dk-primary);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+}
+
+/* ============================================
+   DETAIL KAMAR — Review Card
+   ============================================ */
+.review-card {
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    margin-bottom: 12px;
+    background: white;
+}
+
+.avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--dk-primary-light);
+    color: var(--dk-primary);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+/* ============================================
+   DETAIL KAMAR — Booking Card sticky
+   ============================================ */
+.booking-card {
+    position: sticky;
+    top: 80px;
+}
+
+.price-display {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--dk-primary);
     line-height: 1;
 }
 
-.feature-card {
-    border: 1px solid #e9f2ea;
-    background: #fff;
-    border-radius: 15px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* ============================================
+   DETAIL KAMAR — Fasilitas Item
+   ============================================ */
+.fas-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: #f8fffe;
+    border: 1px solid #e2f5ed;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    color: #2d3748;
 }
 
-.feature-card:hover {
+.fas-item i {
+    color: var(--dk-primary);
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+/* ============================================
+   PRODUCT CARD — Konsisten layout
+   ============================================ */
+.kos-card {
+    border-radius: 16px !important;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.kos-card .card-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+/* Rating row — paksa satu baris */
+.kos-card .rating-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+    min-height: 28px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+
+.kos-card .rating-row .stars {
+    display: flex;
+    align-items: center;
+    gap: 1px;
+    font-size: 0.82rem;
+    flex-shrink: 0;
+}
+
+/* Fasilitas area — fixed height agar tombol selalu di bawah */
+.kos-card .fasilitas-area {
+    min-height: 52px;
+    margin-bottom: 12px;
+}
+
+/* Tombol selalu di bawah */
+.kos-card .btn-detail {
+    margin-top: auto;
+}
+
+/* ============================================
+   DETAIL KAMAR — Rekomendasi Card
+   ============================================ */
+.rekomen-card {
+    border-radius: 12px !important;
+    border: 1px solid #f0f0f0 !important;
+    transition: all 0.3s;
+}
+
+.rekomen-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.1) !important;
+}
+
+/* ============================================
+   REVIEW CARDS — Baru
+   ============================================ */
+.review-card {
+    border-radius: var(--dk-radius) !important;
+    border: 1px solid var(--dk-gray-border);
+    transition: all 0.35s;
+}
+
+.review-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--dk-shadow-hover);
+    border-color: transparent;
+}
+
+.review-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--dk-primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.review-avatar i {
+    font-size: 1.5rem;
+    color: var(--dk-primary);
+}
+
+/* ============================================
+   DOWNLOAD SECTION
+   ============================================ */
+#android-download {
+    border-radius: var(--dk-radius-lg);
+    background: linear-gradient(115deg, #ffffff 0%, #f2fbf6 100%);
+    border: 1px solid #dcf5e7;
+    padding: 2.2rem 2rem;
+    margin-top: 2rem;
+}
+
+.download-card {
+    border-radius: 20px !important;
+    background: linear-gradient(135deg, var(--dk-primary), #006e47) !important;
+    padding: 1.5rem !important;
+    transition: all 0.3s;
+}
+
+.download-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 30px -12px rgba(0, 171, 107, 0.4);
+}
+
+.download-card .btn-light {
+    border-radius: 60px;
+    font-weight: 600;
+    padding: 10px 24px;
+    background: white;
+    color: var(--dk-primary) !important;
+    transition: 0.2s;
+}
+
+.download-card .btn-light:hover {
+    background: #f0f9f4;
+    transform: scale(1.02);
+}
+
+.download-card .bg-white {
+    border-radius: 16px;
+    background: white;
+    padding: 8px;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.dk-footer {
+    background: #0d1f17 !important;
+    color: #b0c4b8;
+    border-radius: 0;
+    width: 100%;
+    margin: 0;
+    max-width: 1440px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.dk-footer .footer-title {
+    font-weight: 700;
+    color: #ffffff;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+    margin-bottom: 16px;
+}
+
+.dk-footer .footer-text {
+    color: #8fa89b;
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.dk-footer a {
+    color: #8fa89b;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.dk-footer a:hover {
+    color: var(--dk-primary);
+}
+
+.dk-footer .footer-nav li {
+    margin-bottom: 10px;
+}
+
+.dk-footer .footer-contact li {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    color: #8fa89b;
+    font-size: 0.88rem;
+}
+
+.dk-footer .footer-contact i {
+    color: var(--dk-primary);
+    margin-top: 3px;
+}
+
+.social-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+.social-circle:hover {
+    background: var(--dk-primary);
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    color: #fff;
+    box-shadow: 0 6px 15px rgba(0, 171, 107, 0.3);
 }
 
-.card {
-    border-radius: 14px;
-    border: 0;
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #5a7566;
 }
 
-.card-body {
-    color: #1e2f27;
+/* ============================================
+   BADGES
+   ============================================ */
+.badge.bg-primary {
+    background: var(--dk-primary-light) !important;
+    color: #1e462e !important;
 }
 
-.slide-in {
-    animation: slideIn 0.45s ease-in-out;
+.text-warning i {
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
 }
 
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
-    }
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+.fade-in {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeInUp 0.5s ease forwards;
+}
 
+@keyframes fadeInUp {
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-#carouselContainer {
-    scroll-behavior: smooth;
+.slide-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
-.product-card {
-    min-width: 230px;
+.slide-in.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-#android-download {
-    background: linear-gradient(120deg, rgba(0, 171, 107, 0.12), #ffffff);
-    border-radius: 18px;
-    border: 1px solid #d8f0e0;
+/* ============================================
+   TYPING CURSOR
+   ============================================ */
+.typing-cursor {
+    display: inline;
+    font-weight: 300;
+    color: var(--dk-primary);
+    animation: blink 0.7s step-end infinite;
+    margin-left: 2px;
 }
 
-@media (max-width: 991px) {
-    .hero {
-        text-align: center;
+.typing-cursor.typing-done {
+    animation: blink 0.7s step-end 3;
+    animation-fill-mode: forwards;
+    opacity: 0;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
     }
 
-    .d-sm-flex {
-        justify-content: center !important;
-    }
-}
-
-/* Call to Action Section */
-#android-download {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-radius: 20px;
-    margin: 2rem auto;
-    max-width: 1400px;
-}
-
-/* Card Download */
-.download-card {
-    border-radius: 16px !important;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.download-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 30px rgba(0, 171, 107, 0.3) !important;
-}
-
-/* Tombol Download */
-.download-card .btn-light {
-    background: white;
-    border: none;
-    transition: all 0.3s ease;
-    font-weight: 600;
-}
-
-.download-card .btn-light:hover {
-    background: #f8f9fa;
-    transform: scale(1.05);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-/* QR Code Container */
-.download-card .bg-white {
-    border-radius: 12px !important;
-    transition: transform 0.3s ease;
-}
-
-.download-card .bg-white:hover {
-    transform: scale(1.05);
-}
-
-/* Teks putih di card */
-.download-card .text-white {
-    color: white !important;
-}
-
-.download-card .text-white-50 {
-    color: rgba(255, 255, 255, 0.7) !important;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    #android-download {
-        padding: 2rem 1rem !important;
-        margin: 1rem;
-        border-radius: 12px;
-    }
-
-    .download-card {
-        max-width: 350px !important;
-    }
-
-    .download-card .d-flex {
-        flex-direction: column !important;
-        text-align: center;
-    }
-
-    .download-card .text-sm-start {
-        text-align: center !important;
+    50% {
+        opacity: 0;
     }
 }
 
-@media (max-width: 576px) {
-    .download-card {
-        max-width: 100% !important;
-    }
-
-    .download-card .d-flex {
-        gap: 1.5rem !important;
-    }
-}
-
-/* Footer D'Kost */
-.dk-footer {
-    background: #f8f9fa;
-    color: #334155;
-}
-
-.dk-footer .footer-title {
-    color: #0f172a;
-    font-weight: 700;
-    margin-bottom: 0.8rem;
-}
-
-.dk-footer .footer-text,
-.dk-footer .footer-contact li,
-.dk-footer .footer-nav li,
-.dk-footer .news-item .text-muted {
-    color: #4a5568;
-}
-
-.dk-footer .footer-link {
-    color: #334155;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.dk-footer .footer-link:hover {
-    color: #00ab6b;
-    text-decoration: none;
-}
-
-.dk-footer .footer-nav li a {
-    color: #4a5568;
-    text-decoration: none;
-}
-
-.dk-footer .footer-nav li a:hover {
-    color: #00ab6b;
-    text-decoration: none;
-}
-
-.dk-footer .social-circle {
-    width: 38px;
-    height: 38px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: #00ab6b;
-    color: #fff;
-    text-decoration: none;
-    transition: transform 0.2s ease;
-}
-
-.dk-footer .social-circle:hover {
-    transform: translateY(-2px);
-    background: #008c56;
-}
-
-.dk-footer .footer-contact i {
-    color: #ffffff;
-    background: #00ab6b;
-    border-radius: 4px;
-    width: 24px;
-    height: 24px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 0.4rem;
-    font-size: 0.8rem;
-}
-
-.dk-footer .footer-bottom {
-    border-top: 1px solid rgba(52, 73, 94, 0.5);
-    margin-top: 0.75rem;
-    padding-top: 0.9rem;
-}
-
-.dk-footer small {
-    color: #64748b;
-}
-
-@media (max-width: 767px) {
-    .dk-footer {
-        text-align: center;
-    }
-
-    .dk-footer .footer-contact li,
-    .dk-footer .footer-nav li,
-    .dk-footer .news-item {
-        text-align: center;
-    }
-
-    .dk-footer .d-flex {
-        justify-content: center;
-    }
-}
-
-footer.footer-01 {
-    background: #003623;
-    color: #ffffff;
-    border-top: 1px solid rgba(52, 73, 94, 0.5);
-}
-
-footer.footer-01 h2.footer-heading {
-    color: #ffffff;
-    font-weight: 700;
-    margin-bottom: 1rem;
-}
-
-footer.footer-01 p,
-footer.footer-01 .text,
-footer.footer-01 small,
-footer.footer-01 .news-title,
-footer.footer-01 .block-23 ul li {
-    color: #bdc3c7;
-}
-
-footer.footer-01 a {
-    color: #bdc3c7;
-    text-decoration: none;
-}
-
-footer.footer-01 a:hover,
-footer.footer-01 a:focus {
-    color: #ffffff;
-    text-decoration: none;
-}
-
-footer.footer-01 .social-circle {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: #00ab6b;
-    color: #ffffff;
-    text-decoration: none;
-    transition: transform 0.2s ease;
-}
-
-footer.footer-01 .social-circle:hover {
-    transform: translateY(-2px);
-    background: #008c56;
-}
-
-footer.footer-01 .bi {
-    color: #ffffff;
-}
-
-footer.footer-01 .border-top {
-    border-color: rgba(52, 73, 94, 0.5) !important;
-}
-
-@media (max-width: 767px) {
-    footer.footer-01 {
-        text-align: left;
-    }
-
-    footer.footer-01 .ftco-footer-social {
-        justify-content: flex-start;
-    }
-}
-
-/* ===== MASONRY GRID UNTUK GALERI ===== */
+/* ============================================
+   MASONRY GRID
+   ============================================ */
 .grid-container {
     column-count: 4;
     column-gap: 20px;
@@ -421,300 +890,304 @@ footer.footer-01 .border-top {
 .grid-item {
     break-inside: avoid;
     margin-bottom: 20px;
-    position: relative;
+    border-radius: var(--dk-radius);
     overflow: hidden;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.grid-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--dk-shadow);
+    display: inline-block;
+    width: 100%;
+    position: relative;
 }
 
 .grid-item img {
     width: 100%;
-    height: auto;
     display: block;
-    transition: transform 0.5s ease;
+    border-radius: var(--dk-radius);
 }
 
-.grid-item:hover img {
-    transform: scale(1.05);
-}
-
-/* Overlay untuk informasi */
-.grid-item .overlay {
+.overlay {
     position: absolute;
-    bottom: 0;
+    top: 0;
     left: 0;
-    right: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
     color: white;
-    padding: 30px 20px 20px;
-    transform: translateY(100%);
-    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+    padding: 15px;
+    border-radius: var(--dk-radius);
 }
 
 .grid-item:hover .overlay {
-    transform: translateY(0);
+    opacity: 1;
 }
 
-.grid-item .overlay h5 {
-    margin-bottom: 5px;
-    font-weight: 600;
+/* ============================================
+   COLORS
+   ============================================ */
+.text-primary {
+    color: var(--dk-primary) !important;
 }
 
-/* Tombol Beli */
-.buy-btn {
-    display: inline-block;
-    background: #00AB6B;
-    color: white;
-    padding: 8px 20px;
-    border-radius: 25px;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    margin-top: 10px;
-    transition: background 0.3s ease;
+.text-success {
+    color: var(--dk-primary) !important;
 }
 
-.buy-btn:hover {
-    background: #008C56;
-    color: white;
+.bg-primary.bg-gradient {
+    background: linear-gradient(180deg, var(--dk-primary) 0%, var(--dk-primary-hover) 100%) !important;
 }
 
-/* Responsive */
-@media (max-width: 1200px) {
-    .grid-container {
-        column-count: 3;
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+/* ============================================
+   INDEX — MOBILE FIXES
+   ============================================ */
+@media (max-width: 991px) {
+
+    /* Navbar hamburger — pastikan keliatan */
+    .navbar-toggler {
+        border-color: rgba(0, 0, 0, 0.3) !important;
+        padding: 6px 10px !important;
+    }
+
+    .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(0,0,0,0.7)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+    }
+
+    /* Navbar scrolled — hamburger tetap keliatan */
+    .navbar.scrolled .navbar-toggler {
+        border-color: rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .navbar .navbar-brand {
+        margin-left: 16px !important;
+        padding-left: 0 !important;
+    }
+
+    /* Container fluid navbar kasih padding */
+    .navbar .container-fluid {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+
+    /* Hero header — kasih padding top lebih besar biar tidak nabrak navbar */
+    header.py-5 {
+        padding-top: 120px !important;
+        padding-bottom: 40px !important;
+        min-height: auto !important;
+    }
+
+    .download-card {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    /* Wrapper card download */
+    #android-download .d-flex.justify-content-md-end {
+        justify-content: center !important;
+    }
+    #android-download {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+        overflow: hidden;
+    }
+    .download-card .bg-white {
+        max-width: 120px;
+        margin: 0 auto;
+    }
+
+    /* Navbar — beri jarak kanan pada hamburger */
+    .navbar-toggler {
+        margin-right: 16px !important;
+    }
+
+    /* Menu collapse — beri jarak dari brand */
+    .navbar-collapse {
+        padding: 12px 16px !important;
+        margin-top: 8px;
+        background: rgba(255,255,255,0.97);
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    /* Hapus margin-top negatif yang bikin nabrak di mobile */
+    header.py-5 .container-fluid {
+        margin-top: 0 !important;
+    }
+
+    .moveup {
+        margin-top: 0 !important;
+    }
+
+    /* Teks hero center di mobile */
+    header.py-5 .text-start {
+        text-align: center !important;
+    }
+
+    header.py-5 .justify-content-sm-start {
+        justify-content: center !important;
+    }
+
+    .navbar-nav .nav-item {
+        padding-left: 8px !important;
+    }
+
+    .navbar-nav .nav-link {
+        padding: 10px 8px !important;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .navbar-nav .nav-item:last-child .nav-link {
+        border-bottom: none;
+    }
+
+    main.flex-shrink-0 header.py-5 {
+        padding-top: 100px !important;
+        margin-top: 0 !important;
+    }
+
+    /* Move-up reset di mobile */
+    .move-up {
+        margin-top: 0 !important;
+    }
+    .display-4 {
+        font-size: 2.5rem !important;
+        margin-bottom: 50px !important;
+    }
+
+    /* Carousel andalan — center */
+    #productCarousel {
+        margin: 0 auto !important;
+        max-width: 100% !important;
+    }
+
+    #section-andalan .col-md-7 {
+        display: flex;
+        justify-content: center;
+    }
+
+    #section-andalan .carousel {
+        width: 100% !important;
+        margin: 0 !important;
+        max-width: 100% !important;
     }
 }
 
-@media (max-width: 992px) {
-    .grid-container {
-        column-count: 2;
+@media (max-width: 768px) {
+
+        /* Typography */
+    h1, .h1 { font-size: 1.6rem !important; }
+    h2, .h2 { font-size: 1.3rem !important; }
+    h3, .h3 { font-size: 1.1rem !important; }
+
+    .display-5 {
+        font-size: 1.6rem !important;
+    }
+
+    .display-4 {
+        font-size: 1.9rem !important;
+        margin-bottom: 10px !important;
+    }
+
+    .lead {
+        font-size: 0.9rem !important;
+    }
+
+    .fw-bolder {
+        font-size: 1.3rem !important;
+    }
+
+    /* Hero section */
+    header.py-5 {
+        padding-top: 100px !important;
+        padding-bottom: 40px !important;
+        min-height: auto !important;
+    }
+
+    /* Navbar hamburger — pastikan keliatan */
+    .navbar-toggler {
+        border-color: rgba(0, 0, 0, 0.3) !important;
+        padding: 6px 10px !important;
+    }
+
+    .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(0,0,0,0.7)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+    }
+
+    /* Navbar scrolled — hamburger tetap keliatan */
+    .navbar.scrolled .navbar-toggler {
+        border-color: rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    /* Tentang kami section — font lebih kecil */
+    .fst-italic.fs-5 {
+        font-size: 0.9rem !important;
+    }
+
+    /* Section andalan heading */
+    #section-andalan h2 {
+        font-size: 1.4rem !important;
+    }
+
+    #section-andalan .fs-5 {
+        font-size: 0.9rem !important;
+    }
+
+    /* Kamar kos andalan — teks dan carousel stack rapi */
+    #section-andalan .col-md-5 {
+        text-align: center;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+
+    #section-andalan .col-md-7 {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+
+    /* Kos terbaik cards */
+    .product-card {
+        width: 200px !important;
+    }
+
+    /* Download section */
+    #android-download h3 {
+        font-size: 1.2rem !important;
     }
 }
 
 @media (max-width: 576px) {
-    .grid-container {
-        column-count: 1;
-        padding: 10px;
+
+    .display-5 {
+        font-size: 1.6rem !important;
     }
 
-    .grid-item .overlay {
-        transform: translateY(0);
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
-    }
-}
-
-/* ===== KOS CARD STYLES ===== */
-.kos-card {
-    border-radius: 12px;
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.kos-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
-}
-
-.kos-card .card-img-top {
-    background: linear-gradient(135deg, #E0E0E0, #BDBDBD);
-}
-
-.kos-card .badge {
-    padding: 8px 12px;
-    font-weight: 500;
-    font-size: 0.8rem;
-    background-color: #F5F5F5 !important;
-    color: #4A5568 !important;
-    border-radius: 20px;
-}
-
-.kos-card .badge i {
-    color: #00AB6B;
-    font-size: 0.8rem;
-}
-
-.kos-card .text-warning i {
-    font-size: 0.9rem;
-    color: #FFC107;
-}
-
-.kos-card .btn-outline-green {
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
-}
-
-.kos-card .btn-outline-green:hover {
-    background-color: #00AB6B;
-    color: white !important;
-    border-color: #00AB6B !important;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .kos-card .card-title {
-        font-size: 1.1rem !important;
+    header.py-5 {
+        padding-top: 100px !important;
     }
 
-    .kos-card .badge {
-        padding: 6px 10px;
-        font-size: 0.75rem;
+    /* Lead text */
+    .lead {
+        font-size: 0.88rem !important;
     }
-}
 
-/* ===== KAMAR DETAIL STYLES ===== */
-.gallery-thumb {
-    width: 80px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 8px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: border-color 0.2s, opacity 0.2s;
-    opacity: 0.7;
-}
+    /* Tentang kami */
+    .fst-italic {
+        font-size: 0.85rem !important;
+    }
 
-.gallery-thumb.active,
-.gallery-thumb:hover {
-    border-color: #00AB6B;
-    opacity: 1;
-}
+    /* Ulasan penghuni cards */
+    .review-card {
+        padding: 12px !important;
+    }
 
-#mainImage {
-    width: 100%;
-    height: 340px;
-    object-fit: cover;
-    border-radius: 14px;
-    transition: opacity 0.25s;
-}
-
-.fas-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    background: #f8fffe;
-    border: 1px solid #e2f5ed;
-    border-radius: 10px;
-    font-size: 0.88rem;
-}
-
-.fas-item i {
-    font-size: 1.1rem;
-    color: #00AB6B;
-    width: 20px;
-    text-align: center;
-}
-
-.review-card {
-    border: 1px solid #f0f0f0;
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin-bottom: 14px;
-    background: #fff;
-}
-
-.review-avatar {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    object-fit: cover;
-    background: #e2f5ed;
-}
-
-.avatar-placeholder {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #00AB6B, #008C56);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 700;
-    font-size: 1rem;
-    flex-shrink: 0;
-}
-
-.rating-bar-bg {
-    height: 8px;
-    border-radius: 4px;
-    background: #eee;
-    flex: 1;
-}
-
-.rating-bar-fill {
-    height: 8px;
-    border-radius: 4px;
-    background: linear-gradient(90deg, #00AB6B, #34d88b);
-}
-
-.price-display {
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: #00AB6B;
-    line-height: 1;
-}
-
-.detail-hero {
-    background-color: #00AB6B;
-    padding: 20px 0 0;
-}
-
-.rekomen-card {
-    border-radius: 12px;
-    overflow: hidden;
-    border: none;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.rekomen-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12) !important;
-}
-
-/* ===== HERO BREADCRUMB MODERN ===== */
-.modern-breadcrumb {
-    background: transparent !important;
-    padding: 0 !important;
-}
-
-.modern-breadcrumb .breadcrumb-item+.breadcrumb-item::before {
-    color: rgba(255, 255, 255, 0.6) !important;
-    content: "›" !important;
-    font-size: 1.2rem;
-    line-height: 0.8;
-    vertical-align: middle;
-}
-
-/* Custom scrollbar for ulasan container to make it clean */
-#ulasanContainer {
-    max-height: 500px;
-    overflow-y: auto;
-}
-#ulasanContainer::-webkit-scrollbar {
-    width: 6px;
-}
-#ulasanContainer::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-#ulasanContainer::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-#ulasanContainer::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-}
-
-/* ===== MODAL BACKDROP (TIDAK GELAP) ===== */
-.modal-backdrop.show {
-    opacity: 0.15 !important;
-    background-color: #000 !important;
+    .review-avatar i {
+        font-size: 1.2rem !important;
+    }
 }

@@ -14,8 +14,8 @@
             <div class="container py-5">
                 <div class="row justify-content-center">
                     <div class="col-lg-8 text-center">
-                        <h5 class="display-4 fw-bold text-white mb-4">
-                            Carilah tempat dimana kamu dapat pulang dan dengan nyaman
+                        <h5 class="display-4 fw-bold text-white mb-5 mt-5">
+                            Carilah tempat dimana kamu dapat pulang dengan nyaman
                         </h5>
 
                         <!-- Search Box -->
@@ -25,18 +25,18 @@
                                 <div class="flex-grow-1 position-relative">
                                     <i
                                         class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-                                    <input type="text" class="form-control border-0 ps-5"
-                                        placeholder="Cari kos impianmu disini"
+                                    <input type="text" id="searchInput" class="form-control border-0 ps-5"
+                                        placeholder="Cari Kamar impianmu disini"
                                         style="background-color: #F5F5F5; border-radius: 12px; height: 54px; font-size: 14px;">
                                 </div>
 
                                 <!-- Filter Dropdown -->
                                 <div class="position-relative" style="min-width: 120px;">
-                                    <select class="form-select border-0"
+                                    <select id="filterSelect" class="form-select border-0"
                                         style="background-color: #F5F5F5; border-radius: 12px; height: 54px; padding-left: 40px; appearance: none; cursor: pointer;">
-                                        <option selected>Filter</option>
-                                        <option value="kecil">Kos Kecil</option>
-                                        <option value="medium">Kos Medium</option>
+                                        <option value="">Filter</option>
+                                        <option value="kecil">Kos Biasa</option>
+                                        <option value="medium">Kos Sedang</option>
                                         <option value="mewah">Kos Mewah</option>
                                         <option value="ac">Dengan AC</option>
                                         <option value="wifi">Dengan WiFi</option>
@@ -56,13 +56,13 @@
         <section class="py-5">
             <div class="container">
                 <div class="d-flex align-items-center justify-content-between mb-5">
-                    <h2 class="fw-bold mb-0" style="color: #2D3748; font-size: 2rem;">Pilihan Kos Kami</h2>
+                    <h2 class="fw-bold mb-0" style="color: #2D3748; font-size: 2rem;">Pilihan Kamar Kami</h2>
                     <span class="text-muted small">
                         <i class="bi bi-sort-down-alt me-1"></i>Pemesanan terbanyak &amp; rating tertinggi
                     </span>
                 </div>
 
-                <div class="row g-4">
+                <div class="row g-4" id="productList">
                     @php
                         /**
                          * Peta nama fasilitas → Bootstrap Icon.
@@ -121,7 +121,11 @@
                             $fasExtra = max(0, $fasilitasList->count() - 3);
                         @endphp
 
-                        <div class="col-lg-3 col-md-6">
+                        <div class="col-lg-3 col-md-6 kos-item" 
+                             data-name="{{ strtolower($kamar->nomor_kamar) }}" 
+                             data-tipe="{{ strtolower($kamar->tipe_kamar) }}" 
+                             data-rating="{{ $ratingVal }}"
+                             data-fasilitas="{{ strtolower($fasilitasList->pluck('nama_fasilitas')->implode(',')) }}">
                             <div class="card kos-card border-0 shadow-sm h-100">
 
                                 {{-- Foto --}}
@@ -150,39 +154,40 @@
                                     </h5>
 
                                     {{-- Fasilitas dengan icon mapping --}}
-                                    @if ($fasilitasList->isNotEmpty())
-                                        <div class="mb-3 d-flex flex-wrap gap-1">
-                                            @foreach ($fasShown as $fas)
-                                                @php
-                                                    $namaLower = strtolower($fas->nama_fasilitas);
-                                                    $icon = 'bi-check-circle';
-                                                    foreach ($fasilitasIcons as $keyword => $iconClass) {
-                                                        if (str_contains($namaLower, $keyword)) {
-                                                            $icon = $iconClass;
-                                                            break;
-                                                        }
-                                                    }
-                                                @endphp
-                                                <span class="badge bg-light text-dark"
-                                                    style="font-size: 0.72rem; font-weight: 500; border: 1px solid #e2e8f0;">
-                                                    <i
-                                                        class="bi {{ $icon }} me-1 text-success"></i>{{ $fas->nama_fasilitas }}
-                                                </span>
-                                            @endforeach
-                                            @if ($fasExtra > 0)
-                                                <span class="badge bg-light text-muted"
-                                                    style="font-size: 0.72rem; border: 1px solid #e2e8f0;">
-                                                    +{{ $fasExtra }} lainnya
-                                                </span>
+                                        <div class="fasilitas-area">
+                                            @if ($fasilitasList->isNotEmpty())
+                                                <div class="d-flex flex-wrap gap-1">
+                                                    @foreach ($fasShown as $fas)
+                                                        @php
+                                                            $namaLower = strtolower($fas->nama_fasilitas);
+                                                            $icon = 'bi-check-circle';
+                                                            foreach ($fasilitasIcons as $keyword => $iconClass) {
+                                                                if (str_contains($namaLower, $keyword)) {
+                                                                    $icon = $iconClass;
+                                                                    break;
+                                                                }
+                                                            }
+                                                        @endphp
+                                                        <span class="badge bg-light text-dark"
+                                                            style="font-size: 0.72rem; font-weight: 500; border: 1px solid #e2e8f0;">
+                                                            <i class="bi {{ $icon }} me-1 text-success"></i>{{ $fas->nama_fasilitas }}
+                                                        </span>
+                                                    @endforeach
+                                                    @if ($fasExtra > 0)
+                                                        <span class="badge bg-light text-muted"
+                                                            style="font-size: 0.72rem; border: 1px solid #e2e8f0;">
+                                                            +{{ $fasExtra }} lainnya
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                            @else
+                                                <p class="text-muted small mb-0">Fasilitas belum tersedia</p>
                                             @endif
                                         </div>
-                                    @else
-                                        <p class="text-muted small mb-3">Fasilitas belum tersedia</p>
-                                    @endif
 
                                     {{-- Rating bintang --}}
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="text-warning me-2" style="font-size: 0.85rem;">
+                                    <div class="rating-row">
+                                        <div class="stars text-warning">
                                             @for ($i = 0; $i < $fullStars; $i++)
                                                 <i class="bi bi-star-fill"></i>
                                             @endfor
@@ -193,22 +198,18 @@
                                                 <i class="bi bi-star"></i>
                                             @endfor
                                         </div>
-                                        <span class="fw-bold me-1" style="font-size: 0.9rem;">
+                                        <span class="fw-bold" style="font-size: 0.9rem;">
                                             {{ $ratingVal > 0 ? $ratingVal : '-' }}
                                         </span>
                                         <span class="text-muted" style="font-size: 0.78rem;">
-                                            @if ($reviewCount > 0)
-                                                ({{ $reviewCount }} ulasan)
-                                            @else
-                                                Belum ada ulasan
-                                            @endif
+                                            {{ $reviewCount > 0 ? '(' . $reviewCount . ' ulasan)' : 'Belum ada ulasan' }}
                                         </span>
                                     </div>
 
                                     {{-- Tombol Detail --}}
                                     <a href="{{ route('kamar.detail', $kamar->id_kamar) }}"
-                                       class="btn btn-outline-green w-100"
-                                       style="border-width: 2px; font-weight: 500; padding: 8px; border-radius: 8px;">
+                                    class="btn btn-outline-green w-100 btn-detail"
+                                    style="border-width: 2px; font-weight: 500; padding: 8px; border-radius: 8px;">
                                         Detail kamar
                                     </a>
 
@@ -230,3 +231,93 @@
 
         @include('templates.main_footer')
         @include('templates.footer')
+
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const filterSelect = document.getElementById('filterSelect');
+            const kosItems = document.querySelectorAll('.kos-item');
+            const productList = document.getElementById('productList');
+
+            function filterKos() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const filterValue = filterSelect.value.toLowerCase();
+                let visibleCount = 0;
+                
+                let itemsArray = Array.from(kosItems);
+
+                // Filter Logic
+                itemsArray.forEach(item => {
+                    const name = item.getAttribute('data-name');
+                    const tipe = item.getAttribute('data-tipe');
+                    const fasilitas = item.getAttribute('data-fasilitas');
+                    
+                    let matchesSearch = name.includes(searchTerm);
+                    let matchesFilter = true;
+
+                    if (filterValue !== '') {
+                        if (filterValue === 'biasa' || filterValue === 'sedang' || filterValue === 'mewah') {
+                            matchesFilter = tipe === filterValue;
+                        } else if (filterValue === 'ac' || filterValue === 'wifi') {
+                            matchesFilter = fasilitas.includes(filterValue);
+                        } else if (filterValue === 'rating') {
+                            matchesFilter = true; // Rating is a sort, not a filter out
+                        }
+                    }
+
+                    if (matchesSearch && matchesFilter) {
+                        item.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                // Sort by Rating if 'rating' filter is selected
+                if (filterValue === 'rating') {
+                    itemsArray.sort((a, b) => {
+                        let ratingA = parseFloat(a.getAttribute('data-rating')) || 0;
+                        let ratingB = parseFloat(b.getAttribute('data-rating')) || 0;
+                        return ratingB - ratingA;
+                    });
+                    
+                    // Re-append sorted items
+                    itemsArray.forEach(item => {
+                        productList.appendChild(item);
+                    });
+                } else {
+                    // Reset order (they might have been sorted)
+                    // Sort by original DOM order. Using their ID or just appending based on initial node could be tricky.
+                    // Assuming ID kamar is not readily available, a page reload or keeping a clone of initial list is better,
+                    // but for simplicity, we just sort by their ID kamar if we had it, or by Name as default if not rating.
+                    itemsArray.sort((a, b) => {
+                        return a.getAttribute('data-name').localeCompare(b.getAttribute('data-name'));
+                    });
+                     itemsArray.forEach(item => {
+                        productList.appendChild(item);
+                    });
+                }
+
+                // Show/hide no results message
+                let noResultsMsg = document.getElementById('noResultsMessage');
+                if (visibleCount === 0 && kosItems.length > 0) {
+                    if (!noResultsMsg) {
+                        noResultsMsg = document.createElement('div');
+                        noResultsMsg.id = 'noResultsMessage';
+                        noResultsMsg.className = 'col-12 text-center py-5';
+                        noResultsMsg.innerHTML = '<i class="bi bi-search fs-1 text-muted mb-3 d-block"></i><p class="text-muted">Kamar tidak ditemukan.</p>';
+                        productList.appendChild(noResultsMsg);
+                    } else {
+                        noResultsMsg.style.display = 'block';
+                    }
+                } else if (noResultsMsg) {
+                    noResultsMsg.style.display = 'none';
+                }
+            }
+
+            if (searchInput) searchInput.addEventListener('input', filterKos);
+            if (filterSelect) filterSelect.addEventListener('change', filterKos);
+        });
+        </script>
+
+        @endsection
