@@ -7,7 +7,7 @@ use App\Models\User;
 
 class NotifikasiService
 {
-    public function __construct(private FcmService $fcm) {}
+    public function __construct(private OneSignalService $oneSignal) {}
 
     // ── Kirim notifikasi ke 1 user ────────────────────────────
     public function kirim(
@@ -16,7 +16,7 @@ class NotifikasiService
         string $pesan,
         string $tipe = 'umum'
     ): Notifikasi {
-        // 1. Simpan ke database dulu
+        // 1. Simpan ke database
         $notif = Notifikasi::create([
             'user_id'      => $user->id,
             'judul'        => $judul,
@@ -25,15 +25,15 @@ class NotifikasiService
             'sudah_dibaca' => false,
         ]);
 
-        // 2. Kirim push notification kalau user punya FCM token
-        if ($user->fcm_token) {
-            $this->fcm->kirimKeUser(
-                fcmToken: $user->fcm_token,
+        // 2. Kirim push notification kalau user punya OneSignal Player ID
+        if ($user->onesignal_player_id) {
+            $this->oneSignal->kirimKeUser(
+                playerId: $user->onesignal_player_id,
                 judul: $judul,
                 pesan: $pesan,
                 data: [
-                    'tipe'       => $tipe,
-                    'notifId'    => (string) $notif->id,
+                    'tipe'    => $tipe,
+                    'notifId' => (string) $notif->id,
                 ]
             );
         }
@@ -41,21 +41,22 @@ class NotifikasiService
         return $notif;
     }
 
-    // ── Shortcut: notifikasi tagihan ──────────────────────────
+    // ── Shortcut: reminder tagihan ────────────────────────────
     public function kirimReminderTagihan(User $user, string $tanggalJatuhTempo): Notifikasi
     {
         return $this->kirim(
             user: $user,
             judul: 'Reminder Tagihan',
-            pesan: "Anda memiliki tagihan yang akan jatuh tempo pada tanggal {$tanggalJatuhTempo}, Segera lakukan perpanjangan sewa",
+            pesan: "Anda memiliki tagihan yang akan jatuh tempo pada tanggal {$tanggalJatuhTempo}, segera lakukan perpanjangan sewa.",
             tipe: 'tagihan',
         );
     }
 
-    // ── Shortcut: notifikasi keluhan diproses ─────────────────
+    // ── Shortcut: status keluhan ──────────────────────────────
     public function kirimStatusKeluhan(User $user, string $statusPesan = ''): Notifikasi
     {
-        $pesan = $statusPesan ?: 'keluhan anda telah diproses oleh admin dan akan segera dilakukan tindakan';
+        $pesan = $statusPesan ?: 'Keluhan Anda telah diproses oleh admin dan akan segera dilakukan tindakan.';
+
         return $this->kirim(
             user: $user,
             judul: 'Status Keluhan',
