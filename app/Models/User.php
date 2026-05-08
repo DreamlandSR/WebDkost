@@ -25,7 +25,7 @@ class User extends Authenticatable
         'no_telepon',
         'alamat',
         'role',
-        'fcm_token',
+        'onesignal_player_id',
     ];
 
     protected $hidden = [
