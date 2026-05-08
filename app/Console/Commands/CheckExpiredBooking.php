@@ -12,20 +12,26 @@ class CheckExpiredBooking extends Command
     protected $description = 'Ubah booking expired dan kembalikan kamar';
 
     public function handle()
-    {
-        $expiredBookings = Booking::where('status_booking', 'menunggu_pembayaran')
-            ->where('tgl_booking', '<', Carbon::now()->subHours(24))
-            ->get();
+{
+    $expiredBookings = Booking::where('status_booking', 'menunggu_pembayaran')
+        ->where('expired_at', '<', Carbon::now()) // ← fix bug 1
+        ->get();
 
-        foreach ($expiredBookings as $booking) {
-            $booking->update(['status_booking' => 'expired']);
-            
-            Kamar::where('id_kamar', $booking->id_kamar)
-                ->update(['status_kamar' => 'tersedia']);
-
-            $booking->tagihan()->update(['status_tagihan' => 'belum_bayar']);
+    foreach ($expiredBookings as $booking) {
+        // Fix bug 2: kembalikan stok furnitur
+        foreach ($booking->furniturDetails as $detail) {
+            \App\Models\Furnitur::where('id_furnitur', $detail->id_furnitur)
+                ->increment('jumlah', $detail->jumlah);
         }
 
-        $this->info('Selesai: ' . $expiredBookings->count() . ' booking diupdate.');
+        $booking->update(['status_booking' => 'expired']);
+
+        Kamar::where('id_kamar', $booking->id_kamar)
+            ->update(['status_kamar' => 'tersedia']);
+
+        $booking->tagihan()->update(['status_tagihan' => 'dibatalkan']);
     }
-}
+
+    $this->info('Selesai: ' . $expiredBookings->count() . ' booking diupdate.');
+    }
+}   
