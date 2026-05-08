@@ -22,24 +22,73 @@ use Carbon\Carbon;
 
 class BookingController extends Controller
 {
-    // ── GET: List booking by user ──────────────────────────
     public function indexByUser($userId)
     {
-        $bookings = Booking::where('id_user', $userId)->get()
-            ->map(fn($b) => $this->formatBooking($b));
-        return response()->json(['success' => true, 'data' => $bookings]);
+        $bookings = Booking::where('id_user', $userId)->get();
+        
+        foreach ($bookings as $booking) {
+            $booking = $this->checkAndUpdateExpired($booking);
+        }
+        
+        return response()->json([
+            'success' => true, 
+            'data' => $bookings->map(fn($b) => $this->formatBooking($b))
+        ]);
     }
-
+private function checkAndUpdateExpired(Booking $booking): Booking
+{
+    if ($booking->status_booking === 'menunggu_pembayaran') {
+        $expiredAt = Carbon::parse($booking->expired_at);
+        
+        if (Carbon::now()->greaterThan($expiredAt)) {
+            // Kembalikan stok furnitur
+            foreach ($booking->furniturDetails as $detail) {
+                if ($detail->furnitur) {
+                    $detail->furnitur->increment('jumlah', $detail->jumlah);
+                }
+            }
+            
+            // Update status
+            $booking->update(['status_booking' => 'expired']);
+            
+            // Kembalikan kamar
+            if ($booking->kamar) {
+                $booking->kamar->update(['status_kamar' => 'tersedia']);
+            }
+            
+            // Update tagihan - gunakan nilai yang valid
+            if ($booking->tagihan) {
+                try {
+                    $booking->tagihan()->update(['status_tagihan' => 'dibatalkan']);
+                } catch (\Exception $e) {
+                    // Jika error, skip update tagihan
+                    \Log::warning("Gagal update tagihan untuk booking #{$booking->id_booking}: " . $e->getMessage());
+                }
+            }
+            
+            // Refresh model
+            $booking->refresh();
+        }
+    }
+    
+    return $booking;
+}
     // ── GET: Detail booking ────────────────────────────────
-    public function show($id)
+        public function show($id)
     {
-        $booking = Booking::find($id);
+        $booking = Booking::with(['kamar.galeri', 'furniturDetails.furnitur', 'tagihan'])
+                        ->find($id);
+        
         if (!$booking) {
             return response()->json([
                 'success' => false,
                 'message' => 'Booking tidak ditemukan.',
             ], 404);
         }
+        
+        // Cek dan update jika expired
+        $booking = $this->checkAndUpdateExpired($booking);
+        
         return response()->json([
             'success' => true,
             'data'    => $this->formatBooking($booking),
@@ -377,11 +426,21 @@ class BookingController extends Controller
     }
 
     // ── Private: Format booking untuk response ─────────────
-    private function formatBooking(Booking $b): array
+        private function formatBooking(Booking $b): array
     {
         $kamar    = $b->kamar;
         $mainFoto = $kamar?->galeri()->where('is_main', 1)->first();
-        $tagihan  = $b->tagihan()->latest('id_tagihan')->first();
+        
+        // Ambil tagihan yang belum lunas atau yang terbaru
+        $tagihan = $b->tagihan()
+                    ->where('status_tagihan', '!=', 'lunas')
+                    ->latest('id_tagihan')
+                    ->first();
+        
+        // Jika tidak ada tagihan belum lunas, ambil yang terbaru
+        if (!$tagihan) {
+            $tagihan = $b->tagihan()->latest('id_tagihan')->first();
+        }
 
         return [
             'id_booking'          => $b->id_booking,
@@ -393,7 +452,7 @@ class BookingController extends Controller
             'tgl_mulai_sewa'      => $b->tgl_mulai_sewa,
             'tgl_akhir_sewa'      => $b->tgl_akhir_sewa,
             'total_biaya_bulanan' => $b->total_biaya_bulanan,
-            'status_booking'      => $b->status_booking,
+            'status_booking'      => $b->status_booking,  // ← pastikan ini 'expired'
             'nomor_kamar'         => $kamar?->nomor_kamar,
             'tipe_kamar'          => $kamar?->tipe_kamar,
             'foto_kamar'          => $mainFoto?->url_foto,
