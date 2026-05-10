@@ -6,7 +6,7 @@ import inject from "@rollup/plugin-inject";
 export default defineConfig({
     plugins: [
         laravel({
-            input: ["resources/css/app.css", "resources/js/app.js"],
+            input: ["resources/css/app.css", "resources/js/app.js", "resources/css/kamar.css", "resources/js/kamar.js",],
             refresh: true,
         }),
         inject({
@@ -38,10 +38,11 @@ export default defineConfig({
 
     server: {
         host: '0.0.0.0', // Membuka akses ke semua interface jaringan dalam kontainer
-        port: 5173,
-        strictPort: true,
+        port: 5174,
+        strictPort: false,
         hmr: {
             host: 'localhost', // Browser di Windows tetap mengakses via 'localhost'
+            port: 5174, // Port HMR yang sama dengan server Vite
         },
         watch: {
             usePolling: true, // WAJIB untuk WSL: agar Vite peka terhadap perubahan file

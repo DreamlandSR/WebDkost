@@ -10,7 +10,6 @@
 @import "./pengeluaran.css";
 @import "./landing.css";
 
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
