@@ -88,7 +88,7 @@
 
                 {{-- Breadcrumb Glassmorphism --}}
                 <nav aria-label="breadcrumb" class="d-inline-flex px-4 py-2 shadow-sm"
-                    style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border-radius: 30px; border: 1px solid rgba(255,255,255,0.25);">
+                    style="background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px); border-radius: 30px; border: 1px solid rgba(255,255,255,0.25);"
                     <ol class="breadcrumb mb-0 align-items-center modern-breadcrumb"
                         style="font-size:0.88rem; font-weight:500;">
                         <li class="breadcrumb-item">
@@ -572,6 +572,14 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function changeMainImage(el, url) {
+            document.getElementById('mainImage').src = url;
+            document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+    </script>
 
     @include('templates.main_footer')
     @include('templates.footer')

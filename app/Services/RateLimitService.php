@@ -8,9 +8,9 @@ class RateLimitService
 {
     // Sesuai free tier Gemini: 15 RPM, 1500/hari
     private array $limits = [
-        'per_user_minute' => 10,   // 5 pesan/menit per user
-        'per_user_hour'   => 30,  // 30 pesan/jam per user
-        'global_minute'   => 12,  // 12 global RPM (80% dari limit Gemini)
+        'per_user_minute' => 15,   // Naik dari 10 ke 15 pesan/menit per user
+        'per_user_hour'   => 50,  // Naik dari 30 ke 50 pesan/jam per user
+        'global_minute'   => 15,  // Naik dari 12 ke 15 global RPM (sesuai limit Gemini)
     ];
 
     public function checkLimit(string $userId): array

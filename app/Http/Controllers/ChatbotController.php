@@ -115,6 +115,14 @@ class ChatbotController extends Controller
         $responseData = null;
         $dbData = [];
 
+        // Cek cache berdasarkan intent dan params (lebih agresif)
+        $intentCacheKey = 'sinora_intent_' . md5($intent . json_encode($params));
+        $cachedIntentResponse = $this->cache->getCachedResponse($intent, $params);
+        if ($cachedIntentResponse) {
+            \Log::info('Intent-based cache hit for intent: ' . $intent);
+            return $cachedIntentResponse;
+        }
+
         // Format response data untuk client
         if (in_array($intent, ['cek_kamar_tersedia', 'cek_kamar_budget', 'cek_kamar_rating']) && !empty($dbResult['data'])) {
             $responseData = is_object($dbResult['data'])
@@ -148,6 +156,15 @@ class ChatbotController extends Controller
             'data' => $responseData,
             'type' => $intent,
         ], $ttl);
+
+        // Cache berdasarkan intent dan params untuk reuse
+        $this->cache->setCachedResponse($intent, $params, [
+            'success' => true,
+            'message' => $reply,
+            'data' => $responseData,
+            'type' => $intent,
+            'from_cache' => false,
+        ]);
 
         return [
             'success'    => true,

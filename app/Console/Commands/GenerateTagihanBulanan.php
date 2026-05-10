@@ -67,7 +67,7 @@ class GenerateTagihanBulanan extends Command
                 $tagihanLalu->update(['status_tagihan' => 'terlambat']);
             }
 
-            $nominalDasar  = $booking->total_biaya_bulanan;
+            $nominalDasar = $booking->total_biaya_bulanan / $booking->durasi_sewa_bulan;
             $totalTagihan  = $nominalDasar + $nominalDenda;
             $tglJatuhTempo = Carbon::parse($bulanIni)->addDays(10)->toDateString();
 

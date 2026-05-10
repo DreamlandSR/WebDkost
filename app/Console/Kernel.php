@@ -13,6 +13,11 @@ class Kernel extends ConsoleKernel
     // ── Schedule ───────────────────────────────────────────
     protected function schedule(Schedule $schedule): void
     {
+        $schedule->command('booking:expire-check')
+                 ->everyMinute()  // ← ubah dari everyFiveMinutes
+                 ->withoutOverlapping()
+                 ->runInBackground();
+                 
         // Generate tagihan setiap tanggal 1, jam 00:01
         $schedule->command('tagihan:generate')
                  ->monthlyOn(1, '00:01')

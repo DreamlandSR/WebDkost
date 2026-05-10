@@ -21,6 +21,9 @@ Route::post('/login',          [AuthController::class, 'login']);
 Route::post('/lupa-password',  [AuthController::class, 'lupaPassword']);
 Route::post('/cek-otp',        [AuthController::class, 'cekOtp']);
 Route::post('/ganti-password', [AuthController::class, 'gantiPassword']);
+Route::post('/verifikasi-email', [AuthController::class, 'verifikasiEmail']);  // ← baru
+Route::post('/google-login',     [AuthController::class, 'googleLogin']);
+Route::post('/resend-otp-register', [AuthController::class, 'resendOtpRegister']);      // ← baru
 
 Route::get('/cek-api', function () {
     return response()->json(['message' => 'API D\'Kost terhubung!']);
@@ -117,31 +120,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/chatbot/chat', [ChatbotController::class, 'chat'])
      ->middleware('throttle:60,1'); // backup throttle Laravel
 
-    
-    // Notifikasi
-    Route::get('notifikasi',             [NotifikasiController::class, 'index']);
-    Route::post('notifikasi/{id}/baca',  [NotifikasiController::class, 'tandaiBaca']);
-    Route::post('notifikasi/baca-semua', [NotifikasiController::class, 'tandaiSemuaBaca']);
-    Route::post('fcm-token',             [NotifikasiController::class, 'simpanFcmToken']);
-    
-
-    
-    // Kalau mau testing uncomment route ini, nanti commend lagi setelah testing selesai
-    // Route::get('/test-notif', function () {
-    // $user = \App\Models\User::first();
-    
-    // $notif = \App\Models\Notifikasi::create([
-    //     'user_id'      => $user->id_user,
-    //     'judul'        => 'Reminder Tagihan',
-    //     'pesan'        => 'Anda memiliki tagihan yang akan jatuh tempo pada tanggal 22 - 04 - 2026, Segera lakukan perpanjangan sewa',
-    //     'tipe'         => 'tagihan',
-    //     'sudah_dibaca' => false,
-    // ]);
-
-    // return response()->json([
-    //     'message' => 'Berhasil!',
-    //     'data'    => $notif,
-    // ]);
-    // });
+     // ── Notifikasi ─────────────────────────────────────────────────
+    Route::prefix('notifikasi')->group(function () {
+        Route::get('/',            [NotifikasiController::class, 'index']);           // Ambil semua notifikasi
+        Route::post('/baca-semua', [NotifikasiController::class, 'tandaiSemuaBaca']); // Tandai semua dibaca
+        Route::post('/{id}/baca',  [NotifikasiController::class, 'tandaiBaca']);      // Tandai 1 notifikasi dibaca
+    });
+ 
+    // ── OneSignal Player ID ────────────────────────────────────────
+    Route::post('/onesignal-player-id', [NotifikasiController::class, 'simpanPlayerId']);
 
 });

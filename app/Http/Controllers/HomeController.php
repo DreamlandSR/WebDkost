@@ -24,7 +24,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $kamars = Kamar::with(['galeri', 'reviews'])->get();
+        $kamars = Kamar::with(['galeri', 'reviews.user'])->get();
 
         return view('home.index', $this->baseViewData('Beranda', [
             'kamars'       => $kamars,

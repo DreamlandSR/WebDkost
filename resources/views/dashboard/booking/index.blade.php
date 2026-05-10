@@ -373,7 +373,7 @@
                                 </div>
                             </div>
                             <div class="modal-body" style="padding: 26px; background: #fff;">
-                                <div class="row g-4">
+                                <div class="row g-3" style="row-gap: 16px;">
                                     <div class="col-6">
                                         <div class="p-3" style="background: #f9fafb; border: 1px solid #f0f1f3; border-radius: 10px;">
                                             <p class="text-muted mb-1" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Nama Penyewa</p>
@@ -436,7 +436,7 @@
                             </div>
                             <div class="modal-footer border-0 bg-white p-4 pt-0">
                                 <button type="button" class="btn w-100 shadow-sm" data-bs-dismiss="modal"
-                                    style="background: #374151; color: white; border-radius: 8px; padding: 10px; font-weight: 600; font-size: 13.5px; border: none;">
+                                    style="background: #00a669; color: white; border-radius: 8px; padding: 10px; font-weight: 600; font-size: 13.5px; border: none;">
                                     Tutup
                                 </button>
                             </div>

@@ -19,11 +19,13 @@ class User extends Authenticatable
     protected $fillable = [
         'nama',
         'email',
+        'google_id',           // ← baru
+        'email_verified_at',   // ← baru
         'password',
         'no_telepon',
         'alamat',
         'role',
-        'fcm_token',
+        'onesignal_player_id',
     ];
 
     protected $hidden = [
@@ -35,11 +37,18 @@ class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
+            'email_verified_at' => 'datetime',  // ← baru
         ];
     }
 
     public function getAuthIdentifierName()
     {
         return 'id_user';
+    }
+
+    // Helper: cek apakah email sudah diverifikasi
+    public function hasVerifiedEmail(): bool
+    {
+        return $this->email_verified_at !== null;
     }
 }
