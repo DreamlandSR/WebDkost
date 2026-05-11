@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Models\BookingDetailFurnitur;
+use App\Models\ItemFurnitur;
 use App\Models\Kamar;
+use App\Models\PenyewaFurnitur;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -281,6 +284,9 @@ class BookingController extends Controller
             $kamarSekarang->status_kamar = 'tersedia';
         }
         $kamarSekarang->save();
+
+        // ✅ Auto-sync PenyewaFurnitur berdasarkan perubahan status booking
+        $this->syncPenyewaFurnitur($booking, $validated['status_booking']);
         
         Log::info('Booking updated successfully', ['id' => $booking->id_booking]);
         
@@ -344,5 +350,68 @@ class BookingController extends Controller
         ];
         
         return $badges[$status] ?? ['bg' => '#f3f4f6', 'text' => '#6b7280', 'label' => 'Tidak Diketahui'];
+    }
+
+    /**
+     * Sync tabel penyewa_furnitur otomatis saat status booking berubah.
+     *
+     * - aktif   → buat record baru (skip jika sudah ada)
+     * - selesai/batal/expired → update status record menjadi 'selesai'
+     */
+    private function syncPenyewaFurnitur(Booking $booking, string $statusBaru): void
+    {
+        try {
+            if ($statusBaru === 'aktif') {
+                // Cek apakah booking ini sudah memiliki penyewa furnitur (untuk menghindari duplikasi saat re-save)
+                $alreadyAssigned = PenyewaFurnitur::where('id_booking', $booking->id_booking)->exists();
+                if ($alreadyAssigned) return;
+
+                $details = BookingDetailFurnitur::where('id_booking', $booking->id_booking)->get();
+
+                foreach ($details as $detail) {
+                    // Cari N item furnitur yang statusnya Tersedia
+                    $availableItems = ItemFurnitur::where('id_furnitur', $detail->id_furnitur)
+                        ->where('status_item', 'Tersedia')
+                        ->limit($detail->jumlah)
+                        ->get();
+
+                    foreach ($availableItems as $item) {
+                        // Tandai item sedang disewa
+                        $item->update(['status_item' => 'Disewa']);
+
+                        PenyewaFurnitur::create([
+                            'id_booking'    => $booking->id_booking,
+                            'id_item'       => $item->id_item,
+                            'id_user'       => $booking->id_user,
+                            'tgl_mulai'     => $booking->tgl_mulai_sewa,
+                            'tgl_selesai'   => $booking->tgl_akhir_sewa,
+                            'status'        => 'aktif',
+                            'catatan'       => 'Otomatis di-assign saat booking #' . $booking->id_booking . ' diaktifkan.',
+                        ]);
+                    }
+                }
+
+            } elseif (in_array($statusBaru, ['selesai', 'batal', 'expired'])) {
+                // Ambil semua record penyewa furnitur aktif untuk booking ini
+                $penyewaanAktif = PenyewaFurnitur::where('id_booking', $booking->id_booking)
+                    ->where('status', 'aktif')
+                    ->get();
+
+                foreach ($penyewaanAktif as $sewa) {
+                    $sewa->update(['status' => 'selesai']);
+                    // Kembalikan status item menjadi Tersedia
+                    if ($sewa->item) {
+                        $sewa->item->update(['status_item' => 'Tersedia']);
+                    }
+                }
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Error syncing penyewa furnitur: ' . $e->getMessage(), [
+                'id_booking' => $booking->id_booking,
+                'status'     => $statusBaru,
+            ]);
+            // Tidak throw — agar update booking tetap berhasil
+        }
     }
 }

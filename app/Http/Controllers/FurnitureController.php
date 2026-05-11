@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Furnitur;
+use App\Models\ItemFurnitur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -42,21 +43,42 @@ class FurnitureController extends Controller
             // Validasi input
             $validated = $request->validate([
                 'nama_furnitur' => 'required|string|max:100',
-                'jumlah' => 'required|integer|min:1',
                 'harga_sewa_tambahan' => 'required|numeric|min:0',
+                'kode_item' => 'required|array|min:1',
+                'kode_item.*' => 'required|string|max:100|unique:item_furnitur,kode_item',
             ]);
             
-            // Simpan ke tabel furnitur
-            $furnitureItem = Furnitur::create([
-                'nama_furnitur' => $validated['nama_furnitur'],
-                'jumlah' => $validated['jumlah'],
-                'harga_sewa_tambahan' => $validated['harga_sewa_tambahan'],
-            ]);
+            // Cek apakah furnitur dengan nama yang sama sudah ada (case-insensitive)
+            $furnitureItem = Furnitur::whereRaw('LOWER(nama_furnitur) = ?', [strtolower(trim($validated['nama_furnitur']))])->first();
+
+            if ($furnitureItem) {
+                // Jika sudah ada, tambahkan jumlahnya dan update harganya (jika berbeda)
+                $furnitureItem->increment('jumlah', count($validated['kode_item']));
+                $furnitureItem->update([
+                    'harga_sewa_tambahan' => $validated['harga_sewa_tambahan']
+                ]);
+            } else {
+                // Jika belum ada, buat baru
+                $furnitureItem = Furnitur::create([
+                    'nama_furnitur' => trim($validated['nama_furnitur']),
+                    'jumlah' => count($validated['kode_item']),
+                    'harga_sewa_tambahan' => $validated['harga_sewa_tambahan'],
+                ]);
+            }
+
+            // Simpan item-item (kode fisik) ke tabel item_furnitur
+            foreach ($validated['kode_item'] as $kode) {
+                ItemFurnitur::create([
+                    'id_furnitur' => $furnitureItem->id_furnitur,
+                    'kode_item' => $kode,
+                    'status_item' => 'Tersedia',
+                ]);
+            }
             
-            Log::info('Furniture created successfully', ['id' => $furnitureItem->id_furnitur]);
+            Log::info('Furniture created successfully with items', ['id' => $furnitureItem->id_furnitur]);
             
             return redirect()->route('furnitur.index')
-                ->with('success', 'Furnitur berhasil ditambahkan!');
+                ->with('success', 'Furnitur beserta kode barang berhasil ditambahkan!');
                 
         } catch (ValidationException $e) {
             return redirect()->back()
@@ -109,17 +131,18 @@ class FurnitureController extends Controller
         try {
             $furniture = Furnitur::findOrFail($id_furnitur);
             
-            // Validasi input
+            // Validasi input. Kode item diabaikan saat edit (untuk simplifikasi/permintaan agar tampilan tetap sama),
+            // atau jika kita mau update kode, kita abaikan unique check untuk ID yg sama.
+            // Sesuai konteks user, hanya edit nama dan harga. Jumlah dan item diatur terpisah jika perlu, 
+            // namun agar aman, kita biarkan saja jumlah mengikuti jumlah item yg ada.
             $validated = $request->validate([
                 'nama_furnitur' => 'required|string|max:100',
-                'jumlah' => 'required|integer|min:1',
                 'harga_sewa_tambahan' => 'required|numeric|min:0',
             ]);
             
             // Update data furnitur
             $furniture->update([
                 'nama_furnitur' => $validated['nama_furnitur'],
-                'jumlah' => $validated['jumlah'],
                 'harga_sewa_tambahan' => $validated['harga_sewa_tambahan'],
             ]);
             

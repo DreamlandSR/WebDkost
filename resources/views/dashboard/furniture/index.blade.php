@@ -26,7 +26,10 @@
                     </div>
 
                     <div class="row mb-4">
-                        <div class="col-lg-12 d-flex justify-content-end">
+                        <div class="col-lg-12 d-flex justify-content-end gap-2">
+                            <a href="{{ route('penyewa-furnitur.index') }}" class="btn-track-furnitur shadow-sm">
+                                <i class="ti-pie-chart"></i> Track Penyewa Furnitur
+                            </a>
                             <button type="button" class="btn-tambah shadow-sm" data-bs-toggle="modal" data-bs-target="#tambahFurnitureModal">
                                 <i class="ti-plus"></i> Tambah Furnitur
                             </button>
@@ -209,18 +212,28 @@
                                             onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none';">
                                     </div>
 
-                                    <!-- Jumlah -->
+                                    <!-- Kode Barang Dinamis -->
                                     <div class="mb-3">
                                         <label class="d-flex align-items-center mb-2" style="font-size: 13px; font-weight: 600; color: #374151; gap: 8px;">
-                                            <span style="background: #ecfdf5; color: #00a669; border-radius: 6px; width: 22px; height: 22px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;"><i class="ti-package"></i></span>
-                                            Jumlah Tersedia <span class="text-danger">*</span>
+                                            <span style="background: #ecfdf5; color: #00a669; border-radius: 6px; width: 22px; height: 22px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;"><i class="ti-barcode"></i></span>
+                                            Kode Barang <span class="text-danger">*</span>
                                         </label>
-                                        <input type="number" name="jumlah" required min="1"
-                                            style="width:100%; padding: 11px 14px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 14px; color: #111827; outline: none; transition: border-color 0.2s, box-shadow 0.2s;"
-                                            placeholder="Contoh: 5"
-                                            value="{{ old('jumlah', 1) }}"
-                                            onfocus="this.style.borderColor='#00a669'; this.style.boxShadow='0 0 0 3px rgba(0,166,105,0.1)';"
-                                            onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none';">
+                                        <div id="dynamic-kode-container">
+                                            <div class="d-flex gap-2 mb-2 kode-row">
+                                                <input type="text" name="kode_item[]" required
+                                                    style="flex:1; padding: 11px 14px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 14px; color: #111827; outline: none; transition: border-color 0.2s, box-shadow 0.2s;"
+                                                    placeholder="Contoh: LMR-01"
+                                                    onfocus="this.style.borderColor='#00a669'; this.style.boxShadow='0 0 0 3px rgba(0,166,105,0.1)';"
+                                                    onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none';">
+                                                <button type="button" class="btn border-0 shadow-sm d-flex align-items-center justify-content-center btn-remove-kode" style="background:#fef2f2; color:#ef4444; width:45px; border-radius:10px; display:none;" onclick="removeKodeRow(this)">
+                                                    <i class="ti-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <button type="button" onclick="addKodeRow()" class="btn border-0 mt-1 d-inline-flex align-items-center gap-1" style="background: #f3f4f6; color: #374151; font-size: 12.5px; font-weight: 600; padding: 6px 12px; border-radius: 8px;">
+                                            <i class="ti-plus" style="font-size:10px;"></i> Tambah Kode
+                                        </button>
+                                        <small class="text-muted d-block mt-2" style="font-size:11px;">Jumlah furnitur akan otomatis terhitung dari seberapa banyak kode yang Anda masukkan.</small>
                                     </div>
 
                                     <!-- Harga Sewa Tambahan -->
@@ -360,12 +373,11 @@
                                     <div class="mb-3">
                                         <label class="d-flex align-items-center mb-2" style="font-size: 13px; font-weight: 600; color: #374151; gap: 8px;">
                                             <span style="background: #eff6ff; color: #3b82f6; border-radius: 6px; width: 22px; height: 22px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;"><i class="ti-package"></i></span>
-                                            Jumlah Tersedia <span class="text-danger">*</span>
+                                            Jumlah Tersedia (Otomatis)
                                         </label>
-                                        <input type="number" name="jumlah" value="{{ $item->jumlah }}" required min="1"
-                                            style="width:100%; padding: 11px 14px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 14px; color: #111827; outline: none; transition: 0.2s;"
-                                            onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';"
-                                            onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none';">
+                                        <input type="number" value="{{ $item->jumlah }}" readonly
+                                            style="width:100%; padding: 11px 14px; border: 1px solid #e5e7eb; background: #f9fafb; border-radius: 10px; font-size: 14px; color: #6b7280; outline: none; cursor: not-allowed;">
+                                        <small class="text-muted d-block mt-2" style="font-size:11px;">Jumlah tidak bisa diedit langsung. Silakan kelola kode barang untuk mengubah jumlah.</small>
                                     </div>
 
                                     <!-- Harga Sewa Tambahan -->
@@ -569,3 +581,48 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    function addKodeRow() {
+        const container = document.getElementById('dynamic-kode-container');
+        const rows = container.querySelectorAll('.kode-row');
+        
+        const newRow = document.createElement('div');
+        newRow.className = 'd-flex gap-2 mb-2 kode-row';
+        newRow.innerHTML = `
+            <input type="text" name="kode_item[]" required
+                style="flex:1; padding: 11px 14px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 14px; color: #111827; outline: none; transition: border-color 0.2s, box-shadow 0.2s;"
+                placeholder="Contoh: LMR-02"
+                onfocus="this.style.borderColor='#00a669'; this.style.boxShadow='0 0 0 3px rgba(0,166,105,0.1)';"
+                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none';">
+            <button type="button" class="btn border-0 shadow-sm d-flex align-items-center justify-content-center btn-remove-kode" style="background:#fef2f2; color:#ef4444; width:45px; border-radius:10px;" onclick="removeKodeRow(this)">
+                <i class="ti-trash"></i>
+            </button>
+        `;
+        container.appendChild(newRow);
+        updateRemoveButtons();
+    }
+
+    function removeKodeRow(btn) {
+        const container = document.getElementById('dynamic-kode-container');
+        const rows = container.querySelectorAll('.kode-row');
+        if (rows.length > 1) {
+            btn.closest('.kode-row').remove();
+        }
+        updateRemoveButtons();
+    }
+
+    function updateRemoveButtons() {
+        const container = document.getElementById('dynamic-kode-container');
+        const rows = container.querySelectorAll('.kode-row');
+        const btns = container.querySelectorAll('.btn-remove-kode');
+        
+        if (rows.length === 1) {
+            btns[0].style.display = 'none'; // Sembunyikan tombol hapus jika hanya sisa 1
+        } else {
+            btns.forEach(btn => btn.style.display = 'flex'); // Tampilkan semua tombol hapus
+        }
+    }
+</script>
+@endpush

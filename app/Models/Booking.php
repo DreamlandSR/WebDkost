@@ -16,4 +16,5 @@ class Booking extends Model {
     public function kamar()           { return $this->belongsTo(Kamar::class,   'id_kamar',   'id_kamar'); }
     public function furniturDetails() { return $this->hasMany(BookingDetailFurnitur::class, 'id_booking', 'id_booking'); }
     public function tagihan()         { return $this->hasMany(Tagihan::class,   'id_booking', 'id_booking'); }
+    public function penyewaFurnitur() { return $this->hasMany(\App\Models\PenyewaFurnitur::class, 'id_booking', 'id_booking'); }
 }
