@@ -318,6 +318,28 @@
                                             <p class="mb-0 fw-bold text-success" style="font-size: 14px;">Rp {{ number_format($item->harga_sewa_tambahan, 0, ',', '.') }}</p>
                                         </div>
                                     </div>
+                                    <div class="col-12">
+                                        <div class="p-3" style="background: #f9fafb; border: 1px solid #f0f1f3; border-radius: 10px;">
+                                            <p class="text-muted mb-2" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Daftar Kode Barang Fisik</p>
+                                            
+                                            <div class="d-flex flex-wrap gap-2">
+                                                @forelse($item->items as $kode)
+                                                    <span class="badge rounded-pill" style="
+                                                        padding: 6px 12px; font-size: 12px; font-weight: 500;
+                                                        background: {{ $kode->status_item === 'Tersedia' ? '#ecfdf5' : ($kode->status_item === 'Disewa' ? '#eff6ff' : '#fef2f2') }};
+                                                        color: {{ $kode->status_item === 'Tersedia' ? '#00a669' : ($kode->status_item === 'Disewa' ? '#3b82f6' : '#ef4444') }};
+                                                        border: 1px solid {{ $kode->status_item === 'Tersedia' ? '#a7f3d0' : ($kode->status_item === 'Disewa' ? '#bfdbfe' : '#fecaca') }};
+                                                    ">
+                                                        <i class="ti-barcode me-1" style="font-size: 10px;"></i>
+                                                        {{ $kode->kode_item }}
+                                                        <span style="opacity: 0.7; margin-left: 4px; font-size: 10px;">({{ $kode->status_item }})</span>
+                                                    </span>
+                                                @empty
+                                                    <span style="color: #9ca3af; font-size: 12.5px; font-style: italic;">Belum ada kode barang yang didaftarkan.</span>
+                                                @endforelse
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="modal-footer border-0 bg-white p-4 pt-0">

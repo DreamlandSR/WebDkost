@@ -16,7 +16,7 @@ class FurnitureController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Furnitur::query();
+            $query = Furnitur::with('items');
             
             // Search berdasarkan nama furnitur
             if ($request->filled('search')) {
