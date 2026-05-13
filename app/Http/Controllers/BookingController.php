@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Models\BookingDetailFurnitur;
+use App\Models\ItemFurnitur;
 use App\Models\Kamar;
+use App\Models\PenyewaFurnitur;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -281,6 +284,9 @@ class BookingController extends Controller
             $kamarSekarang->status_kamar = 'tersedia';
         }
         $kamarSekarang->save();
+
+        // ✅ Auto-sync PenyewaFurnitur berdasarkan perubahan status booking
+        // Logika sync penyewa_furnitur sekarang ditangani otomatis oleh Model Event di Booking::booted()
         
         Log::info('Booking updated successfully', ['id' => $booking->id_booking]);
         

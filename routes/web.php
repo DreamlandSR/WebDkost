@@ -20,6 +20,7 @@ use App\Http\Controllers\Payment\MidtransController;
 use App\Http\Controllers\Api\GaleriKamarController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\FurnitureController;
+use App\Http\Controllers\PenyewaFurniturController;
 
 // ── CORS untuk storage files ────────────────────────────────
 Route::get('storage/{path}', function ($path) {
@@ -109,6 +110,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard/furnitur/{id_furnitur}', [FurnitureController::class, 'show'])->name('furnitur.show');
     Route::put('/dashboard/furnitur/{id_furnitur}', [FurnitureController::class, 'update'])->name('furnitur.update');
     Route::delete('/dashboard/furnitur/{id_furnitur}', [FurnitureController::class, 'destroy'])->name('furnitur.destroy');
+    Route::delete('/dashboard/furnitur/item/{id_item}', [FurnitureController::class, 'destroyItem'])->name('furnitur.item.destroy');
+
+    // Kelola Penyewa Furnitur
+    Route::get('/dashboard/penyewa-furnitur', [PenyewaFurniturController::class, 'index'])->name('penyewa-furnitur.index');
+    Route::post('/dashboard/penyewa-furnitur', [PenyewaFurniturController::class, 'store'])->name('penyewa-furnitur.store');
+    Route::get('/dashboard/penyewa-furnitur/{id}', [PenyewaFurniturController::class, 'show'])->name('penyewa-furnitur.show');
+    Route::put('/dashboard/penyewa-furnitur/{id}', [PenyewaFurniturController::class, 'update'])->name('penyewa-furnitur.update');
+    Route::delete('/dashboard/penyewa-furnitur/{id}', [PenyewaFurniturController::class, 'destroy'])->name('penyewa-furnitur.destroy');
 
     // Kelola User
     Route::get('/dashboard/user', [\App\Http\Controllers\UserController::class, 'index'])->name('user.index');

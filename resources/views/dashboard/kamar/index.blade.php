@@ -3,8 +3,6 @@
 @section('content')
     @include('layouts.sections.navbar')
 
-    @vite(['resources/css/kamar.css'])
-
     <div class="container-scroller">
         <div class="container-fluid page-body-wrapper">
 
@@ -281,7 +279,6 @@
 
     @push('scripts')
         {{-- Memuat script fitur kamar jika sudah dipisahkan ke file sendiri --}}
-        @vite('resources/js/kamar.js')
 
         <script>
             // Pass existing kamar numbers to JS for validation

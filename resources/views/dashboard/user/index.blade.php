@@ -62,7 +62,7 @@
                                         </div>
                                         <div class="d-flex align-items-center w-100 mt-2 mt-md-0 d-md-flex justify-content-md-end" style="gap: 10px; max-width: 320px;">
                                             <input type="text" name="search" class="form-control shadow-none w-100" placeholder="Cari nama atau email" value="{{ request('search') }}" style="border-radius: 4px; padding: 6px 12px; font-size: 14px;">
-                                            <button type="submit" class="btn border-0 shadow-sm d-flex align-items-center justify-content-center flex-shrink-0" style="background-color: #6366f1; color: white; padding: 0; width: 36px; height: 36px; border-radius: 4px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';">
+                                            <button type="submit" class="btn border-0 shadow-sm d-flex align-items-center justify-content-center flex-shrink-0" style="background-color: #00a669; color: white; padding: 0; width: 36px; height: 36px; border-radius: 4px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';">
                                                 <i class="ti-search" style="font-size: 15px;"></i>
                                             </button>
                                         </div>
