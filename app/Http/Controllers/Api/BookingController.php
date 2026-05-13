@@ -286,8 +286,28 @@ private function checkAndUpdateExpired(Booking $booking): Booking
                 ]);
             }
 
-            // Kurangi stok furnitur
+            // Kurangi stok furnitur umum
             $furnitur->decrement('jumlah', $item['jumlah']);
+
+            // ── ASSIGN ITEM FISIK (TRACKING PENYEWA_FURNITUR) ──
+            $availableItems = \App\Models\ItemFurnitur::where('id_furnitur', $furnitur->id_furnitur)
+                ->where('status_item', 'Tersedia')
+                ->limit($item['jumlah'])
+                ->get();
+
+            foreach ($availableItems as $physicalItem) {
+                $physicalItem->update(['status_item' => 'Disewa']);
+                
+                \App\Models\PenyewaFurnitur::create([
+                    'id_booking'    => $booking->id_booking,
+                    'id_item'       => $physicalItem->id_item,
+                    'id_user'       => $booking->id_user,
+                    'tgl_mulai'     => Carbon::now()->toDateString(),
+                    'tgl_selesai'   => $booking->tgl_akhir_sewa,
+                    'status'        => 'aktif',
+                    'catatan'       => 'Otomatis di-assign saat penambahan furnitur mid-sewa (Tagihan Tambahan).',
+                ]);
+            }
 
             $subtotal       = $furnitur->harga_sewa_tambahan * $item['jumlah'] * $sisaBulan;
             $tambahanBiaya += $subtotal;

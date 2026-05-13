@@ -20,6 +20,11 @@ class Tagihan extends Model
         'status_tagihan',
     ];
 
+    protected $casts = [
+        'tgl_jatuh_tempo' => 'date',
+        'periode_bulan' => 'date',
+    ];
+
     public function booking()
     {
         return $this->belongsTo(Booking::class, 'id_booking', 'id_booking');

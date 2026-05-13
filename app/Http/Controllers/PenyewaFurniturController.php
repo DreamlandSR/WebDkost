@@ -40,7 +40,7 @@ class PenyewaFurniturController extends Controller
                 });
             }
 
-            $penyewaFurnitur = $query->orderBy('id_penyewa_furnitur', 'desc')->paginate(10);
+            $penyewaFurnitur = $query->orderBy('id_penyewa_furnitur', 'desc')->paginate(5);
 
             $furniturList = Furnitur::orderBy('nama_furnitur')->get();
             $itemList     = \App\Models\ItemFurnitur::with('furnitur')

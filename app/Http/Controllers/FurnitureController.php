@@ -46,17 +46,18 @@ class FurnitureController extends Controller
                 'harga_sewa_tambahan' => 'required|numeric|min:0',
                 'kode_item' => 'required|array|min:1',
                 'kode_item.*' => 'required|string|max:100|unique:item_furnitur,kode_item',
+            ], [
+                'kode_item.*.unique' => 'Kode barang ":input" sudah terdaftar. Silakan gunakan kode yang lain.'
             ]);
             
-            // Cek apakah furnitur dengan nama yang sama sudah ada (case-insensitive)
-            $furnitureItem = Furnitur::whereRaw('LOWER(nama_furnitur) = ?', [strtolower(trim($validated['nama_furnitur']))])->first();
+            // Cek apakah furnitur dengan nama yang sama sudah ada
+            $existing = Furnitur::whereRaw('LOWER(nama_furnitur) = ?', [strtolower(trim($validated['nama_furnitur']))])->first();
 
-            if ($furnitureItem) {
-                // Jika sudah ada, tambahkan jumlahnya dan update harganya (jika berbeda)
-                $furnitureItem->increment('jumlah', count($validated['kode_item']));
-                $furnitureItem->update([
-                    'harga_sewa_tambahan' => $validated['harga_sewa_tambahan']
-                ]);
+            if ($existing) {
+                // Jika sudah ada, tambahkan jumlahnya saja. 
+                // Harga tetap menggunakan harga yang sudah ada di database.
+                $existing->increment('jumlah', count($validated['kode_item']));
+                $furnitureItem = $existing;
             } else {
                 // Jika belum ada, buat baru
                 $furnitureItem = Furnitur::create([
@@ -186,6 +187,39 @@ class FurnitureController extends Controller
             
             return redirect()->back()
                 ->with('error', 'Gagal menghapus furnitur: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Remove the specified item furnitur from storage.
+     */
+    public function destroyItem($id_item)
+    {
+        try {
+            $item = ItemFurnitur::findOrFail($id_item);
+            
+            if ($item->status_item !== 'Tersedia') {
+                return redirect()->back()->with('error', 'Hanya furnitur dengan status Tersedia yang dapat dihapus.');
+            }
+
+            $furniture = Furnitur::findOrFail($item->id_furnitur);
+            
+            // Hapus item
+            $item->delete();
+
+            // Kurangi jumlah furnitur
+            $furniture->decrement('jumlah');
+            
+            Log::info('Furniture item deleted successfully', ['id_item' => $id_item]);
+            
+            return redirect()->route('furnitur.index')
+                ->with('success', 'Kode barang berhasil dihapus!');
+                
+        } catch (\Exception $e) {
+            Log::error('Error deleting furnitur item: ' . $e->getMessage());
+            
+            return redirect()->back()
+                ->with('error', 'Gagal menghapus kode barang: ' . $e->getMessage());
         }
     }
 }

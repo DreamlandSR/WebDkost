@@ -12,6 +12,10 @@ class Booking extends Model {
         'total_biaya_bulanan', 'status_booking',
     ];
 
+    protected $casts = [
+        'expired_at' => 'datetime',
+    ];
+
     public function user()            { return $this->belongsTo(User::class,    'id_user',    'id_user'); }
     public function kamar()           { return $this->belongsTo(Kamar::class,   'id_kamar',   'id_kamar'); }
     public function furniturDetails() { return $this->hasMany(BookingDetailFurnitur::class, 'id_booking', 'id_booking'); }
@@ -65,8 +69,8 @@ class Booking extends Model {
                         'status' => 'selesai',
                         'tgl_selesai' => date('Y-m-d')
                     ]);
-                    if ($sewa->itemFurnitur) {
-                        $sewa->itemFurnitur->update(['status_item' => 'Tersedia']);
+                    if ($sewa->item) {
+                        $sewa->item->update(['status_item' => 'Tersedia']);
                     }
                 }
             }

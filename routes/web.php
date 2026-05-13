@@ -110,6 +110,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard/furnitur/{id_furnitur}', [FurnitureController::class, 'show'])->name('furnitur.show');
     Route::put('/dashboard/furnitur/{id_furnitur}', [FurnitureController::class, 'update'])->name('furnitur.update');
     Route::delete('/dashboard/furnitur/{id_furnitur}', [FurnitureController::class, 'destroy'])->name('furnitur.destroy');
+    Route::delete('/dashboard/furnitur/item/{id_item}', [FurnitureController::class, 'destroyItem'])->name('furnitur.item.destroy');
 
     // Kelola Penyewa Furnitur
     Route::get('/dashboard/penyewa-furnitur', [PenyewaFurniturController::class, 'index'])->name('penyewa-furnitur.index');

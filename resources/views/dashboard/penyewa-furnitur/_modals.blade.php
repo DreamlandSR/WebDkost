@@ -105,91 +105,91 @@
 {{-- ====================== MODAL DETAIL ====================== --}}
 <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width:500px;">
-        <div class="modal-content border-0 shadow-lg" style="border-radius:14px; overflow:hidden;">
-            <div style="background:#fff; padding:22px 26px 18px; border-bottom:1px solid #f0f1f3;">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:16px; overflow:hidden;">
+
+            {{-- Header --}}
+            <div style="background:#fff; padding:20px 24px 16px; border-bottom:1px solid #f0f1f3;">
                 <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center" style="gap:10px;">
-                        <div style="background:#ecfdf5; border-radius:10px; width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                    <div class="d-flex align-items-center" style="gap:12px;">
+                        <div style="background:#ecfdf5; border-radius:10px; width:40px; height:40px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                             <i class="ti-info-alt" style="color:#00a669; font-size:18px;"></i>
                         </div>
                         <div>
-                            <h5 class="mb-0 fw-bold" style="color:#111827; font-size:16px;">Detail Penyewa Furnitur</h5>
-                            <p class="mb-0" style="color:#9ca3af; font-size:12px;">Informasi lengkap</p>
+                            <h5 class="mb-0 fw-bold" style="color:#111827; font-size:15px; letter-spacing:-0.2px;">Detail Penyewa Furnitur</h5>
+                            <p class="mb-0" style="color:#9ca3af; font-size:12px; margin-top:1px;">Informasi lengkap</p>
                         </div>
                     </div>
                     <button type="button" data-bs-dismiss="modal"
-                        style="background:#f3f4f6; border:none; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; color:#6b7280;"
+                        style="background:#f3f4f6; border:none; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; color:#6b7280; cursor:pointer; flex-shrink:0;"
                         onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">
-                        <i class="ti-close"></i>
+                        <i class="ti-close" style="font-size:12px;"></i>
                     </button>
                 </div>
             </div>
-            <div class="modal-body" style="padding:26px; background:#fff;">
-                <div class="row g-3">
-                    <div class="col-12">
-                        <div class="detail-card">
-                            <p class="detail-label">Penyewa</p>
-                            <p class="detail-value fw-bold" id="detail-penyewa">-</p>
-                            <p class="detail-sub" id="detail-email">-</p>
-                            <p class="detail-sub" id="detail-telp">-</p>
-                        </div>
+
+            {{-- Body --}}
+            <div class="modal-body" style="padding:20px 24px; background:#fff; max-height:70vh; overflow-y:auto;">
+
+                {{-- Penyewa --}}
+                <div class="detail-card" style="margin-bottom:10px;">
+                    <p class="detail-label">Penyewa</p>
+                    <p class="detail-value fw-bold" id="detail-penyewa" style="margin-bottom:3px;">-</p>
+                    <p class="detail-sub" id="detail-email" style="margin-bottom:2px;">-</p>
+                    <p class="detail-sub" id="detail-telp" style="margin-bottom:0;">-</p>
+                </div>
+
+                {{-- Furnitur & Kamar --}}
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <div class="detail-card">
+                        <p class="detail-label">Furnitur</p>
+                        <p class="detail-value fw-bold" id="detail-furnitur" style="margin-bottom:0;">-</p>
                     </div>
-                    <div class="col-6">
-                        <div class="detail-card">
-                            <p class="detail-label">Furnitur</p>
-                            <p class="detail-value fw-bold" id="detail-furnitur">-</p>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="detail-card">
-                            <p class="detail-label">Kamar</p>
-                            <p class="detail-value" id="detail-kamar">-</p>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="detail-card">
-                            <p class="detail-label">Kode Barang</p>
-                            <p class="detail-value" id="detail-kode">-</p>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="detail-card">
-                            <p class="detail-label">Harga/Unit</p>
-                            <p class="detail-value text-success fw-bold" id="detail-harga">-</p>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="detail-card">
-                            <p class="detail-label">Status</p>
-                            <span id="detail-status" class="badge rounded-pill px-3 py-2" style="font-size:12px; font-weight:600;">-</span>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="detail-card">
-                            <p class="detail-label">Tgl Mulai</p>
-                            <p class="detail-value" id="detail-tgl-mulai">-</p>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="detail-card">
-                            <p class="detail-label">Tgl Selesai</p>
-                            <p class="detail-value" id="detail-tgl-selesai">-</p>
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="detail-card">
-                            <p class="detail-label">Catatan</p>
-                            <p class="detail-value" id="detail-catatan" style="white-space:pre-line;">-</p>
-                        </div>
+                    <div class="detail-card">
+                        <p class="detail-label">Kamar</p>
+                        <p class="detail-value" id="detail-kamar" style="margin-bottom:0;">-</p>
                     </div>
                 </div>
+
+                {{-- Kode, Harga, Status --}}
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <div class="detail-card">
+                        <p class="detail-label">Kode Barang</p>
+                        <p class="detail-value" id="detail-kode" style="margin-bottom:0;">-</p>
+                    </div>
+                    <div class="detail-card">
+                        <p class="detail-label">Harga/Unit</p>
+                        <p class="detail-value fw-bold" id="detail-harga" style="margin-bottom:0; color:#00a669;">-</p>
+                    </div>
+                    <div class="detail-card" style="display:flex; flex-direction:column; align-items:flex-start;">
+                        <p class="detail-label">Status</p>
+                        <span id="detail-status" class="badge rounded-pill" style="font-size:12px; font-weight:600; padding:5px 14px;">-</span>
+                    </div>
+                </div>
+
+                {{-- Tgl Mulai & Selesai --}}
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <div class="detail-card">
+                        <p class="detail-label">Tgl Mulai</p>
+                        <p class="detail-value" id="detail-tgl-mulai" style="margin-bottom:0;">-</p>
+                    </div>
+                    <div class="detail-card">
+                        <p class="detail-label">Tgl Selesai</p>
+                        <p class="detail-value" id="detail-tgl-selesai" style="margin-bottom:0;">-</p>
+                    </div>
+                </div>
+
+
             </div>
-            <div class="modal-footer border-0 bg-white px-4 pb-4 pt-0">
-                <button type="button" class="btn w-100" data-bs-dismiss="modal"
-                    style="background:#00a669; color:white; border-radius:8px; font-weight:600; font-size:13.5px; border:none; padding:10px;">
+
+            {{-- Footer --}}
+            <div style="padding:16px 24px; background:#fff; border-top:1px solid #f0f1f3;">
+                <button type="button" data-bs-dismiss="modal"
+                    style="width:100%; background:linear-gradient(135deg,#00a669,#008a57); color:white; border:none; border-radius:10px; font-weight:600; font-size:13.5px; padding:11px; cursor:pointer; transition:opacity 0.2s;"
+                    onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
                     Tutup
                 </button>
             </div>
+
         </div>
     </div>
 </div>

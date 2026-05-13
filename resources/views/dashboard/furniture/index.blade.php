@@ -27,8 +27,8 @@
 
                     <div class="row mb-4">
                         <div class="col-lg-12 d-flex justify-content-end gap-2">
-                            <a href="{{ route('penyewa-furnitur.index') }}" class="btn-track-furnitur shadow-sm">
-                                <i class="ti-pie-chart"></i> Track Penyewa Furnitur
+                            <a href="{{ route('penyewa-furnitur.index') }}" class="btn-track-furnitur shadow-sm" style="margin-right: 12px;">
+                                <i class="ti-pie-chart"></i> Track Furnitur Penyewa
                             </a>
                             <button type="button" class="btn-tambah shadow-sm" data-bs-toggle="modal" data-bs-target="#tambahFurnitureModal">
                                 <i class="ti-plus"></i> Tambah Furnitur
@@ -71,7 +71,7 @@
                             <i class="ti-alert"></i>
                         </div>
                         <div class="custom-alert-content">
-                            <strong>Terjadi kesalahan validasi:</strong>
+                            <strong>Ada error nih:</strong>
                             <ul class="mb-0 mt-1">
                                 @foreach($errors->all() as $error)
                                     <li>{{ $error }}</li>
@@ -90,8 +90,8 @@
                                 <div class="card-body p-4 p-md-5">
 
                                     <form method="GET" action="{{ url()->current() }}" class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 pb-2 gap-3 w-100">
-                                        <div class="d-flex align-items-center w-100 mt-2 mt-md-0 d-md-flex justify-content-md-end" style="gap: 10px; max-width: 320px;">
-                                            <input type="text" name="search" class="form-control shadow-none w-100" placeholder="Cari nama furnitur" value="{{ request('search') }}" style="border-radius: 4px; padding: 6px 12px; font-size: 14px;">
+                                        <div class="d-flex align-items-center w-100 mt-2 mt-md-0 d-md-flex justify-content-md-end" style="gap: 10px; max-width: 320px; ">
+                                            <input type="text" name="search" class="form-control shadow-none w-100" placeholder="Cari nama furnitur" value="{{ request('search') }}"  style="border-radius:8px; font-size:13.5px; margin-right: 12px; border: 1px solid #d1d5db; background-color: #fdfdfd; height: 40px; line-height: 40px; padding: 0 12px 0 36px;">
                                             <button type="submit" class="btn border-0 shadow-sm d-flex align-items-center justify-content-center flex-shrink-0" style="background-color: #00a669; color: white; padding: 0; width: 36px; height: 36px; border-radius: 4px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';">
                                                 <i class="ti-search" style="font-size: 15px;"></i>
                                             </button>
@@ -325,7 +325,7 @@
                                             <div class="d-flex flex-wrap gap-2">
                                                 @forelse($item->items as $kode)
                                                     <span class="badge rounded-pill" style="
-                                                        padding: 6px 12px; font-size: 12px; font-weight: 500;
+                                                        padding: 6px 12px; margin: 5px; font-size: 12px; font-weight: 500;
                                                         background: {{ $kode->status_item === 'Tersedia' ? '#ecfdf5' : ($kode->status_item === 'Disewa' ? '#eff6ff' : '#fef2f2') }};
                                                         color: {{ $kode->status_item === 'Tersedia' ? '#00a669' : ($kode->status_item === 'Disewa' ? '#3b82f6' : '#ef4444') }};
                                                         border: 1px solid {{ $kode->status_item === 'Tersedia' ? '#a7f3d0' : ($kode->status_item === 'Disewa' ? '#bfdbfe' : '#fecaca') }};
@@ -439,23 +439,68 @@
 
                 <!-- Modal Hapus -->
                 <div class="modal fade" id="hapusModal{{ $item->id_furnitur }}" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+                    <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
                         <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
-                            <div class="modal-body text-center" style="padding: 40px 30px;">
-                                <div style="background: #fef2f2; border-radius: 50%; width: 70px; height: 70px; display:flex; align-items:center; justify-content:center; margin: 0 auto 24px;">
-                                    <i class="ti-trash" style="color: #ef4444; font-size: 32px;"></i>
-                                </div>
-                                <h5 class="fw-bold mb-2" style="color: #111827; font-size: 18px;">Konfirmasi Hapus</h5>
-                                <p class="mb-4" style="color: #6b7280; font-size: 14px; line-height: 1.5;">Apakah Anda yakin ingin menghapus furnitur <strong>{{ $item->nama_furnitur }}</strong>? Tindakan ini tidak dapat dibatalkan.</p>
-
-                                <form action="{{ route('furnitur.destroy', $item->id_furnitur) }}" method="POST" id="formHapus{{ $item->id_furnitur }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <div class="d-flex flex-column gap-3">
-                                        <button type="submit" class="btn text-white py-2 fw-bold" style="background: #ef4444; border-radius: 10px; font-size: 14px; border: none;">Ya, Hapus Sekarang</button>
-                                        <button type="button" class="btn py-2 fw-600" data-bs-dismiss="modal" style="background: #f3f4f6; color: #4b5563; border-radius: 10px; font-size: 14px; border: none; margin-top: 12px;">Batalkan</button>
+                            <div style="background: #fff; padding: 22px 26px 18px; border-bottom: 1px solid #f0f1f3;">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center" style="gap: 12px;">
+                                        <div style="background: #fef2f2; border-radius: 10px; width: 40px; height: 40px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                            <i class="ti-trash" style="color: #ef4444; font-size: 18px;"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-0 fw-bold" style="color: #111827; font-size: 16px;">Hapus Barang ({{ $item->nama_furnitur }})</h5>
+                                            <p class="mb-0" style="color: #9ca3af; font-size: 12.5px;">Pilih kode barang yang ingin dihapus</p>
+                                        </div>
                                     </div>
-                                </form>
+                                    <button type="button" data-bs-dismiss="modal"
+                                        style="background: #f3f4f6; border: none; border-radius: 50%; width: 32px; height: 32px; display:flex; align-items:center; justify-content:center; color: #6b7280; font-size: 12px; transition: 0.2s;"
+                                        onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">
+                                        <i class="ti-close"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="modal-body" style="padding: 26px; background: #fff; max-height: 60vh; overflow-y: auto;">
+                                @php
+                                    $tersediaItems = $item->items->where('status_item', 'Tersedia');
+                                @endphp
+                                
+                                @if($tersediaItems->count() > 0)
+                                    <div class="list-group">
+                                        @foreach($tersediaItems as $kode)
+                                            <div class="list-group-item d-flex justify-content-between align-items-center mb-2" style="border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px 16px;">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <i class="ti-barcode" style="color:#6b7280;"></i>
+                                                    <span style="font-weight: 600; font-size: 14px; color: #111827;">{{ $kode->kode_item }}</span>
+                                                </div>
+                                                <form action="{{ route('furnitur.item.destroy', $kode->id_item) }}" method="POST" class="form-hapus-item" data-kode="{{ $kode->kode_item }}" style="margin:0;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm" style="background: #fef2f2; color: #ef4444; border: 1px solid #fecaca; border-radius: 8px; font-size: 12px; padding: 5px 12px; font-weight: 600; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                                                        Hapus
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <div class="text-center py-4">
+                                        <i class="ti-package" style="font-size: 40px; color: #d1d5db; margin-bottom: 12px; display: block;"></i>
+                                        <p style="color: #6b7280; font-size: 14px; margin-bottom: 0;">Tidak ada barang dengan status 'Tersedia' yang dapat dihapus.</p>
+                                    </div>
+                                @endif
+                                
+                                <hr style="border-color: #f3f4f6; margin: 24px 0;">
+                                
+                                <div class="text-center">
+                                    <p style="color: #6b7280; font-size: 12.5px; margin-bottom: 12px;">Atau hapus semua data furnitur ini beserta seluruh kode barangnya</p>
+                                    <form action="{{ route('furnitur.destroy', $item->id_furnitur) }}" method="POST" class="form-hapus-seluruh" data-nama="{{ $item->nama_furnitur }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn text-white w-100 shadow-sm" style="background: #ef4444; border-radius: 8px; font-size: 13.5px; padding: 10px; font-weight: 600; border: none; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                                            Hapus Seluruh Furnitur
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -524,8 +569,38 @@
 
                     .btn-tambah:hover {
                         opacity: 0.9;
-                        color: white;
+                        color: black;
                         text-decoration: none;
+                    }
+
+                    .btn-track-furnitur {
+                        background: #ffffff;
+                        color: #374151;
+                        border: 1.5px solid #e5e7eb;
+                        padding: 10px 20px;
+                        border-radius: 8px;
+                        font-weight: 500;
+                        font-size: 13.5px;
+                        cursor: pointer;
+                        transition: opacity 0.2s;
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 6px;
+                        text-decoration: none;
+                    }
+
+                    .btn-track-furnitur:hover {
+                        background: #f9fafb;
+                        border-color: #d1d5db;
+                        color: #111827;
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                        transform: translateY(-2px);
+                        text-decoration: none;
+                    }
+
+                    .btn-track-furnitur:active {
+                        transform: translateY(0px);
+                        box-shadow: none;
                     }
 
                     .table-row-hover:hover {
@@ -646,5 +721,86 @@
             btns.forEach(btn => btn.style.display = 'flex'); // Tampilkan semua tombol hapus
         }
     }
+
+    // SweetAlert untuk konfirmasi Hapus
+    document.addEventListener('DOMContentLoaded', function () {
+        const hapusItemForms = document.querySelectorAll('.form-hapus-item');
+        hapusItemForms.forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const kode = this.getAttribute('data-kode');
+                Swal.fire({
+                    html: `
+                        <div style="text-align: center; margin-top: 5px;">
+                            <div style="background: #fef2f2; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path></svg>
+                            </div>
+                            <h5 style="color: #111827; font-size: 15.5px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.2px;">Hapus Kode Barang?</h5>
+                            <p style="color: #6b7280; font-size: 13px; line-height: 1.5; margin-bottom: 0;">Apakah Anda yakin ingin menghapus kode barang <strong style="color: #111827;">${kode}</strong>?</p>
+                        </div>
+                    `,
+                    showConfirmButton: true,
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#f3f4f6',
+                    confirmButtonText: '<span style="font-weight: 600; font-size: 13px;">Ya, Hapus</span>',
+                    cancelButtonText: '<span style="font-weight: 600; font-size: 13px; color: #4b5563;">Batal</span>',
+                    reverseButtons: true,
+                    width: '320px',
+                    padding: '24px 20px',
+                    customClass: {
+                        popup: 'rounded-4 shadow-lg border-0',
+                        actions: 'mt-3 mb-0 w-100 justify-content-center',
+                        confirmButton: 'rounded-3 px-4 py-2 border-0 mx-2',
+                        cancelButton: 'rounded-3 px-4 py-2 border-0 mx-2'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit();
+                    }
+                });
+            });
+        });
+
+        const hapusSeluruhForms = document.querySelectorAll('.form-hapus-seluruh');
+        hapusSeluruhForms.forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const nama = this.getAttribute('data-nama');
+                Swal.fire({
+                    html: `
+                        <div style="text-align: center; margin-top: 5px;">
+                            <div style="background: #fef2f2; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6"></path></svg>
+                            </div>
+                            <h5 style="color: #111827; font-size: 15.5px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.2px;">Hapus Seluruh Furnitur?</h5>
+                            <p style="color: #6b7280; font-size: 13px; line-height: 1.5; margin-bottom: 16px;">Anda akan menghapus kategori <strong style="color: #111827;">${nama}</strong> beserta riwayatnya.</p>
+                            <span style="background: #fef2f2; color: #ef4444; padding: 6px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 600;">Tindakan ini tidak dapat dibatalkan</span>
+                        </div>
+                    `,
+                    showConfirmButton: true,
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#f3f4f6',
+                    confirmButtonText: '<span style="font-weight: 600; font-size: 13px;">Hapus Semua</span>',
+                    cancelButtonText: '<span style="font-weight: 600; font-size: 13px; color: #4b5563;">Batal</span>',
+                    reverseButtons: true,
+                    width: '340px',
+                    padding: '24px 20px',
+                    customClass: {
+                        popup: 'rounded-4 shadow-lg border-0',
+                        actions: 'mt-4 mb-0 w-100 justify-content-center',
+                        confirmButton: 'rounded-3 px-3 py-2 border-0 mx-2',
+                        cancelButton: 'rounded-3 px-4 py-2 border-0 mx-2'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit();
+                    }
+                });
+            });
+        });
+    });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endpush
