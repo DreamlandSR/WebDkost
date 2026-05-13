@@ -77,7 +77,7 @@
 
                                     <div class="mb-4 d-flex align-items-center">
                                         <span class="text-muted mr-1 auth-forgot-text">Lupa password ?</span>
-                                        <a href="{{ route('otp.request') }}"
+                                        <a href="{{ route('forgot-password') }}"
                                             class="small text-decoration-none auth-link-forgot">
                                             klik disini
                                         </a>
