@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Exports\PendapatanPerBulanExport;
+use App\Exports\PengeluaranPerBulanExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AdminController extends Controller
 {
@@ -106,4 +109,33 @@ class AdminController extends Controller
 
         return view('dashboard.terlaris', compact('produkTerlaris'));
     }
+
+    public function exportPendapatan(Request $request)
+    {
+        $bulan = $request->input('bulan', Carbon::now()->month);
+        $tahun = $request->input('tahun', Carbon::now()->year);
+
+        $namaBulan = Carbon::createFromDate($tahun, $bulan, 1)
+            ->locale('id')
+            ->translatedFormat('F_Y');
+
+        $fileName = 'Laporan_Pendapatan_' . $namaBulan . '.xlsx';
+
+        return Excel::download(new PendapatanPerBulanExport($bulan, $tahun), $fileName);
+    }
+
+    public function exportPengeluaran(Request $request)
+    {
+        $bulan = $request->input('bulan', Carbon::now()->month);
+        $tahun = $request->input('tahun', Carbon::now()->year);
+
+        $namaBulan = Carbon::createFromDate($tahun, $bulan, 1)
+            ->locale('id')
+            ->translatedFormat('F_Y');
+
+        $fileName = 'Laporan_Pengeluaran_' . $namaBulan . '.xlsx';
+
+        return Excel::download(new PengeluaranPerBulanExport($bulan, $tahun), $fileName);
+    }
 }
+
