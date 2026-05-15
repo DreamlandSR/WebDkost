@@ -7,20 +7,6 @@
         </a>
     </div>
     <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
-        <ul class="navbar-nav mr-lg-2">
-            <li class="nav-item nav-search d-none d-lg-block">
-                <div class="d-flex align-items-center navbar-search-container" id="navbar-search-container">
-                    <div class="d-flex align-items-center justify-content-center navbar-search-icon"
-                        id="navbar-search-icon">
-                        <i class="ti-search"></i>
-                    </div>
-                    <input type="text"
-                        class="form-control bg-transparent border-0 shadow-none ps-2 pe-0 m-0 navbar-search-input"
-                        id="navbar-search-input" placeholder="Cari di sini..." aria-label="search"
-                        aria-describedby="search">
-                </div>
-            </li>
-        </ul>
 
         {{-- Hamburger button - mobile only --}}
         <button class="d-flex d-lg-none align-items-center justify-content-center border-0 bg-transparent ms-auto me-2"

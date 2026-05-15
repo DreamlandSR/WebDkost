@@ -150,9 +150,22 @@
                                             </div>
                                         </div>
 
-                                        @php $isPositive = ($growthPembayaran ?? 0) >= 0; @endphp
-                                        <span
-                                            class="badge rounded-pill d-flex align-items-center gap-1 {{ $isPositive ? 'growth-card__badge--positive' : 'growth-card__badge--negative' }}">
+                                        <div class="d-flex align-items-center">
+                                            <button type="button"
+                                                class="btn btn-export-pendapatan d-flex align-items-center"
+                                                onclick="openExportModal('pendapatan')"
+                                                title="Unduh laporan pendapatan per bulan" style = "margin-right: 12px;">
+                                                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                                    <polyline points="7 10 12 15 17 10"/>
+                                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                                </svg>
+                                                Unduh Excel
+                                            </button>
+
+                                            @php $isPositive = ($growthPembayaran ?? 0) >= 0; @endphp
+                                            <span
+                                                class="badge rounded-pill d-flex align-items-center gap-1 {{ $isPositive ? 'growth-card__badge--positive' : 'growth-card__badge--negative' }}">
                                             @if ($isPositive)
                                                 <svg width="12" height="12" fill="none" stroke="currentColor"
                                                     stroke-width="2" viewBox="0 0 24 24">
@@ -168,7 +181,8 @@
                                                 </svg>
                                                 {{ $growthPembayaran }}%
                                             @endif
-                                        </span>
+                                            </span>
+                                        </div>
                                     </div>
 
                                     <p class="text-secondary growth-card__description mt-4 mb-4">
@@ -327,15 +341,18 @@
                                     <div class="text-muted pengeluaran-card__subtitle">Rincian transaksi dan biaya
                                         operasional bulan {{ $currentMonth }}</div>
                                 </div>
-                                <div class="d-flex align-items-center">
-                                    <a href="{{ route('pengeluaran.export') }}" class="btn btn-success d-flex align-items-center gap-2 shadow-sm" style="border-radius: 8px; font-size: 12px; font-weight: 600; padding: 8px 16px; background-color: #00a669; border: none;">
-                                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                            <polyline points="7 10 12 15 17 10"></polyline>
-                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                <div class="d-flex align-items-center gap-2">
+                                    <button type="button"
+                                        class="btn btn-export-pengeluaran d-flex align-items-center gap-2"
+                                        onclick="openExportModal('pengeluaran')"
+                                        title="Unduh laporan pengeluaran per bulan">
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                            <polyline points="7 10 12 15 17 10"/>
+                                            <line x1="12" y1="15" x2="12" y2="3"/>
                                         </svg>
                                         Unduh Excel
-                                    </a>
+                                    </button>
                                     <a href="{{ url('/laporan/pengeluaran') }}" class="pengeluaran-card__link">
                                         Lihat Laporan
                                     </a>
@@ -460,8 +477,362 @@
         </div>{{-- .page-body-wrapper --}}
     </div>{{-- .container-scroller --}}
 
+    {{-- ════════════════════════════════════════════════════════
+         MODAL EXPORT PENDAPATAN PER BULAN
+    ════════════════════════════════════════════════════════ --}}
+    <div class="export-modal-overlay" id="exportModalOverlay" onclick="closeExportModal()">
+        <div class="export-modal" id="exportModal" onclick="event.stopPropagation()">
+
+            {{-- Header Modal --}}
+            <div class="export-modal__header" id="exportModalHeader">
+                <div class="export-modal__header-icon" id="exportModalHeaderIcon">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                </div>
+                <div>
+                    <h5 class="export-modal__title" id="exportModalTitle">Unduh Laporan Excel</h5>
+                    <p class="export-modal__subtitle" id="exportModalSubtitle">Pilih bulan dan tahun untuk mengunduh laporan</p>
+                </div>
+                <button type="button" class="export-modal__close" onclick="closeExportModal()">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+
+            {{-- Body Modal --}}
+            <div class="export-modal__body">
+                {{-- Bulan --}}
+                <div class="export-field">
+                    <label class="export-field__label">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Bulan
+                    </label>
+                    <div class="export-month-grid" id="exportMonthGrid">
+                        @php
+                            $bulanList = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+                        @endphp
+                        @foreach ($bulanList as $i => $bln)
+                            <button type="button"
+                                class="export-month-btn {{ ($i + 1) === (int) now()->month ? 'active' : '' }}"
+                                data-month="{{ $i + 1 }}"
+                                onclick="selectMonth(this)">
+                                {{ $bln }}
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Tahun --}}
+                <div class="export-field">
+                    <label class="export-field__label">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        Tahun
+                    </label>
+                    <div class="export-year-row">
+                        <button type="button" class="export-year-nav" onclick="changeYear(-1)">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <polyline points="15 18 9 12 15 6"/>
+                            </svg>
+                        </button>
+                        <span class="export-year-display" id="exportYearDisplay">{{ now()->year }}</span>
+                        <button type="button" class="export-year-nav" onclick="changeYear(1)">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Preview Info --}}
+                <div class="export-preview" id="exportPreview">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                    <span id="exportPreviewText">Laporan_Pendapatan_<span id="exportPreviewMonth">{{ now()->locale('id')->translatedFormat('F') }}</span>_<span id="exportPreviewYear">{{ now()->year }}</span>.xlsx</span>
+                </div>
+            </div>
+
+            {{-- Footer Modal --}}
+            <div class="export-modal__footer">
+                <button type="button" class="btn export-btn-cancel" onclick="closeExportModal()">
+                    Batal
+                </button>
+                <a href="#" class="btn export-btn-download" id="exportDownloadBtn">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Unduh Sekarang
+                </a>
+            </div>
+        </div>
+    </div>
+
     @push('scripts')
         {{-- Kirim data PHP ke JavaScript via window object --}}
+        <style>
+            /* ═══════════ TOMBOL EXPORT ═══════════ */
+            .btn-export-pendapatan {
+                background: linear-gradient(135deg, #00a669 0%, #00c47c 100%);
+                color: #fff;
+                border: none;
+                border-radius: 8px;
+                font-size: 11.5px;
+                font-weight: 600;
+                padding: 7px 14px;
+                transition: all .25s ease;
+                box-shadow: 0 2px 8px rgba(0,166,105,.3);
+                white-space: nowrap;
+            }
+            .btn-export-pendapatan:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 14px rgba(0,166,105,.45);
+                color: #fff;
+            }
+            .btn-export-pengeluaran {
+                background: linear-gradient(135deg, #6979f8 0%, #8b9cff 100%);
+                color: #fff;
+                border: none;
+                border-radius: 8px;
+                font-size: 11.5px;
+                font-weight: 600;
+                padding: 7px 14px;
+                transition: all .25s ease;
+                box-shadow: 0 2px 8px rgba(105,121,248,.3);
+                white-space: nowrap;
+            }
+            .btn-export-pengeluaran:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 14px rgba(105,121,248,.45);
+                color: #fff;
+            }
+
+            /* ═══════════ OVERLAY & MODAL ═══════════ */
+            .export-modal-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(15,23,42,.5);
+                backdrop-filter: blur(4px);
+                z-index: 9999;
+                align-items: center;
+                justify-content: center;
+                animation: overlayFadeIn .2s ease;
+            }
+            .export-modal-overlay.active { display: flex; }
+
+            @keyframes overlayFadeIn { from { opacity: 0; } to { opacity: 1; } }
+            @keyframes modalSlideIn  { from { opacity: 0; transform: translateY(-24px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+            .export-modal {
+                background: #fff;
+                border-radius: 18px;
+                width: 100%;
+                max-width: 440px;
+                box-shadow: 0 20px 60px rgba(0,0,0,.18);
+                animation: modalSlideIn .25s cubic-bezier(.34,1.56,.64,1);
+                overflow: hidden;
+            }
+
+            /* Header */
+            .export-modal__header {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                padding: 22px 24px 18px;
+                border-bottom: 1px solid #f0f0f5;
+            }
+            .export-modal__header-icon {
+                width: 46px; height: 46px;
+                border-radius: 12px;
+                display: flex; align-items: center; justify-content: center;
+                flex-shrink: 0;
+            }
+            .export-modal__header.green .export-modal__header-icon {
+                background: #e8f5e9;
+                color: #00a669;
+            }
+            .export-modal__header.purple .export-modal__header-icon {
+                background: #ece9ff;
+                color: #6979f8;
+            }
+            .export-modal__title {
+                font-size: 16px;
+                font-weight: 700;
+                color: #1a1a2e;
+                margin: 0 0 2px;
+            }
+            .export-modal__subtitle {
+                font-size: 12px;
+                color: #8a8fa8;
+                margin: 0;
+            }
+            .export-modal__close {
+                margin-left: auto;
+                background: none;
+                border: none;
+                color: #aab0c4;
+                padding: 6px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: background .2s, color .2s;
+            }
+            .export-modal__close:hover { background: #f3f4f6; color: #555; }
+
+            /* Body */
+            .export-modal__body { padding: 20px 24px; }
+            .export-field { margin-bottom: 18px; }
+            .export-field__label {
+                display: flex; align-items: center; gap: 6px;
+                font-size: 12px;
+                font-weight: 600;
+                color: #6b7080;
+                text-transform: uppercase;
+                letter-spacing: .5px;
+                margin-bottom: 10px;
+            }
+
+            /* Grid Bulan */
+            .export-month-grid {
+                display: grid;
+                grid-template-columns: repeat(6, 1fr);
+                gap: 6px;
+            }
+            .export-month-btn {
+                background: #f6f7fa;
+                border: 1.5px solid transparent;
+                border-radius: 8px;
+                font-size: 12px;
+                font-weight: 500;
+                color: #4a4f68;
+                padding: 7px 4px;
+                cursor: pointer;
+                transition: all .18s ease;
+                text-align: center;
+            }
+            .export-month-btn:hover {
+                background: #f0f1ff;
+                border-color: #6979f8;
+                color: #6979f8;
+            }
+            .export-month-btn.active {
+                font-weight: 700;
+                color: #fff;
+            }
+            /* Warna active akan diset via JS */
+            .export-modal.type-pendapatan .export-month-btn.active {
+                background: #00a669;
+                border-color: #00a669;
+                box-shadow: 0 2px 8px rgba(0,166,105,.35);
+            }
+            .export-modal.type-pengeluaran .export-month-btn.active {
+                background: #6979f8;
+                border-color: #6979f8;
+                box-shadow: 0 2px 8px rgba(105,121,248,.35);
+            }
+
+            /* Navigasi Tahun */
+            .export-year-row {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                background: #f6f7fa;
+                border-radius: 10px;
+                padding: 8px 14px;
+                width: fit-content;
+            }
+            .export-year-nav {
+                background: #fff;
+                border: 1px solid #e0e2ec;
+                border-radius: 7px;
+                width: 30px; height: 30px;
+                display: flex; align-items: center; justify-content: center;
+                cursor: pointer;
+                color: #4a4f68;
+                transition: all .18s;
+            }
+            .export-year-nav:hover { background: #6979f8; border-color: #6979f8; color: #fff; }
+            .export-year-display {
+                font-size: 16px;
+                font-weight: 700;
+                color: #1a1a2e;
+                min-width: 52px;
+                text-align: center;
+            }
+
+            /* Preview */
+            .export-preview {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                background: #f6f7fa;
+                border-radius: 8px;
+                padding: 9px 12px;
+                font-size: 11.5px;
+                color: #5a6080;
+                margin-top: 4px;
+                border: 1px dashed #d0d4e8;
+            }
+
+            /* Footer */
+            .export-modal__footer {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 10px;
+                padding: 16px 24px;
+                border-top: 1px solid #f0f0f5;
+            }
+            .export-btn-cancel {
+                background: #f3f4f6;
+                border: none;
+                color: #6b7080;
+                font-size: 13px;
+                font-weight: 600;
+                padding: 9px 18px;
+                border-radius: 8px;
+                transition: background .2s;
+            }
+            .export-btn-cancel:hover { background: #e5e7eb; }
+            .export-btn-download {
+                display: flex; align-items: center; gap: 7px;
+                font-size: 13px;
+                font-weight: 700;
+                padding: 9px 20px;
+                border-radius: 8px;
+                color: #fff;
+                border: none;
+                transition: all .22s;
+            }
+            .export-modal.type-pendapatan .export-btn-download {
+                background: linear-gradient(135deg, #00a669, #00c47c);
+                box-shadow: 0 3px 12px rgba(0,166,105,.35);
+            }
+            .export-modal.type-pengeluaran .export-btn-download {
+                background: linear-gradient(135deg, #6979f8, #8b9cff);
+                box-shadow: 0 3px 12px rgba(105,121,248,.35);
+            }
+            .export-btn-download:hover {
+                transform: translateY(-1px);
+                color: #fff;
+            }
+        </style>
+
         <script>
             window.dashboardData = {
                 growth: {
@@ -476,6 +847,87 @@
                     colors: {!! json_encode($chartColors) !!},
                 },
             };
+
+            // ── Export Modal Logic ─────────────────────────
+            const exportRoutes = {
+                pendapatan : '{{ route("admin.export.pendapatan") }}',
+                pengeluaran: '{{ route("admin.export.pengeluaran") }}',
+            };
+
+            const monthNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+            let currentType  = 'pendapatan';
+            let currentMonth = {{ now()->month }};
+            let currentYear  = {{ now()->year }};
+
+            function openExportModal(type) {
+                currentType  = type;
+                currentMonth = {{ now()->month }};
+                currentYear  = {{ now()->year }};
+
+                const modal    = document.getElementById('exportModal');
+                const overlay  = document.getElementById('exportModalOverlay');
+                const header   = document.getElementById('exportModalHeader');
+
+                // Reset state
+                modal.className = 'export-modal type-' + type;
+                header.className = 'export-modal__header ' + (type === 'pendapatan' ? 'green' : 'purple');
+
+                document.getElementById('exportModalTitle').textContent =
+                    type === 'pendapatan' ? 'Unduh Laporan Pendapatan' : 'Unduh Laporan Pengeluaran';
+                document.getElementById('exportModalSubtitle').textContent =
+                    type === 'pendapatan'
+                        ? 'Pilih periode untuk laporan pendapatan bulanan'
+                        : 'Pilih periode untuk laporan pengeluaran bulanan';
+
+                // Reset bulan
+                document.querySelectorAll('.export-month-btn').forEach(btn => {
+                    btn.classList.toggle('active', parseInt(btn.dataset.month) === currentMonth);
+                });
+
+                updateYearDisplay();
+                updatePreview();
+
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeExportModal() {
+                document.getElementById('exportModalOverlay').classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            function selectMonth(btn) {
+                document.querySelectorAll('.export-month-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentMonth = parseInt(btn.dataset.month);
+                updatePreview();
+            }
+
+            function changeYear(delta) {
+                const newYear = currentYear + delta;
+                if (newYear < 2020 || newYear > {{ now()->year + 1 }}) return;
+                currentYear = newYear;
+                updateYearDisplay();
+                updatePreview();
+            }
+
+            function updateYearDisplay() {
+                document.getElementById('exportYearDisplay').textContent = currentYear;
+            }
+
+            function updatePreview() {
+                const prefix = currentType === 'pendapatan' ? 'Laporan_Pendapatan' : 'Laporan_Pengeluaran';
+                const bln    = monthNames[currentMonth - 1];
+                document.getElementById('exportPreviewText').textContent =
+                    prefix + '_' + bln + '_' + currentYear + '.xlsx';
+
+                const url = exportRoutes[currentType] + '?bulan=' + currentMonth + '&tahun=' + currentYear;
+                document.getElementById('exportDownloadBtn').href = url;
+            }
+
+            // Tutup modal jika tekan Escape
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') closeExportModal(); });
         </script>
     @endpush
 @endsection

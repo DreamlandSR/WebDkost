@@ -74,6 +74,8 @@ Route::middleware('auth')->group(function () {
 // ── Admin Routes ────────────────────────────────────────────
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/export/pendapatan', [AdminController::class, 'exportPendapatan'])->name('admin.export.pendapatan');
+    Route::get('/admin/export/pengeluaran', [AdminController::class, 'exportPengeluaran'])->name('admin.export.pengeluaran');
 
     Route::get('/laporan/keluhan', [\App\Http\Controllers\LaporanKeluhan::class, 'index'])->name('keluhan.page');
     Route::put('/laporan/keluhan/{id_keluhan}', [\App\Http\Controllers\LaporanKeluhan::class, 'updateStatus'])->name('keluhan.updateStatus');
