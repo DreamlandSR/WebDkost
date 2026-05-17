@@ -35,7 +35,7 @@ class TagihanController extends Controller
                 });
             }
             
-            $tagihans = $query->orderBy('id_tagihan', 'desc')->paginate(10);
+            $tagihans = $query->orderBy('id_tagihan', 'desc')->paginate(5);
             
             return view('dashboard.tagihan.index', compact('tagihans'));
             

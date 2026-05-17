@@ -94,8 +94,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard/kamar/{id_kamar}/edit', [\App\Http\Controllers\KamarController::class, 'edit'])->name('kamar.edit');
     Route::put('/dashboard/kamar/{id_kamar}', [\App\Http\Controllers\KamarController::class, 'update'])->name('kamar.update');
     Route::delete('/dashboard/kamar/{id_kamar}', [\App\Http\Controllers\KamarController::class, 'destroy'])->name('kamar.destroy');
-    Route::delete('/kamar/image/{id_galeri}', [\App\Http\Controllers\KamarController::class, 'deleteImage'])->name('kamar.delete-image');
-    Route::put('/kamar/image/{id_galeri}/main', [\App\Http\Controllers\KamarController::class, 'setMainImage'])->name('kamar.set-main-image');
+    Route::delete('/kamar/image/{id_foto}', [\App\Http\Controllers\KamarController::class, 'deleteImage'])->name('kamar.delete-image');
+    Route::put('/kamar/image/{id_foto}/main', [\App\Http\Controllers\KamarController::class, 'setMainImage'])->name('kamar.set-main-image');
 
     // Kelola Booking
     Route::get('/dashboard/booking', [BookingController::class, 'index'])->name('booking.index');
@@ -141,12 +141,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/register/verify-otp', [RegisteredUserController::class, 'verifyOtp'])->name('register.verify-otp');
     Route::get('/register/success', [RegisteredUserController::class, 'showSuccess'])->name('register.success');
     Route::get('/AdminPage', [AdminController::class, 'index'])->name('admin');
-});
-
-// routes untuk AJAX
-Route::prefix('kamar')->group(function () {
-    Route::delete('image/{id_galeri}', [\App\Http\Controllers\KamarController::class, 'deleteImage'])->name('kamar.delete-image');
-    Route::put('image/{id_galeri}/main', [\App\Http\Controllers\KamarController::class, 'setMainImage'])->name('kamar.set-main-image');
 });
 
 require __DIR__ . '/auth.php';

@@ -290,6 +290,15 @@
                             <span style="background: #eff6ff; color: #3b82f6; border-radius: 6px; width: 22px; height: 22px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;"><i class="ti-home"></i></span>
                             Nomor Kamar <span class="text-danger">*</span>
                         </label>
+                        <div id="duplicateWarningEdit{{ $kamar->id_kamar }}"
+                            style="display:none; align-items:center; gap:7px; background:linear-gradient(135deg,#fff5f5,#fff0f0); border-left:3px solid #f87171; border-radius:8px; padding:8px 12px; margin-bottom:8px;">
+                            <span style="background:#fee2e2; border-radius:6px; width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <i class="ti-alert" style="color:#ef4444; font-size:11px;"></i>
+                            </span>
+                            <span style="font-size:12.5px; color:#b91c1c; font-weight:500;">
+                                Nomor kamar sudah digunakan!
+                            </span>
+                        </div>
                         <input type="text" name="nomor_kamar" value="{{ $kamar->nomor_kamar }}" required
                             style="width:100%; padding: 11px 14px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 14px; color: #111827; outline: none; transition: 0.2s;"
                             onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';"
@@ -309,7 +318,7 @@
                                     {{ $kamar->tipe_kamar == $tipe ? 'checked' : '' }}
                                     style="display:none;"
                                     onchange="updateEditPill(this, 'tipe', {{ $kamar->id_kamar }})">
-                                <span class="pill-label-tipe-{{ $kamar->id_kamar }} {{ $kamar->tipe_kamar == $tipe ? 'pill-active-edit' : '' }}"
+                                <span class="pill-label-edit pill-label-tipe-{{ $kamar->id_kamar }}"
                                     style="display:inline-block; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 500; border: 1.5px solid #e5e7eb; background: #f9fafb; color: #6b7280; transition: all 0.15s; user-select:none;">{{ $tipe }}</span>
                             </label>
                             @endforeach
@@ -329,7 +338,7 @@
                             @foreach(['tersedia', 'terisi', 'maintenance'] as $status)
                             <label class="status-pill-edit" style="cursor:pointer;">
                                 <input type="radio" name="status_kamar" value="{{ $status }}" {{ $kamar->status_kamar == $status ? 'checked' : '' }} required style="display:none;" onchange="updateEditPill(this, 'status', {{ $kamar->id_kamar }})">
-                                <span class="pill-label-status-{{ $kamar->id_kamar }} {{ $kamar->status_kamar == $status ? 'pill-active-edit' : '' }}"
+                                <span class="pill-label-edit pill-label-status-{{ $kamar->id_kamar }}"
                                     style="display:inline-block; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 500; border: 1.5px solid #e5e7eb; background: #f9fafb; color: #6b7280; transition: all 0.15s; user-select:none;">{{ $status }}</span>
                             </label>
                             @endforeach
@@ -423,6 +432,22 @@
                             <span style="background: #eff6ff; color: #3b82f6; border-radius: 6px; width: 22px; height: 22px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;"><i class="ti-image"></i></span>
                             Galeri Foto
                         </label>
+                        <div id="imageSizeWarningEdit{{ $kamar->id_kamar }}"
+                            style="display:none; align-items:center; gap:7px; background:linear-gradient(135deg,#fff5f5,#fff0f0); border-left:3px solid #f87171; border-radius:8px; padding:8px 12px; margin-bottom:8px;">
+                            <span style="background:#fee2e2; border-radius:6px; width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 9V13" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M12 17H12.01" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M10.29 3.86L1.82 18A2 2 0 0 0 3.53 21H20.47A2 2 0 0 0 22.18 18L13.71 3.86A2 2 0 0 0 10.29 3.86Z"
+                                        stroke="#ef4444" stroke-width="2" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <span id="imageSizeWarningTextEdit{{ $kamar->id_kamar }}"
+                                style="font-size:12.5px; color:#b91c1c; font-weight:500;">
+                                Ukuran file melebihi batas 2MB!
+                            </span>
+                        </div>
 
                         <div class="image-input-wrapper">
                             <input type="file" name="images[]" id="imageInput{{ $kamar->id_kamar }}" accept="image/*" multiple style="display:none;">
@@ -430,22 +455,43 @@
                             @if($kamar->galeri && $kamar->galeri->count() > 0)
                                 <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px;" id="galleryContainer{{ $kamar->id_kamar }}">
                                     @foreach($kamar->galeri as $gambar)
-                                    <div class="gallery-item" id="gallery-item-{{ $gambar->id_galeri }}" style="width: 100px; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05); position: relative; flex-shrink: 0;">
-                                        <div style="width: 100%; height: 80px; background: #f3f4f6; display: flex; align-items: center; justify-content: center; position: relative;">
-                                            <button type="button" onclick="deleteImage({{ $gambar->id_galeri }}, {{ $kamar->id_kamar }})" style="position: absolute; top: 4px; right: 4px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; z-index: 10; transition: background 0.2s;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='rgba(239, 68, 68, 0.9)'" title="Hapus Gambar">
-                                                <i class="ti-close"></i>
-                                            </button>
-                                            <img src="{{ asset('storage/' . $gambar->url_foto) }}" alt="Gallery" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 1;">
+                                        @php
+                                            $idGaleri = $gambar->id_foto ?? $gambar->id;
+                                        @endphp
+
+                                        <div class="gallery-item" id="gallery-item-{{ $idGaleri }}"
+                                            style="width: 100px; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05); position: relative; flex-shrink: 0;">
+
+                                            <div style="width: 100%; height: 80px; background: #f3f4f6; display: flex; align-items: center; justify-content: center; position: relative;">
+
+                                                <button type="button"
+                                                    onclick="markDeleteImage(event, {{ $gambar->id_foto }}, {{ $kamar->id_kamar }})"
+                                                    style="position: absolute; top: 4px; right: 4px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; z-index: 10; transition: background 0.2s;"
+                                                    onmouseover="this.style.background='#dc2626'"
+                                                    onmouseout="this.style.background='rgba(239, 68, 68, 0.9)'"
+                                                    title="Hapus Gambar">
+                                                    <i class="ti-close"></i>
+                                                </button>
+
+                                                <img src="{{ asset('storage/' . $gambar->url_foto) }}" alt="Gallery"
+                                                    style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 1;">
+                                            </div>
+
+                                            <div style="padding: 6px; text-align: center; background: #f9fafb; border-top: 1px solid #f0f0f0;">
+                                                @if($gambar->is_main)
+                                                    <small style="font-size: 10px; color: #10b981; font-weight: 600; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="Gambar Utama">
+                                                        Gambar Utama
+                                                    </small>
+                                                @else
+                                                    <button type="button"
+                                                        onclick="markSetMainImage(event, {{ $gambar->id_foto }}, {{ $kamar->id_kamar }})"
+                                                        style="background:none; border:none; padding:0; font-size:10px; color:#3b82f6; text-decoration:none; display:block; font-weight:500; cursor:pointer;">
+                                                        Jadikan Utama
+                                                    </button>
+                                                @endif
+                                            </div>
                                         </div>
-                                        <div style="padding: 6px; text-align: center; background: #f9fafb; border-top: 1px solid #f0f0f0;">
-                                            @if($gambar->is_main)
-                                                <small style="font-size: 10px; color: #10b981; font-weight: 600; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="Gambar Utama">Gambar Utama</small>
-                                            @else
-                                                <a href="javascript:void(0)" class="btn-set-main" data-id="{{ $gambar->id_galeri }}" data-kamar="{{ $kamar->id_kamar }}" style="font-size: 10px; color: #3b82f6; text-decoration: none; display: block; font-weight: 500; transition: 0.2s;" onmouseover="this.style.color='#2563eb'" onmouseout="this.style.color='#3b82f6'">Jadikan Utama</a>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    @endforeach
+                                        @endforeach
 
                                     <div id="imagePreviewEdit{{ $kamar->id_kamar }}" style="display: flex; flex-wrap: wrap; gap: 12px;"></div>
 

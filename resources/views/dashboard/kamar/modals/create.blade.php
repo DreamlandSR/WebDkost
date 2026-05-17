@@ -1,9 +1,3 @@
-<style>
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-6px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-</style>
 <div class="modal fade" id="tambahKamarModal" tabindex="-1" aria-labelledby="tambahKamarModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 520px;">
         <div class="modal-content border-0" style="border-radius: 14px; overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.13);">
@@ -62,12 +56,26 @@
                             <span style="background: #ecfdf5; color: #00a669; border-radius: 6px; width: 22px; height: 22px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;"><i class="ti-home"></i></span>
                             Nomor Kamar <span class="text-danger">*</span>
                         </label>
-                        <input type="text" name="nomor_kamar" required
+                        <div id="duplicateWarning" style="display:none; align-items: center; mb-2; gap: 7px; background: linear-gradient(135deg, #fff5f5, #fff0f0); border-left: 3px solid #f87171; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; animation: slideDown 0.25s ease;">
+                            <span style="background: #fee2e2; border-radius: 6px; width: 22px; height: 22px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <i class="ti-alert" style="color: #ef4444; font-size: 11px;"></i>
+                            </span>
+                            <span style="font-size: 12.5px; color: #b91c1c; font-weight: 500;">Nomor kamar sudah ada!</span>
+                        </div>
+                        @error('nomor_kamar')
+                            <div class="d-flex align-items-center mt-2" style="gap: 7px; background: linear-gradient(135deg, #fffbeb, #fef3c7); border-left: 3px solid #f59e0b; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; animation: slideDown 0.25s ease;">
+                                <span style="background: #fde68a; border-radius: 6px; width: 22px; height: 22px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                    <i class="ti-alert" style="color: #d97706; font-size: 11px;"></i>
+                                </span>
+                                <span style="font-size: 12.5px; color: #92400e; font-weight: 500;">{{ $message }}</span>
+                            </div>
+                        @enderror
+                        <input type="text" name="nomor_kamar" id="inputNomorKamar" required
                             style="width:100%; padding: 11px 14px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 14px; color: #111827; outline: none; transition: border-color 0.2s, box-shadow 0.2s;"
                             placeholder="Contoh: 101, A1"
                             value="{{ old('nomor_kamar') }}"
                             onfocus="this.style.borderColor='#00a669'; this.style.boxShadow='0 0 0 3px rgba(0,166,105,0.1)';"
-                            onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none';">
+                            onblur="if(!this.classList.contains('is-duplicate')) { this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'; }">
                     </div>
 
                     <!-- Tipe Kamar -->
@@ -78,11 +86,17 @@
                         </label>
                         <div class="d-flex flex-wrap" style="gap: 10px;" id="tipeGrid">
                             @foreach(['biasa', 'sedang', 'mewah'] as $tipe)
-                            <label class="tipe-pill" style="cursor:pointer;">
-                                <input type="radio" name="tipe_kamar" value="{{ $tipe }}" onchange="selectTipe(this)" {{ old('tipe_kamar') == $tipe ? 'checked' : '' }}>
-                                <span class="pill-label" style="display:inline-block; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 500; border: 1.5px solid #e5e7eb; background: #f9fafb; color: #6b7280; transition: all 0.15s; user-select:none;">{{ $tipe }}</span>
+                            <label class="tipe-pill" style="cursor:pointer; margin: 0;">
+                                <input type="radio" name="tipe_kamar" value="{{ $tipe }}" onchange="selectTipe(this)">
+                                <span class="pill-label" style="display:inline-block; padding: 7px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; border: 1.5px solid #e5e7eb; background: #f9fafb; color: #6b7280; transition: all 0.2s; user-select:none; text-transform: capitalize;">{{ $tipe }}</span>
                             </label>
                             @endforeach
+                        </div>
+                        <div id="tipeWarning" style="display:none; align-items: center; gap: 7px; background: linear-gradient(135deg, #fffbeb, #fef3c7); border-left: 3px solid #f59e0b; border-radius: 8px; padding: 8px 12px; margin-top: 8px; animation: slideDown 0.25s ease;">
+                            <span style="background: #fde68a; border-radius: 6px; width: 22px; height: 22px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <i class="ti-alert" style="color: #d97706; font-size: 11px;"></i>
+                            </span>
+                            <span style="font-size: 12.5px; color: #92400e; font-weight: 500;">Harap pilih tipe kamar!</span>
                         </div>
                         @error('tipe_kamar')
                             <div class="d-flex align-items-center mt-2" style="gap: 7px; background: linear-gradient(135deg, #fffbeb, #fef3c7); border-left: 3px solid #f59e0b; border-radius: 8px; padding: 8px 12px; animation: slideDown 0.25s ease;">
@@ -102,11 +116,17 @@
                         </label>
                         <div class="d-flex flex-wrap" style="gap: 10px;" id="statusGrid">
                             @foreach(['tersedia', 'terisi', 'maintenance'] as $status)
-                            <label class="status-pill" style="cursor:pointer;">
-                                <input type="radio" name="status_kamar" value="{{ $status }}" onchange="selectStatus(this)" {{ old('status_kamar') == $status ? 'checked' : '' }}>
-                                <span class="pill-label" style="display:inline-block; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 500; border: 1.5px solid #e5e7eb; background: #f9fafb; color: #6b7280; transition: all 0.15s; user-select:none;">{{ $status }}</span>
+                            <label class="status-pill" style="cursor:pointer; margin: 0;">
+                                <input type="radio" name="status_kamar" value="{{ $status }}" onchange="selectStatus(this)">
+                                <span class="pill-label" style="display:inline-block; padding: 7px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; border: 1.5px solid #e5e7eb; background: #f9fafb; color: #6b7280; transition: all 0.2s; user-select:none; text-transform: capitalize;">{{ $status }}</span>
                             </label>
                             @endforeach
+                        </div>
+                        <div id="statusWarning" style="display:none; align-items: center; gap: 7px; background: linear-gradient(135deg, #fffbeb, #fef3c7); border-left: 3px solid #f59e0b; border-radius: 8px; padding: 8px 12px; margin-top: 8px; animation: slideDown 0.25s ease;">
+                            <span style="background: #fde68a; border-radius: 6px; width: 22px; height: 22px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <i class="ti-alert" style="color: #d97706; font-size: 11px;"></i>
+                            </span>
+                            <span style="font-size: 12.5px; color: #92400e; font-weight: 500;">Harap pilih status kamar!</span>
                         </div>
                         @error('status_kamar')
                             <div class="d-flex align-items-center mt-2" style="gap: 7px; background: linear-gradient(135deg, #fffbeb, #fef3c7); border-left: 3px solid #f59e0b; border-radius: 8px; padding: 8px 12px; animation: slideDown 0.25s ease;">
@@ -133,6 +153,14 @@
                                 onfocus="this.style.borderColor='#00a669'; this.style.boxShadow='0 0 0 3px rgba(0,166,105,0.1)';"
                                 onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none';">
                         </div>
+                        @error('harga')
+                            <div class="d-flex align-items-center mt-2" style="gap: 7px; background: linear-gradient(135deg, #fffbeb, #fef3c7); border-left: 3px solid #f59e0b; border-radius: 8px; padding: 8px 12px; animation: slideDown 0.25s ease;">
+                                <span style="background: #fde68a; border-radius: 6px; width: 22px; height: 22px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                    <i class="ti-alert" style="color: #d97706; font-size: 11px;"></i>
+                                </span>
+                                <span style="font-size: 12.5px; color: #92400e; font-weight: 500;">{{ $message }}</span>
+                            </div>
+                        @enderror
                     </div>
 
                     <!-- Deskripsi -->
@@ -181,37 +209,47 @@
                         </div>
                     </div>
 
-                    <script>
-                        function updateFasilitasCount() {
-                            const checkboxes = document.querySelectorAll('.fasilitas-checkbox:checked');
-                            const countSpan = document.getElementById('fasilitasSelectedCount');
-                            if (checkboxes.length === 0) {
-                                countSpan.textContent = 'Pilih Fasilitas';
-                                countSpan.style.color = '#9ca3af';
-                            } else {
-                                countSpan.textContent = checkboxes.length + ' Fasilitas dipilih';
-                                countSpan.style.color = '#111827';
-                            }
-                        }
-                        // Initialize on load
-                        document.addEventListener('DOMContentLoaded', updateFasilitasCount);
-                    </script>
 
                     <!-- Multiple Image Upload -->
                     <div class="mb-3">
-                        <label class="d-flex align-items-center mb-2" style="font-size: 13px; font-weight: 600; color: #374151; gap: 8px;">
-                            <span style="background: #ecfdf5; color: #00a669; border-radius: 6px; width: 22px; height: 22px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;"><i class="ti-image"></i></span>
+                        <label class="d-flex align-items-center mb-2"
+                            style="font-size: 13px; font-weight: 600; color: #374151; gap: 8px;">
+                            <span style="background: #ecfdf5; color: #00a669; border-radius: 6px; width: 22px; height: 22px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">
+                                <i class="ti-image"></i>
+                            </span>
                             Foto Kamar
                         </label>
+
+                        <!-- ALERT FOTO DI ATAS FIELD -->
+                        <div id="imageSizeWarning"
+                            style="display:none; align-items:center; gap:7px; background:linear-gradient(135deg,#fff5f5,#fff0f0); border-left:3px solid #f87171; border-radius:8px; padding:8px 12px; margin-bottom:8px;">
+                            <span style="background:#fee2e2; border-radius:6px; width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center;">
+                                <i class="ti-alert" style="color:#ef4444; font-size:11px;"></i>
+                            </span>
+                            <span id="imageSizeWarningText" style="font-size:12.5px; color:#b91c1c; font-weight:500;">
+                                Ukuran file melebihi batas 2MB!
+                            </span>
+                        </div>
+
                         <div class="image-input-wrapper">
-                            <input type="file" name="images[]" id="imageInput" accept="image/*" multiple style="display:none;">
-                            <label for="imageInput" id="imageUploadLabel" class="image-upload-label" style="display:block; border: 2px dashed #e5e7eb; border-radius: 10px; padding: 20px; text-align:center; cursor:pointer; transition: 0.2s;"
+                            <input
+                                type="file"
+                                name="images[]"
+                                id="imageInput"
+                                accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+                                multiple
+                                style="display:none;"
+                                onchange="previewMultipleImages(event)">
+
+                            <label for="imageInput" id="imageUploadLabel" class="image-upload-label"
+                                style="display:block; border: 2px dashed #e5e7eb; border-radius: 10px; padding: 20px; text-align:center; cursor:pointer; transition: 0.2s;"
                                 onmouseover="this.style.borderColor='#00a669'; this.style.backgroundColor='#f9fafb';"
                                 onmouseout="this.style.borderColor='#e5e7eb'; this.style.backgroundColor='white';">
                                 <i class="ti-image" style="font-size: 32px; color: #9ca3af; display:block; margin-bottom:8px;"></i>
                                 <p style="margin:0; color: #6b7280; font-size: 13px;">Klik atau drag gambar ke sini</p>
                                 <p style="margin:4px 0 0 0; color: #9ca3af; font-size: 12px;">Bisa pilih banyak (Hold Ctrl/Cmd) | PNG, JPG, GIF (max 2MB each)</p>
                             </label>
+
                             <div id="imagePreview" style="display: none; flex-wrap: wrap; gap: 12px; margin-top: 15px;"></div>
                         </div>
                     </div>
@@ -239,23 +277,20 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Cek apakah ada error validasi dari Laravel
-        @if ($errors->has('tipe_kamar') || $errors->has('status_kamar') || $errors->has('nomor_kamar'))
-
-            // 1. Munculkan kembali modal Tambah Kamar secara otomatis
+        @if ($errors->any())
+            // Munculkan kembali modal Tambah Kamar secara otomatis
             var modalEl = document.getElementById('tambahKamarModal');
             if (modalEl) {
                 var myModal = new bootstrap.Modal(modalEl);
                 myModal.show();
             }
-
-            // 2. Warnai ulang pill yang sebelumnya sudah dipilih (biar tidak jadi abu-abu lagi)
-            document.querySelectorAll('input[type="radio"]:checked').forEach(radio => {
-                if (radio.name === 'tipe_kamar') window.selectTipe(radio);
-                if (radio.name === 'status_kamar') window.selectStatus(radio);
-            });
-
         @endif
+
+        // Warnai ulang pill yang sebelumnya sudah dipilih (biar tidak jadi abu-abu lagi)
+        document.querySelectorAll('#tambahKamarModal input[type="radio"]:checked').forEach(radio => {
+            if (radio.name === 'tipe_kamar') window.selectTipe(radio);
+            if (radio.name === 'status_kamar') window.selectStatus(radio);
+        });
     });
 </script>
-
 @endpush

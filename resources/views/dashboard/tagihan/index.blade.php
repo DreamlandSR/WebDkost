@@ -72,12 +72,12 @@
                                         <div class="d-flex align-items-center" style="gap: 15px;">
                                             <label class="text-muted fw-medium mb-0" style="font-size: 15px; white-space: nowrap;">Filter status</label>
                                             <select name="status" class="form-select shadow-none" style="width: 140px; border-radius: 4px; padding: 6px 12px; font-size: 14px; cursor: pointer;" onchange="this.form.submit()">
-                                                <option value="Semua" {{ request('status') == 'Semua' || !request('status') ? 'selected' : '' }}>Semua</option>
-                                                <option value="unpaid" {{ request('status') == 'unpaid' ? 'selected' : '' }}>Belum Bayar</option>
-                                                <option value="partial" {{ request('status') == 'partial' ? 'selected' : '' }}>Sebagian</option>
-                                                <option value="paid" {{ request('status') == 'paid' ? 'selected' : '' }}>Lunas</option>
-                                                <option value="overdue" {{ request('status') == 'overdue' ? 'selected' : '' }}>Tertunda</option>
-                                            </select>
+                                                 <option value="Semua" {{ request('status') == 'Semua' || !request('status') ? 'selected' : '' }}>Semua</option>
+                                                 <option value="belum_bayar" {{ request('status') == 'belum_bayar' ? 'selected' : '' }}>Belum Bayar</option>
+                                                 <option value="expired" {{ request('status') == 'expired' ? 'selected' : '' }}>Expired</option>
+                                                 <option value="lunas" {{ request('status') == 'lunas' ? 'selected' : '' }}>Lunas</option>
+                                                 <option value="dibatalkan" {{ request('status') == 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
+                                             </select>
                                         </div>
 
                                         <div class="d-flex align-items-center w-100 mt-2 mt-md-0 d-md-flex justify-content-md-end" style="gap: 10px; max-width: 320px;">
@@ -109,18 +109,20 @@
                                                     <td class="border-bottom-1 border-top-0 border-start-0 border-end-0 py-4 px-3 text-dark bg-transparent" style="font-size: 14px; border-color: #f1f2f6;">{{ $no++ }}</td>
                                                     <td class="border-bottom-1 border-top-0 border-start-0 border-end-0 py-4 px-3 text-dark bg-transparent text-nowrap fw-600" style="font-size: 14px; border-color: #f1f2f6;">{{ $tagihan->booking->user->nama ?? '-' }}</td>
                                                     <td class="border-bottom-1 border-top-0 border-start-0 border-end-0 py-4 px-3 text-dark bg-transparent text-nowrap" style="font-size: 14px; border-color: #f1f2f6;">{{ $tagihan->booking->kamar->nomor_kamar ?? '-' }}</td>
-                                                    <td class="border-bottom-1 border-top-0 border-start-0 border-end-0 py-4 px-3 text-dark bg-transparent text-nowrap" style="font-size: 14px; border-color: #f1f2f6;">{{ $tagihan->periode_bulan ?? '-' }}</td>
+                                                    <td class="border-bottom-1 border-top-0 border-start-0 border-end-0 py-4 px-3 text-dark bg-transparent text-nowrap" style="font-size: 14px; border-color: #f1f2f6;">{{ \Carbon\Carbon::parse($tagihan->periode_bulan)->locale('id')->translatedFormat('F Y') ?? '-' }}</td>
                                                     <td class="border-bottom-1 border-top-0 border-start-0 border-end-0 py-4 px-3 text-dark bg-transparent text-nowrap fw-600" style="font-size: 14px; border-color: #f1f2f6;">Rp {{ number_format($tagihan->total_tagihan ?? 0, 0, ',', '.') }}</td>
                                                     <td class="border-bottom-1 border-top-0 border-start-0 border-end-0 py-4 px-3 text-dark bg-transparent text-nowrap" style="font-size: 14px; border-color: #f1f2f6;">{{ \Carbon\Carbon::parse($tagihan->tgl_jatuh_tempo)->locale('id')->translatedFormat('d M, Y') ?? '-' }}</td>
                                                     <td class="border-bottom-1 border-top-0 border-start-0 border-end-0 py-4 px-3 bg-transparent text-nowrap" style="font-size: 14px; border-color: #f1f2f6;">
                                                         @if($tagihan->status_tagihan == 'belum_bayar')
                                                             <span class="badge rounded-pill" style="background-color: #fef2f2; color: #ef4444; font-weight: 600; font-size: 12px;">Belum Bayar</span>
-                                                        @elseif($tagihan->status_tagihan == 'sebagian')
-                                                            <span class="badge rounded-pill" style="background-color: #fef3c7; color: #d97706; font-weight: 600; font-size: 12px;">Sebagian</span>
+                                                        @elseif($tagihan->status_tagihan == 'expired')
+                                                            <span class="badge rounded-pill" style="background-color: #fee2e2; color: #991b1b; font-weight: 600; font-size: 12px;">Expired</span>
                                                         @elseif($tagihan->status_tagihan == 'lunas')
                                                             <span class="badge rounded-pill" style="background-color: #ecfdf5; color: #00a669; font-weight: 600; font-size: 12px;">Lunas</span>
+                                                        @elseif($tagihan->status_tagihan == 'dibatalkan')
+                                                            <span class="badge rounded-pill" style="background-color: #f3f4f6; color: #6b7280; font-weight: 600; font-size: 12px;">Dibatalkan</span>
                                                         @else
-                                                            <span class="badge rounded-pill" style="background-color: #fee2e2; color: #991b1b; font-weight: 600; font-size: 12px;">Terlambat</span>
+                                                            <span class="badge rounded-pill" style="background-color: #fee2e2; color: #ef4444; font-weight: 600; font-size: 12px;">Terlambat</span>
                                                         @endif
                                                     </td>
                                                     <td class="border-bottom-1 border-top-0 border-start-0 border-end-0 py-4 px-3 text-center bg-transparent text-nowrap" style="border-color: #f1f2f6;">
@@ -239,9 +241,9 @@
                                             <span style="background: #ecfdf5; color: #00a669; border-radius: 6px; width: 22px; height: 22px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;"><i class="ti-calendar"></i></span>
                                             Periode <span class="text-danger">*</span>
                                         </label>
-                                        <input type="text" name="periode_bulan" required
+                                        <input type="month" name="periode_bulan" required
+                                            max="{{ date('Y-m') }}"
                                             style="width:100%; padding: 11px 14px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 14px; color: #111827; outline: none; transition: 0.2s;"
-                                            placeholder="Contoh: 2026-04"
                                             value="{{ old('periode_bulan') }}"
                                             onfocus="this.style.borderColor='#00a669'; this.style.boxShadow='0 0 0 3px rgba(0,166,105,0.1)';"
                                             onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none';">
@@ -301,14 +303,14 @@
                                             Status <span class="text-danger">*</span>
                                         </label>
                                         <div class="d-flex flex-wrap" style="gap: 10px;" id="statusGrid">
-                                            @foreach(['unpaid', 'partial', 'paid', 'overdue'] as $status)
+                                            @foreach(['belum_bayar', 'expired', 'lunas', 'dibatalkan'] as $status)
                                             <label class="status-pill" style="cursor:pointer;">
                                                 <input type="radio" name="status_tagihan" value="{{ $status }}" required style="display:none;" onchange="selectStatus(this)" {{ old('status_tagihan') == $status ? 'checked' : '' }}>
                                                 <span class="pill-label" style="display:inline-block; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 500; border: 1.5px solid #e5e7eb; background: #f9fafb; color: #6b7280; transition: all 0.15s; user-select:none;">
-                                                    @if($status == 'unpaid') Belum Bayar
-                                                    @elseif($status == 'partial') Sebagian
-                                                    @elseif($status == 'paid') Lunas
-                                                    @else Tertunda @endif
+                                                    @if($status == 'belum_bayar') Belum Bayar
+                                                    @elseif($status == 'expired') Expired
+                                                    @elseif($status == 'lunas') Lunas
+                                                    @else Dibatalkan @endif
                                                 </span>
                                             </label>
                                             @endforeach
@@ -407,14 +409,16 @@
                                     <div class="col-6">
                                         <div class="p-3" style="background: #f9fafb; border: 1px solid #f0f1f3; border-radius: 10px;">
                                             <p class="text-muted mb-1" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Status</p>
-                                            @if($tagihan->status_tagihan == 'unpaid')
+                                            @if($tagihan->status_tagihan == 'belum_bayar')
                                                 <span class="badge rounded-pill" style="background-color: #fef2f2; color: #ef4444; font-weight: 600; font-size: 12px;">Belum Bayar</span>
-                                            @elseif($tagihan->status_tagihan == 'partial')
-                                                <span class="badge rounded-pill" style="background-color: #fef3c7; color: #d97706; font-weight: 600; font-size: 12px;">Sebagian</span>
-                                            @elseif($tagihan->status_tagihan == 'paid')
+                                            @elseif($tagihan->status_tagihan == 'expired')
+                                                <span class="badge rounded-pill" style="background-color: #fee2e2; color: #991b1b; font-weight: 600; font-size: 12px;">Expired</span>
+                                            @elseif($tagihan->status_tagihan == 'lunas')
                                                 <span class="badge rounded-pill" style="background-color: #ecfdf5; color: #00a669; font-weight: 600; font-size: 12px;">Lunas</span>
+                                            @elseif($tagihan->status_tagihan == 'dibatalkan')
+                                                <span class="badge rounded-pill" style="background-color: #f3f4f6; color: #6b7280; font-weight: 600; font-size: 12px;">Dibatalkan</span>
                                             @else
-                                                <span class="badge rounded-pill" style="background-color: #fee2e2; color: #991b1b; font-weight: 600; font-size: 12px;">Tertunda</span>
+                                                <span class="badge rounded-pill" style="background-color: #fee2e2; color: #ef4444; font-weight: 600; font-size: 12px;">Terlambat</span>
                                             @endif
                                         </div>
                                     </div>
@@ -463,7 +467,8 @@
                                             <span style="background: #ecfdf5; color: #00a669; border-radius: 6px; width: 22px; height: 22px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;"><i class="ti-calendar"></i></span>
                                             Periode <span class="text-danger">*</span>
                                         </label>
-                                        <input type="text" name="periode_bulan" value="{{ $tagihan->periode_bulan }}" required
+                                        <input type="month" name="periode_bulan" value="{{ $tagihan->periode_bulan }}" required
+                                            max="{{ date('Y-m') }}"
                                             style="width:100%; padding: 11px 14px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 14px; color: #111827; outline: none; transition: 0.2s;"
                                             onfocus="this.style.borderColor='#00a669'; this.style.boxShadow='0 0 0 3px rgba(0,166,105,0.1)';"
                                             onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none';">
@@ -518,15 +523,15 @@
                                             Status <span class="text-danger">*</span>
                                         </label>
                                         <div class="d-flex flex-wrap" style="gap: 10px;">
-                                            @foreach(['unpaid', 'partial', 'paid', 'overdue'] as $status)
+                                            @foreach(['belum_bayar', 'expired', 'lunas', 'dibatalkan'] as $status)
                                             <label class="status-pill-edit" style="cursor:pointer;">
                                                 <input type="radio" name="status_tagihan" value="{{ $status }}" {{ $tagihan->status_tagihan == $status ? 'checked' : '' }} required style="display:none;" onchange="updateEditPill(this, 'status', {{ $tagihan->id_tagihan }})">
-                                                <span class="pill-label-status-{{ $tagihan->id_tagihan }} {{ $tagihan->status_tagihan == $status ? 'pill-active-edit' : '' }}"
+                                                <span class="pill-label-edit pill-label-status-{{ $tagihan->id_tagihan }}"
                                                     style="display:inline-block; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 500; border: 1.5px solid #e5e7eb; background: #f9fafb; color: #6b7280; transition: all 0.15s; user-select:none;">
-                                                    @if($status == 'unpaid') Belum Bayar
-                                                    @elseif($status == 'partial') Sebagian
-                                                    @elseif($status == 'paid') Lunas
-                                                    @else Tertunda @endif
+                                                    @if($status == 'belum_bayar') Belum Bayar
+                                                    @elseif($status == 'expired') Expired
+                                                    @elseif($status == 'lunas') Lunas
+                                                    @else Dibatalkan @endif
                                                 </span>
                                             </label>
                                             @endforeach
@@ -600,15 +605,10 @@
                         const selector = `.pill-label-${type}-${id}`;
                         const pills = document.querySelectorAll(selector);
                         pills.forEach(pill => {
-                            const isChecked = pill.previousElementSibling.checked;
+                            pill.classList.remove('pill-active-edit');
+                            const isChecked = pill.previousElementSibling && pill.previousElementSibling.checked;
                             if (isChecked) {
-                                pill.style.borderColor = '#3b82f6';
-                                pill.style.background = '#eff6ff';
-                                pill.style.color = '#1e40af';
-                            } else {
-                                pill.style.borderColor = '#e5e7eb';
-                                pill.style.background = '#f9fafb';
-                                pill.style.color = '#6b7280';
+                                pill.classList.add('pill-active-edit');
                             }
                         });
                     }

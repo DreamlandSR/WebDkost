@@ -221,7 +221,7 @@
                                             @foreach(['Listrik','PDAM','Dapur','Iuran','Peralatan'] as $kat)
                                             <label class="kategori-pill">
                                                 <input type="radio" name="kategori" value="{{ $kat }}" required
-                                                       style="display:none;" onchange="selectKategori(this)">
+                                                       style="display:none;">
                                                 <span class="pill-label">{{ $kat }}</span>
                                             </label>
                                             @endforeach
@@ -409,8 +409,8 @@
                                                 <input type="radio" name="kategori" value="{{ $kat }}"
                                                        {{ $pengeluaran->kategori == $kat ? 'checked' : '' }} required
                                                        style="display:none;"
-                                                       onchange="updateEditPill(this, {{ $pengeluaran->id_pengeluaran }})">
-                                                <span class="pill-label-edit pill-label-edit-{{ $pengeluaran->id_pengeluaran }} {{ $pengeluaran->kategori == $kat ? 'pill-active-edit' : '' }}">
+                                                       onchange="updateEditPill(this)">
+                                                <span class="pill-label-edit pill-label-edit-{{ $pengeluaran->id_pengeluaran }}">
                                                     {{ $kat }}
                                                 </span>
                                             </label>
@@ -514,6 +514,31 @@
                 </div>{{-- /hapusModal --}}
 
                 @endforeach
+
+                <script>
+                    // Toggle pill active state for Tambah modal
+                    function selectKategori(element) {
+                        const pills = element.closest('.d-flex').querySelectorAll('.pill-label');
+                        pills.forEach(pill => {
+                            if (element.nextElementSibling === pill) {
+                                pill.style.borderColor = '#00a669';
+                                pill.style.background = '#ecfdf5';
+                                pill.style.color = '#00a669';
+                                pill.style.fontWeight = '600';
+                            } else {
+                                pill.style.borderColor = '#e5e7eb';
+                                pill.style.background = '#f9fafb';
+                                pill.style.color = '#6b7280';
+                                pill.style.fontWeight = '500';
+                            }
+                        });
+                    }
+
+                    // Toggle pill active state for Edit modal (Now handled by CSS :checked)
+                    function updateEditPill(element) {
+                        // No-op: CSS handles this now via :checked selector
+                    }
+                </script>
 
             </div>{{-- /main-panel --}}
         </div>
