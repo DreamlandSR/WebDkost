@@ -109,7 +109,7 @@
                                                     <td class="border-bottom-1 border-top-0 border-start-0 border-end-0 py-4 px-3 text-dark bg-transparent" style="font-size: 14px; border-color: #f1f2f6;">{{ $no++ }}</td>
                                                     <td class="border-bottom-1 border-top-0 border-start-0 border-end-0 py-4 px-3 text-dark bg-transparent text-nowrap fw-600" style="font-size: 14px; border-color: #f1f2f6;">{{ $tagihan->booking->user->nama ?? '-' }}</td>
                                                     <td class="border-bottom-1 border-top-0 border-start-0 border-end-0 py-4 px-3 text-dark bg-transparent text-nowrap" style="font-size: 14px; border-color: #f1f2f6;">{{ $tagihan->booking->kamar->nomor_kamar ?? '-' }}</td>
-                                                    <td class="border-bottom-1 border-top-0 border-start-0 border-end-0 py-4 px-3 text-dark bg-transparent text-nowrap" style="font-size: 14px; border-color: #f1f2f6;">{{ $tagihan->periode_bulan ?? '-' }}</td>
+                                                    <td class="border-bottom-1 border-top-0 border-start-0 border-end-0 py-4 px-3 text-dark bg-transparent text-nowrap" style="font-size: 14px; border-color: #f1f2f6;">{{ $tagihan->periode_bulan ? \Carbon\Carbon::parse($tagihan->periode_bulan)->locale('id')->translatedFormat('d M, Y') : '-' }}</td>
                                                     <td class="border-bottom-1 border-top-0 border-start-0 border-end-0 py-4 px-3 text-dark bg-transparent text-nowrap fw-600" style="font-size: 14px; border-color: #f1f2f6;">Rp {{ number_format($tagihan->total_tagihan ?? 0, 0, ',', '.') }}</td>
                                                     <td class="border-bottom-1 border-top-0 border-start-0 border-end-0 py-4 px-3 text-dark bg-transparent text-nowrap" style="font-size: 14px; border-color: #f1f2f6;">{{ \Carbon\Carbon::parse($tagihan->tgl_jatuh_tempo)->locale('id')->translatedFormat('d M, Y') ?? '-' }}</td>
                                                     <td class="border-bottom-1 border-top-0 border-start-0 border-end-0 py-4 px-3 bg-transparent text-nowrap" style="font-size: 14px; border-color: #f1f2f6;">
@@ -350,7 +350,7 @@
                                         </div>
                                         <div>
                                             <h5 class="mb-0 fw-bold" style="color: #111827; font-size: 16px;">Detail Tagihan</h5>
-                                            <p class="mb-0" style="color: #9ca3af; font-size: 12.5px;">Informasi lengkap tagihan periode {{ $tagihan->periode_bulan }}</p>
+                                            <p class="mb-0" style="color: #9ca3af; font-size: 12.5px;">Informasi lengkap tagihan periode {{ $tagihan->periode_bulan ? \Carbon\Carbon::parse($tagihan->periode_bulan)->locale('id')->translatedFormat('d M, Y') : '-' }}</p>
                                         </div>
                                     </div>
                                     <button type="button" data-bs-dismiss="modal"
@@ -377,7 +377,7 @@
                                     <div class="col-6">
                                         <div class="p-3" style="background: #f9fafb; border: 1px solid #f0f1f3; border-radius: 10px;">
                                             <p class="text-muted mb-1" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Periode</p>
-                                            <p class="mb-0 fw-bold" style="color: #111827; font-size: 14px;">{{ $tagihan->periode_bulan ?? '-' }}</p>
+                                            <p class="mb-0 fw-bold" style="color: #111827; font-size: 14px;">{{ $tagihan->periode_bulan ? \Carbon\Carbon::parse($tagihan->periode_bulan)->locale('id')->translatedFormat('d M, Y') : '-' }}</p>
                                         </div>
                                     </div>
                                     <div class="col-6">
@@ -442,7 +442,7 @@
                                         </div>
                                         <div>
                                             <h5 class="mb-0 fw-bold" style="color: #111827; font-size: 16px; letter-spacing: -0.3px;">Edit Tagihan</h5>
-                                            <p class="mb-0" style="color: #9ca3af; font-size: 12.5px; margin-top: 1px;">Perbarui data tagihan periode {{ $tagihan->periode_bulan }}</p>
+                                            <p class="mb-0" style="color: #9ca3af; font-size: 12.5px; margin-top: 1px;">Perbarui data tagihan periode {{ $tagihan->periode_bulan ? \Carbon\Carbon::parse($tagihan->periode_bulan)->locale('id')->translatedFormat('d M, Y') : '-' }}</p>
                                         </div>
                                     </div>
                                     <button type="button" data-bs-dismiss="modal" aria-label="Close"
@@ -561,7 +561,7 @@
                                     <i class="ti-trash" style="color: #ef4444; font-size: 32px;"></i>
                                 </div>
                                 <h5 class="fw-bold mb-2" style="color: #111827; font-size: 18px;">Konfirmasi Hapus</h5>
-                                <p class="mb-4" style="color: #6b7280; font-size: 14px; line-height: 1.5;">Apakah Anda yakin ingin menghapus tagihan periode <strong>{{ $tagihan->periode_bulan }}</strong>? Tindakan ini tidak dapat dibatalkan.</p>
+                                <p class="mb-4" style="color: #6b7280; font-size: 14px; line-height: 1.5;">Apakah Anda yakin ingin menghapus tagihan periode <strong>{{ $tagihan->periode_bulan ? \Carbon\Carbon::parse($tagihan->periode_bulan)->locale('id')->translatedFormat('d M, Y') : '-' }}</strong>? Tindakan ini tidak dapat dibatalkan.</p>
 
                                 <form action="{{ route('tagihan.destroy', $tagihan->id_tagihan) }}" method="POST" id="formHapus{{ $tagihan->id_tagihan }}">
                                     @csrf

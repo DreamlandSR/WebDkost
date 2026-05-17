@@ -124,7 +124,7 @@ class ChatbotController extends Controller
         }
 
         // Format response data untuk client
-        if (in_array($intent, ['cek_kamar_tersedia', 'cek_kamar_budget', 'cek_kamar_rating']) && !empty($dbResult['data'])) {
+        if (in_array($intent, ['cek_kamar_tersedia', 'cek_kamar_budget', 'cek_kamar_rating', 'cek_kamar_fasilitas']) && !empty($dbResult['data'])) {
             $responseData = is_object($dbResult['data'])
                 ? $dbResult['data']->values()->toArray()
                 : array_values((array) $dbResult['data']);
@@ -180,7 +180,7 @@ class ChatbotController extends Controller
     {
         if (!$hasData) {
             return match($intent) {
-                'cek_kamar_tersedia', 'cek_kamar_budget', 'cek_kamar_rating' => 
+                'cek_kamar_tersedia', 'cek_kamar_budget', 'cek_kamar_rating', 'cek_kamar_fasilitas' => 
                     'Maaf kak, kamar yang kamu cari tidak ada nih 😔 Coba tanya yang lain ya!',
                 'cek_fasilitas' => 'Maaf kak, info fasilitas tidak tersedia saat ini 😔',
                 default => 'Halo kak! 😊 Ada yang bisa Sinora bantu?',
@@ -189,6 +189,7 @@ class ChatbotController extends Controller
 
         return match($intent) {
             'cek_kamar_tersedia' => 'Ada nih kak beberapa kamar yang masih kosong! 🏠',
+            'cek_kamar_fasilitas'=> 'Kamar dengan fasilitas yang kamu mau ada nih kak! ✨',
             'cek_kamar_budget'   => 'Dengan budget kamu, ada beberapa pilihan kamar yang cocok kak! 💰',
             'cek_kamar_rating'   => 'Kamar-kamar dengan rating terbaik sudah Sinora siapkan kak! ⭐',
             'cek_harga'          => 'Ini daftar harga sewa kamar kak 💰',
@@ -204,6 +205,7 @@ class ChatbotController extends Controller
     {
         return match($intent) {
             'cek_kamar_tersedia' => $this->getAvailableRooms($params),
+            'cek_kamar_fasilitas'=> $this->getAvailableRoomsByFacility($params),
             'cek_kamar_budget'   => $this->getAvailableRoomsByBudget($params),
             'cek_kamar_rating'   => $this->getAvailableRoomsByRating(),
             'cek_harga'          => $this->getRoomPrices(),
@@ -263,6 +265,63 @@ class ChatbotController extends Controller
                           'tipe'      => ucfirst($k->tipe_kamar),
                           'harga'     => 'Rp ' . number_format($k->harga_per_bulan, 0, ',', '.') . '/bulan',
                           'sisa_budget' => 'Sisa budget kamu: Rp ' . number_format($budget - $k->harga_per_bulan, 0, ',', '.'),
+                          'fasilitas' => $k->fasilitas->pluck('nama_fasilitas')->join(', ') ?: '-',
+                      ]);
+
+        $result = ['data' => $rooms, 'message' => ''];
+        $this->cache->cacheDbResult($cacheKey, $result, 180);
+        return $result;
+    }
+
+    // ── Kamar By Fasilitas ───────────────────────────────────
+    private function getAvailableRoomsByFacility(array $params): array
+    {
+        $fasilitas = $params['fasilitas'] ?? null;
+        
+        // Jika tidak ada fasilitas parameter, return kosong
+        if (!$fasilitas) {
+            return ['data' => collect([]), 'message' => ''];
+        }
+
+        $cacheKey = 'rooms_by_facility_' . md5($fasilitas);
+        $cached   = $this->cache->getDbCache($cacheKey);
+        if ($cached) return $cached;
+
+        $rooms = Kamar::where('status_kamar', 'tersedia')
+                      ->whereHas('fasilitas', function($q) use ($fasilitas) {
+                          $q->where('nama_fasilitas', 'like', "%{$fasilitas}%");
+                      })
+                      ->select([
+                          'id_kamar',
+                          'nomor_kamar',
+                          'tipe_kamar',
+                          'harga_per_bulan',
+                          'status_kamar',
+                      ])
+                      ->with([
+                          'fasilitas:id_kamar,nama_fasilitas',
+                          'galeri' => fn($q) => $q->where('is_main', 1)->limit(1),
+                      ])
+                      ->orderBy('harga_per_bulan')
+                      ->limit(5)
+                      ->get()
+                      ->map(fn($k) => [
+                          // Untuk Flutter KamarModel.fromJson
+                          'id_kamar'        => $k->id_kamar,
+                          'nomor_kamar'     => $k->nomor_kamar,
+                          'tipe_kamar'      => $k->tipe_kamar,
+                          'deskripsi'       => '',
+                          'harga_per_bulan' => $k->harga_per_bulan,
+                          'status_kamar'    => $k->status_kamar,
+                          'foto_primary'    => $k->galeri->first()
+                              ? asset('storage/' . $k->galeri->first()->url_foto)
+                              : null,
+                          'rating'          => null,
+
+                          // Untuk Gemini natural reply
+                          'nomor'     => $k->nomor_kamar,
+                          'tipe'      => ucfirst($k->tipe_kamar),
+                          'harga'     => 'Rp ' . number_format($k->harga_per_bulan, 0, ',', '.') . '/bulan',
                           'fasilitas' => $k->fasilitas->pluck('nama_fasilitas')->join(', ') ?: '-',
                       ]);
 

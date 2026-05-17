@@ -267,6 +267,7 @@ class GeminiService
         - cek_kamar_tersedia : tanya ketersediaan kamar
         - cek_kamar_budget   : tanya kamar sesuai budget/harga terjangkau
         - cek_kamar_rating   : tanya kamar dengan rating bagus
+        - cek_kamar_fasilitas: tanya kamar dengan fasilitas spesifik (AC, kamar mandi dalam, WiFi, dll)
         - cek_harga          : tanya harga/biaya sewa
         - cek_fasilitas      : tanya fasilitas kamar
         - lihat_review       : tanya review/ulasan/rating umum
@@ -275,7 +276,11 @@ class GeminiService
         - tidak_relevan      : diluar topik kos sama sekali
 
         EXTRACT BUDGET: Jika ada angka dalam message (misal 900000, 1000000), extract ke params.budget
-        Contoh: "budget 900000" → params: {"budget": 900000, "tipe_kamar": null}
+        Contoh: "budget 900000" → params: {"budget": 900000, "tipe_kamar": null, "fasilitas": null}
+
+        EXTRACT FASILITAS: Jika user mencari kamar dengan fasilitas tertentu, extract ke params.fasilitas.
+        Contoh: "kamar yang ada AC" → params: {"budget": null, "tipe_kamar": null, "fasilitas": "AC"}
+        Contoh: "kamar mandi dalam ada ngga?" → params: {"budget": null, "tipe_kamar": null, "fasilitas": "kamar mandi dalam"}
 
         PENTING: Selalu ekstrak angka sebagai budget jika ada
         PENTING: "budget", "harga", "terjangkau" + angka → cek_kamar_budget
@@ -284,7 +289,7 @@ class GeminiService
         PENTING: "kamar" tanpa konteks lain → cek_kamar_tersedia
 
         Balas HANYA JSON tanpa markdown, tanpa penjelasan apapun:
-        {"intent":"nama_intent","confidence":0.9,"params":{"budget":null,"tipe_kamar":null}}
+        {"intent":"nama_intent","confidence":0.9,"params":{"budget":null,"tipe_kamar":null,"fasilitas":null}}
         PROMPT;
     }
 
@@ -315,7 +320,7 @@ class GeminiService
             return [
                 'intent'     => $decoded['intent'] ?? 'info_umum',
                 'confidence' => $decoded['confidence'] ?? 0.7,
-                'params'     => $decoded['params'] ?? ['tipe_kamar' => null],
+                'params'     => $decoded['params'] ?? ['tipe_kamar' => null, 'fasilitas' => null],
                 'reply'      => $reply,
             ];
         }
@@ -331,6 +336,7 @@ class GeminiService
         // Cari pattern intent dari text
         $intentPatterns = [
             'cek_kamar_budget'   => ['budget', 'harga', 'terjangkau', 'dibawah', 'di bawah'],
+            'cek_kamar_fasilitas'=> ['kamar ada', 'kamar fasilitas', 'kamar dengan'],
             'cek_kamar_tersedia' => ['tersedia', 'kosong', 'masih ada'],
             'cek_kamar_rating'   => ['rating', 'bagus', 'terbaik', 'rekomendasi'],
             'cek_harga'          => ['harga', 'biaya', 'sewa'],
@@ -358,7 +364,7 @@ class GeminiService
             $budget = (int) $matches[1];
         }
 
-        $params = ['tipe_kamar' => null];
+        $params = ['tipe_kamar' => null, 'fasilitas' => null];
         if ($budget) {
             $params['budget'] = $budget;
         }
@@ -376,6 +382,7 @@ class GeminiService
     {
         return match($intent) {
             'cek_kamar_tersedia' => 'Ada beberapa kamar yang masih tersedia kak! 🏠 Coba tanyakan lebih detail atau tanya kamar mana yang kamu minati.',
+            'cek_kamar_fasilitas'=> 'Sinora bisa carikan kamar dengan fasilitas tersebut kak! ✨ Coba sebutkan fasilitas yang diinginkan.',
             'cek_kamar_budget'   => 'Dengan budget kamu, pasti ada kamar yang cocok kak! 💰 Coba sebutkan angka budget yang kamu punya, nanti aku cariin pilihan terbaik untuk kamu.',
             'cek_kamar_rating'   => 'Kamar-kamar kita punya rating yang bagus kak! ⭐ Coba tanyakan kamar apa yang kamu cari.',
             'cek_harga'          => 'Harga sewa kamar bervariasi sesuai tipe kamar kak 💰 Coba tanyakan tipe kamar apa yang kamu minati.',
@@ -393,7 +400,7 @@ class GeminiService
         return [
             'intent'     => 'info_umum',
             'confidence' => 0.3,
-            'params'     => ['tipe_kamar' => null],
+            'params'     => ['tipe_kamar' => null, 'fasilitas' => null],
             'reply'      => 'Halo kak! 😊 Ada yang bisa Sinora bantu? Tanya tentang kamar, harga, fasilitas, atau yang lain ya!',
         ];
     }
@@ -412,6 +419,7 @@ class GeminiService
         - cek_kamar_tersedia : kamar kosong, kamar available
         - cek_kamar_budget   : kamar dengan budget, harga terjangkau, harga dibawah X
         - cek_kamar_rating   : kamar bagus rating, kamar terbaik, rekomendasi
+        - cek_kamar_fasilitas: kamar dengan fasilitas spesifik (AC, kamar mandi dalam, WiFi)
         - cek_harga          : harga sewa, biaya
         - cek_fasilitas      : fasilitas, apa saja, AC dll
         - lihat_review       : review, ulasan, rating, bintang
@@ -422,6 +430,10 @@ class GeminiService
         EXTRACT BUDGET: Jika ada angka dalam message, extract ke params.budget
         Contoh: "budget 900000" → params: {"budget": 900000}
         Jika ada kata "dibawah", "di bawah", "kurang dari", hitung budget dari angka tersebut.
+        
+        EXTRACT FASILITAS: Jika user mencari kamar dengan fasilitas tertentu, extract ke params.fasilitas.
+        Contoh: "kamar yang ada AC" → params: {"fasilitas": "AC"}
+        Contoh: "kamar mandi dalam" → params: {"fasilitas": "kamar mandi dalam"}
 
         JAWABAN: Gunakan bahasa Indonesia santai. Panggil "kak". Pakai emoji. Maksimal 300 kata.
 
@@ -437,7 +449,7 @@ class GeminiService
         {
             "intent": "string (salah satu dari intent yang tersedia)",
             "confidence": 0.9,
-            "params": {"budget": null atau number, "tipe_kamar": null atau string},
+            "params": {"budget": null atau number, "tipe_kamar": null atau string, "fasilitas": null atau string},
             "reply": "jawaban natural, pastikan lengkap dan tidak kosong"
         }
 
@@ -459,7 +471,7 @@ class GeminiService
         return $decoded ?? [
             'intent'     => 'info_umum',
             'confidence' => 0.5,
-            'params'     => ['tipe_kamar' => null],
+            'params'     => ['tipe_kamar' => null, 'fasilitas' => null],
         ];
     }
 }
