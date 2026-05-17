@@ -341,8 +341,8 @@
                                             @foreach(['admin', 'penyewa'] as $role)
                                             <label style="cursor:pointer;">
                                                 <input type="radio" name="role" value="{{ $role }}" {{ $user->role == $role ? 'checked' : '' }} required style="display:none;" onchange="updateEditPill(this, 'role', {{ $user->id_user }})">
-                                                <span class="pill-label-role-{{ $user->id_user }} {{ $user->role == $role ? 'pill-active-edit' : '' }}"
-                                                    style="display:inline-block; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 500; border: 1.5px solid {{ $user->role == $role ? '#3b82f6' : '#e5e7eb' }}; background: {{ $user->role == $role ? '#eff6ff' : '#f9fafb' }}; color: {{ $user->role == $role ? '#1e40af' : '#6b7280' }}; transition: all 0.15s; user-select:none;">{{ ucfirst($role) }}</span>
+                                                <span class="pill-label-edit pill-label-role-{{ $user->id_user }}"
+                                                    style="display:inline-block; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 500; border: 1.5px solid #e5e7eb; background: #f9fafb; color: #6b7280; transition: all 0.15s; user-select:none;">{{ ucfirst($role) }}</span>
                                             </label>
                                             @endforeach
                                         </div>
@@ -395,15 +395,10 @@
                     function updateEditPill(element, type, id) {
                         const pills = document.querySelectorAll(`.pill-label-${type}-${id}`);
                         pills.forEach(pill => {
+                            pill.classList.remove('pill-active-edit');
                             const isChecked = pill.previousElementSibling && pill.previousElementSibling.checked;
                             if (isChecked) {
-                                pill.style.borderColor = '#3b82f6';
-                                pill.style.background = '#eff6ff';
-                                pill.style.color = '#1e40af';
-                            } else {
-                                pill.style.borderColor = '#e5e7eb';
-                                pill.style.background = '#f9fafb';
-                                pill.style.color = '#6b7280';
+                                pill.classList.add('pill-active-edit');
                             }
                         });
                     }

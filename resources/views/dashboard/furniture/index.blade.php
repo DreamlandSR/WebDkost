@@ -71,7 +71,6 @@
                             <i class="ti-alert"></i>
                         </div>
                         <div class="custom-alert-content">
-                            <strong>Ada error nih:</strong>
                             <ul class="mb-0 mt-1">
                                 @foreach($errors->all() as $error)
                                     <li>{{ $error }}</li>

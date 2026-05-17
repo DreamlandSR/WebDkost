@@ -273,6 +273,60 @@
                         @include('dashboard.kamar.modals.semua_modal')
                     @endforeach
                 </div>
+
+                <div class="modal fade" id="confirmDeleteImageModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+                        <div class="modal-content border-0 shadow-lg" style="border-radius: 18px; overflow: hidden;">
+                            <div class="modal-body text-center" style="padding: 34px 28px;">
+
+                                <div style="width: 74px; height: 74px; border-radius: 50%; background: #fef2f2; display:flex; align-items:center; justify-content:center; margin: 0 auto 20px;">
+                                    <i class="ti-alert" style="font-size: 32px; color: #ef4444;"></i>
+                                </div>
+
+                                <h5 class="fw-bold mb-2" style="font-size: 18px; color:#111827;">
+                                    Hapus Gambar?
+                                </h5>
+
+                                <p class="mb-4" style="font-size: 14px; color:#6b7280; line-height: 1.6;">
+                                    Gambar ini akan dihapus setelah Anda menekan tombol
+                                    <strong>Simpan Perubahan</strong>.
+                                </p>
+
+                                <div class="d-flex justify-content-center" style="gap: 12px;">
+                                    <button type="button"
+                                        class="btn"
+                                        data-bs-dismiss="modal"
+                                        style="padding: 9px 22px; border-radius: 10px; background:#f3f4f6; color:#4b5563; font-weight:600; border:none;">
+                                        Batal
+                                    </button>
+
+                                    <button type="button"
+                                        id="confirmDeleteImageBtn"
+                                        class="btn"
+                                        style="padding: 9px 24px; border-radius: 10px; background:#ef4444; color:white; font-weight:700; border:none;">
+                                        Ya, Hapus
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    // Toggle pill active state for Edit modal (tipe & status)
+                    function updateEditPill(element, type, id) {
+                        const selector = `.pill-label-${type}-${id}`;
+                        const pills = document.querySelectorAll(selector);
+                        pills.forEach(pill => {
+                            pill.classList.remove('pill-active-edit');
+                            const isChecked = pill.previousElementSibling && pill.previousElementSibling.checked;
+                            if (isChecked) {
+                                pill.classList.add('pill-active-edit');
+                            }
+                        });
+                    }
+                </script>
             </div>
         </div>
     </div>
@@ -323,4 +377,6 @@
             }
         </style>
     @endpush
+
+
 @endsection
