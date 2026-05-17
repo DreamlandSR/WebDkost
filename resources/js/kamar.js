@@ -1,14 +1,10 @@
-let selectedFilesDataTransfer = new DataTransfer();
+let selectedTambahFiles = [];
 
-function previewMultipleImages(event) {
+window.previewMultipleImages = function (event) {
     let files = [];
 
     if (event && event.target && event.target.files) {
         files = Array.from(event.target.files);
-    } else if (event && event instanceof FileList) {
-        files = Array.from(event);
-    } else if (event && event.length !== undefined) {
-        files = Array.from(event);
     } else {
         console.error("Parameter tidak dikenali:", event);
         return;
@@ -21,47 +17,73 @@ function previewMultipleImages(event) {
         "image/gif",
         "image/webp",
     ];
+
     const maxSize = 2 * 1024 * 1024; // 2MB
 
-    const validFiles = files.filter((file) => {
+    const imageWarning = document.getElementById("imageSizeWarning");
+    const imageWarningText = document.getElementById("imageSizeWarningText");
+
+    let hasError = false;
+
+    files.forEach((file) => {
         const isValidType = validTypes.includes(file.type);
+
         if (!isValidType) {
-            showNotification(
-                `File "${file.name}" bukan format gambar yang didukung`,
-                "error",
-            );
-            return false;
+            hasError = true;
+
+            if (imageWarningText) {
+                imageWarningText.textContent = `File "${file.name}" bukan format gambar yang didukung`;
+            }
+
+            if (imageWarning) {
+                imageWarning.style.display = "flex";
+            }
+
+            return;
         }
 
         if (file.size > maxSize) {
-            showNotification(
-                `Ukuran file "${file.name}" melebihi batas 2MB`,
-                "error",
-            );
-            return false;
+            hasError = true;
+
+            if (imageWarningText) {
+                imageWarningText.textContent = `Ukuran file "${file.name}" melebihi batas 2MB`;
+            }
+
+            if (imageWarning) {
+                imageWarning.style.display = "flex";
+            }
+
+            return;
         }
 
-        return true;
+        selectedTambahFiles.push(file);
     });
 
-    validFiles.forEach((file) => {
-        selectedFilesDataTransfer.items.add(file);
-    });
-
-    renderPreviewImages();
-}
-
-window.removeImageTambah = function (index) {
-    const newDt = new DataTransfer();
-    const files = selectedFilesDataTransfer.files;
-
-    for (let i = 0; i < files.length; i++) {
-        if (i !== index) {
-            newDt.items.add(files[i]);
-        }
+    if (!hasError && imageWarning) {
+        imageWarning.style.display = "none";
     }
 
-    selectedFilesDataTransfer = newDt;
+    renderPreviewImages();
+
+    const fileInput = document.getElementById("imageInput");
+    if (fileInput) {
+        const dt = new DataTransfer();
+
+        selectedTambahFiles.forEach((file) => {
+            dt.items.add(file);
+        });
+
+        fileInput.files = dt.files;
+    }
+};
+
+window.removeImageTambah = function (event, index) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    selectedTambahFiles.splice(index, 1);
     renderPreviewImages();
 };
 
@@ -72,14 +94,17 @@ function renderPreviewImages() {
 
     if (!preview || !uploadLabel || !fileInput) return;
 
-    // Update the actual input files
-    fileInput.files = selectedFilesDataTransfer.files;
+    const dt = new DataTransfer();
+
+    selectedTambahFiles.forEach((file) => {
+        dt.items.add(file);
+    });
+
+    fileInput.files = dt.files;
 
     preview.innerHTML = "";
-    const files = selectedFilesDataTransfer.files;
 
-    if (files.length === 0) {
-        fileInput.value = "";
+    if (selectedTambahFiles.length === 0) {
         preview.style.display = "none";
         uploadLabel.style.display = "block";
         return;
@@ -88,7 +113,7 @@ function renderPreviewImages() {
     uploadLabel.style.display = "none";
     preview.style.display = "flex";
 
-    Array.from(files).forEach((file, index) => {
+    selectedTambahFiles.forEach((file, index) => {
         const reader = new FileReader();
 
         const imageContainer = document.createElement("div");
@@ -105,7 +130,10 @@ function renderPreviewImages() {
 
         imageContainer.innerHTML = `
             <div style="width: 100%; height: 80px; background: #f3f4f6; display: flex; align-items: center; justify-content: center; position: relative;">
-                <button type="button" onclick="window.removeImageTambah(${index})" style="position: absolute; top: 4px; right: 4px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; z-index: 10; transition: background 0.2s;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='rgba(239, 68, 68, 0.9)'" title="Hapus Gambar">
+                <button type="button"
+                    onclick="window.removeImageTambah(event, ${index})"
+                    style="position: absolute; top: 4px; right: 4px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; z-index: 10;"
+                    title="Hapus Gambar">
                     <i class="ti-close"></i>
                 </button>
                 <i class="ti-reload" style="font-size: 20px; color: #9ca3af; animation: spin 1s linear infinite;"></i>
@@ -149,36 +177,29 @@ function renderPreviewImages() {
         justify-content: center;
         cursor: pointer;
         flex-shrink: 0;
-        transition: all 0.2s;
         color: #00a669;
         margin: 0;
     `;
-    addMoreContainer.onmouseover = function () {
-        this.style.background = "#d1fae5";
-    };
-    addMoreContainer.onmouseout = function () {
-        this.style.background = "#ecfdf5";
-    };
+
     addMoreContainer.innerHTML = `
         <i class="ti-plus" style="font-size: 24px; margin-bottom: 4px;"></i>
         <span style="font-size: 11px; font-weight: 600;">Tambah</span>
     `;
+
     preview.appendChild(addMoreContainer);
 }
 
-let selectedFilesEditDataTransfers = {};
+window.selectedFilesEditDataTransfers = {};
+const selectedFilesEditDataTransfers = window.selectedFilesEditDataTransfers;
 
 /**
  * Preview multiple images for EDIT modal
  */
 function previewMultipleImagesEdit(event, id) {
     let files = [];
+
     if (event && event.target && event.target.files) {
         files = Array.from(event.target.files);
-    } else if (event && event instanceof FileList) {
-        files = Array.from(event);
-    } else if (event && event.length !== undefined) {
-        files = Array.from(event);
     } else {
         console.error("Parameter tidak dikenali");
         return;
@@ -191,31 +212,62 @@ function previewMultipleImagesEdit(event, id) {
         "image/gif",
         "image/webp",
     ];
-    const maxSize = 2 * 1024 * 1024; // 2MB
 
-    const validFiles = files.filter((file) => {
-        const isValidType = validTypes.includes(file.type);
-        if (!isValidType) {
-            showNotification(
-                `File "${file.name}" bukan format gambar yang didukung`,
-                "error",
-            );
-            return false;
-        }
+    const maxSize = 2 * 1024 * 1024;
 
-        if (file.size > maxSize) {
-            showNotification(
-                `Ukuran file "${file.name}" melebihi batas 2MB`,
-                "error",
-            );
-            return false;
-        }
-
-        return true;
-    });
+    const imageWarning = document.getElementById("imageSizeWarningEdit" + id);
+    const imageWarningText = document.getElementById("imageSizeWarningTextEdit" + id);
+    const fileInput = document.getElementById("imageInput" + id);
 
     if (!selectedFilesEditDataTransfers[id]) {
         selectedFilesEditDataTransfers[id] = new DataTransfer();
+    }
+
+    let hasError = false;
+    const validFiles = [];
+
+    files.forEach((file) => {
+        if (!validTypes.includes(file.type)) {
+            hasError = true;
+
+            if (imageWarningText) {
+                imageWarningText.textContent = `File "${file.name}" bukan format gambar yang didukung`;
+            }
+
+            if (imageWarning) {
+                imageWarning.style.display = "flex";
+            }
+
+            return;
+        }
+
+        if (file.size > maxSize) {
+            hasError = true;
+
+            if (imageWarningText) {
+                imageWarningText.textContent = `Ukuran file "${file.name}" melebihi batas 2MB`;
+            }
+
+            if (imageWarning) {
+                imageWarning.style.display = "flex";
+            }
+
+            return;
+        }
+
+        validFiles.push(file);
+    });
+
+    if (hasError && validFiles.length === 0) {
+        if (fileInput) {
+            fileInput.files = selectedFilesEditDataTransfers[id].files;
+        }
+
+        return;
+    }
+
+    if (!hasError && imageWarning) {
+        imageWarning.style.display = "none";
     }
 
     validFiles.forEach((file) => {
@@ -223,6 +275,12 @@ function previewMultipleImagesEdit(event, id) {
     });
 
     renderPreviewImagesEdit(id);
+
+    if (fileInput) {
+        fileInput.files = selectedFilesEditDataTransfers[id].files;
+    }
+
+    console.log("File edit tersimpan di input:", fileInput.files.length);
 }
 
 window.removeImageEdit = function (id, index) {
@@ -350,59 +408,8 @@ function renderPreviewImagesEdit(id) {
     preview.appendChild(addMoreContainer);
 }
 
-// ========== AJAX FUNCTIONS ==========
 
-/**
- * Delete image via AJAX
- */
-window.deleteImage = async function deleteImage(imageId, kamarId) {
-    if (!confirm("Yakin ingin menghapus gambar ini?")) return;
-
-    try {
-        const csrfToken =
-            document.querySelector('meta[name="csrf-token"]')?.content || "";
-
-        const response = await fetch(`/kamar/image/${imageId}`, {
-            method: "DELETE",
-            headers: {
-                "X-CSRF-TOKEN": csrfToken,
-                "Content-Type": "application/json",
-            },
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            const imageElement = document.getElementById(
-                `gallery-item-${imageId}`,
-            );
-            if (imageElement) imageElement.remove();
-
-            const container = document.getElementById(
-                `deleteImagesContainer${kamarId}`,
-            );
-            if (container) {
-                const hiddenInput = document.createElement("input");
-                hiddenInput.type = "hidden";
-                hiddenInput.name = "delete_images[]";
-                hiddenInput.value = imageId;
-                container.appendChild(hiddenInput);
-            }
-
-            showNotification("Gambar berhasil dihapus", "success");
-        } else {
-            showNotification("Gagal menghapus gambar", "error");
-        }
-    } catch (error) {
-        console.error("Error:", error);
-        showNotification("Terjadi kesalahan", "error");
-    }
-}
-
-/**
- * Set main image via AJAX
- */
-async function setMainImage(imageId, kamarId) {
+window.setMainImage = async function setMainImage(imageId, kamarId) {
     try {
         const csrfToken =
             document.querySelector('meta[name="csrf-token"]')?.content || "";
@@ -411,29 +418,44 @@ async function setMainImage(imageId, kamarId) {
             method: "PUT",
             headers: {
                 "X-CSRF-TOKEN": csrfToken,
-                "Content-Type": "application/json",
+                "Accept": "application/json",
             },
         });
 
-        const data = await response.json();
+        console.log("SET MAIN status:", response.status);
 
-        if (data.success) {
-            location.reload();
+        const text = await response.text();
+        console.log("SET MAIN response:", text);
+
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            showNotification("Response bukan JSON. Cek Console.", "error");
+            return;
+        }
+
+        if (response.ok && data.success) {
+            showNotification(data.message || "Gambar utama berhasil diubah", "success");
+
+            setTimeout(() => {
+                location.reload();
+            }, 700);
         } else {
-            showNotification("Gagal mengubah gambar utama", "error");
+            showNotification(data.message || "Gagal mengubah gambar utama", "error");
         }
     } catch (error) {
-        console.error("Error:", error);
-        showNotification("Terjadi kesalahan", "error");
+        console.error("Error set main image:", error);
+        showNotification("Terjadi kesalahan saat mengubah gambar utama", "error");
     }
-}
+};
 
 // ========== NOTIFICATION SYSTEM ==========
 
 /**
  * Show notification toast
  */
-function showNotification(message, type = "success") {
+window.showNotification = function (message, type = "success") {
     const existingNotifications = document.querySelectorAll(
         ".custom-notification",
     );
@@ -457,7 +479,7 @@ function showNotification(message, type = "success") {
             notification.remove();
         }
     }, 3000);
-}
+};
 
 // ========== FORM PILL SELECTORS ==========
 
@@ -468,66 +490,44 @@ function showNotification(message, type = "success") {
 
 // WAJIB menggunakan window. agar bisa dipanggil oleh onchange="..." di HTML
 window.selectTipe = function (radio) {
-    const tipeGrid = document.getElementById("tipeGrid");
-    const errorTipe = document.getElementById("error-tipe-js");
+    document.querySelectorAll("#tipeGrid .pill-label").forEach((el) => {
+        el.classList.remove("pill-active-tipe");
+    });
 
-    // Hapus efek error
-    if (tipeGrid) {
-        tipeGrid.style.background = "transparent";
-        tipeGrid.style.boxShadow = "none";
-        tipeGrid.style.padding = "0";
-    }
-    if (errorTipe) errorTipe.style.display = "none";
-
-    // Reset warna semua pill tipe
-    document
-        .querySelectorAll("#tambahKamarModal .tipe-pill .pill-label")
-        .forEach((el) => {
-            el.style.background = "#f9fafb";
-            el.style.color = "#6b7280";
-            el.style.borderColor = "#e5e7eb";
-            el.style.fontWeight = "500";
-        });
-
-    // Beri warna hijau pada pill yang dipilih
     const lbl = radio.nextElementSibling;
     if (lbl) {
-        lbl.style.background = "#ecfdf5";
-        lbl.style.color = "#00a669";
-        lbl.style.borderColor = "#00a669";
-        lbl.style.fontWeight = "600";
+        lbl.classList.add("pill-active-tipe");
     }
+
+    const warning = document.getElementById("tipeWarning");
+    if (warning) warning.style.display = "none";
 };
 
 window.selectStatus = function (radio) {
-    const statusGrid = document.getElementById("statusGrid");
-    const errorStatus = document.getElementById("error-status-js");
+    document.querySelectorAll("#statusGrid .pill-label").forEach((el) => {
+        el.classList.remove("pill-active-status");
+    });
 
-    // Hapus efek error
-    if (statusGrid) {
-        statusGrid.style.background = "transparent";
-        statusGrid.style.boxShadow = "none";
-        statusGrid.style.padding = "0";
-    }
-    if (errorStatus) errorStatus.style.display = "none";
-
-    // Reset warna semua pill status
-    document
-        .querySelectorAll("#tambahKamarModal .status-pill .pill-label")
-        .forEach((el) => {
-            el.style.background = "#f9fafb";
-            el.style.color = "#6b7280";
-            el.style.borderColor = "#e5e7eb";
-            el.style.fontWeight = "500";
-        });
-
-    // Beri warna hijau pada pill yang dipilih
     const lbl = radio.nextElementSibling;
     if (lbl) {
-        lbl.style.background = "#ecfdf5";
-        lbl.style.color = "#00a669";
-        lbl.style.borderColor = "#00a669";
-        lbl.style.fontWeight = "600";
+        lbl.classList.add("pill-active-status");
+    }
+
+    const warning = document.getElementById("statusWarning");
+    if (warning) warning.style.display = "none";
+};
+
+window.updateFasilitasCount = function() {
+    const checkboxes = document.querySelectorAll('.fasilitas-checkbox:checked');
+    const countSpan = document.getElementById('fasilitasSelectedCount');
+    if (countSpan) {
+        if (checkboxes.length === 0) {
+            countSpan.textContent = 'Pilih Fasilitas';
+            countSpan.style.color = '#9ca3af';
+        } else {
+            countSpan.textContent = checkboxes.length + ' Fasilitas dipilih';
+            countSpan.style.color = '#111827';
+        }
     }
 };
 
@@ -598,8 +598,8 @@ function initModalReset() {
             });
 
             // 3. Sembunyikan Pesan Error JS (Teks Merah)
-            const errorMessages = ["error-tipe-js", "error-status-js"];
-            errorMessages.forEach((id) => {
+            const warnings = ["duplicateWarning", "tipeWarning", "statusWarning"];
+            warnings.forEach((id) => {
                 const el = document.getElementById(id);
                 if (el) el.style.display = "none";
             });
@@ -608,10 +608,7 @@ function initModalReset() {
             document
                 .querySelectorAll("#tambahKamarModal .pill-label")
                 .forEach((el) => {
-                    el.style.background = "#f9fafb";
-                    el.style.color = "#6b7280";
-                    el.style.borderColor = "#e5e7eb";
-                    el.style.fontWeight = "500";
+                    el.classList.remove("pill-active-tipe", "pill-active-status");
                 });
 
             // 5. Uncheck semua Radio Button
@@ -629,7 +626,7 @@ function initModalReset() {
             }
 
             // 7. Reset Preview Gambar & DataTransfer
-            selectedFilesDataTransfer = new DataTransfer();
+            selectedTambahFiles = [];
             const preview = document.getElementById("imagePreview");
             const uploadLabel = document.getElementById("imageUploadLabel");
             const fileInput = document.getElementById("imageInput");
@@ -643,7 +640,6 @@ function initModalReset() {
             }
             if (fileInput) {
                 fileInput.value = "";
-                fileInput.files = selectedFilesDataTransfer.files;
             }
 
             console.log("Modal Tambah Kamar berhasil dibersihkan.");
@@ -654,6 +650,14 @@ function initModalReset() {
     document.querySelectorAll('.modal[id^="editModal"]').forEach((modal) => {
         modal.addEventListener("hidden.bs.modal", function () {
             const kamarId = this.id.replace("editModal", "");
+
+            const imageWarningEdit = document.getElementById(
+                "imageSizeWarningEdit" + kamarId
+            );
+
+            if (imageWarningEdit) {
+                imageWarningEdit.style.display = "none";
+            }
 
             // Reset newly added images preview untuk edit modal
             if (
@@ -677,102 +681,89 @@ function initModalReset() {
     });
 }
 
-// Reset edit modals newly added images on close
-document.querySelectorAll('.modal[id^="editModal"]').forEach((modal) => {
-    modal.addEventListener("hidden.bs.modal", function () {
-        const kamarId = this.id.replace("editModal", "");
-
-        // Reset newly added images if they exist
-        if (selectedFilesEditDataTransfers[kamarId]) {
-            selectedFilesEditDataTransfers[kamarId] = new DataTransfer();
-            renderPreviewImagesEdit(kamarId);
-        }
-    });
-});
-
 // ========== FORM SUBMIT HANDLERS ==========
 
 /**
  * Initialize form submit handlers
  */
 function initFormHandlers() {
-    // Hanya target form create/edit kamar, BUKAN form search/filter
     const kamarForms = [
         ...document.querySelectorAll('form[id="formTambahKamar"]'),
         ...document.querySelectorAll('form[id^="formEditKamar"]'),
     ];
+
     kamarForms.forEach((form) => {
         form.addEventListener("submit", function (e) {
-            // 1. Ambil data radio yang terpilih
-            const tipeTerpilih = this.querySelector(
-                'input[name="tipe_kamar"]:checked',
-            );
-            const statusTerpilih = this.querySelector(
-                'input[name="status_kamar"]:checked',
-            );
-
             let isValid = true;
+            
+            // Pastikan file tambah kamar masuk ke input file sebelum submit
+            if (this.id === "formTambahKamar") {
+                const fileInput = document.getElementById("imageInput");
 
-            // 2. Validasi Tipe Kamar
-            const tipeGrid = document.getElementById("tipeGrid");
-            const errorTipe = document.getElementById("error-tipe-js");
+                if (fileInput && selectedTambahFiles.length > 0) {
+                    const dt = new DataTransfer();
+
+                    selectedTambahFiles.forEach((file) => {
+                        dt.items.add(file);
+                    });
+
+                    fileInput.files = dt.files;
+
+                    console.log("File tambah kamar yang dikirim:", fileInput.files.length);
+                }
+            }
+
+            // Pastikan file edit yang sudah dipilih benar-benar masuk ke input file
+            if (this.id.startsWith("formEditKamar")) {
+                const kamarId = this.id.replace("formEditKamar", "");
+                const fileInput = document.getElementById("imageInput" + kamarId);
+
+                if (
+                    fileInput &&
+                    selectedFilesEditDataTransfers[kamarId] &&
+                    selectedFilesEditDataTransfers[kamarId].files.length > 0
+                ) {
+                    fileInput.files = selectedFilesEditDataTransfers[kamarId].files;
+                    console.log(
+                        "File yang dikirim untuk kamar",
+                        kamarId,
+                        ":",
+                        fileInput.files.length
+                    );
+                }
+            }
+
+            const tipeTerpilih = this.querySelector('input[name="tipe_kamar"]:checked');
+            const statusTerpilih = this.querySelector('input[name="status_kamar"]:checked');
+
+            const tipeWarning = document.getElementById("tipeWarning");
+            const statusWarning = document.getElementById("statusWarning");
+
             if (!tipeTerpilih) {
-                if (tipeGrid) {
-                    tipeGrid.style.background = "linear-gradient(135deg, #fff5f5, #fee2e2)";
-                    tipeGrid.style.boxShadow = "0 0 0 2px #f87171, 0 4px 12px rgba(239,68,68,0.12)";
-                    tipeGrid.style.borderRadius = "10px";
-                    tipeGrid.style.padding = "10px";
-                    tipeGrid.style.transition = "all 0.25s ease";
-                }
-                if (errorTipe) errorTipe.style.display = "block";
+                if (tipeWarning) tipeWarning.style.display = "flex";
                 isValid = false;
             } else {
-                if (tipeGrid) {
-                    tipeGrid.style.background = "transparent";
-                    tipeGrid.style.boxShadow = "none";
-                    tipeGrid.style.padding = "0";
-                }
-                if (errorTipe) errorTipe.style.display = "none";
+                if (tipeWarning) tipeWarning.style.display = "none";
             }
 
-            // 3. Validasi Status Kamar
-            const statusGrid = document.getElementById("statusGrid");
-            const errorStatus = document.getElementById("error-status-js");
             if (!statusTerpilih) {
-                if (statusGrid) {
-                    statusGrid.style.background = "linear-gradient(135deg, #fff5f5, #fee2e2)";
-                    statusGrid.style.boxShadow = "0 0 0 2px #f87171, 0 4px 12px rgba(239,68,68,0.12)";
-                    statusGrid.style.borderRadius = "10px";
-                    statusGrid.style.padding = "10px";
-                    statusGrid.style.transition = "all 0.25s ease";
-                }
-                if (errorStatus) errorStatus.style.display = "block";
+                if (statusWarning) statusWarning.style.display = "flex";
                 isValid = false;
             } else {
-                if (statusGrid) {
-                    statusGrid.style.background = "transparent";
-                    statusGrid.style.boxShadow = "none";
-                    statusGrid.style.padding = "0";
-                }
-                if (errorStatus) errorStatus.style.display = "none";
+                if (statusWarning) statusWarning.style.display = "none";
             }
 
-            // 4. Jika tidak valid, hentikan proses
+            const inputNomor = this.querySelector('input[name="nomor_kamar"]');
+            const duplicateWarning = document.getElementById("duplicateWarning");
+
+            if (inputNomor && inputNomor.classList.contains("is-duplicate")) {
+                if (duplicateWarning) duplicateWarning.style.display = "flex";
+                isValid = false;
+            }
+
             if (!isValid) {
                 e.preventDefault();
-                showNotification(
-                    "Harap lengkapi Tipe dan Status Kamar!",
-                    "error",
-                );
                 return false;
-            }
-
-            // 5. Jika valid, jalankan efek loading tombol (kode asli Anda)
-            const submitButton = this.querySelector('button[type="submit"]');
-            if (submitButton && !submitButton.disabled) {
-                submitButton.disabled = true;
-                submitButton.innerHTML =
-                    '<i class="ti-reload" style="animation: spin 1s linear infinite;"></i> Menyimpan...';
             }
         });
     });
@@ -798,37 +789,25 @@ function initAutoHideAlerts() {
  * Initialize all event listeners
  */
 function initEventListeners() {
-    // File input untuk CREATE modal
-    const createFileInput = document.getElementById("imageInput");
-    if (createFileInput) {
-        createFileInput.addEventListener("change", function (e) {
-            if (e.target.files && e.target.files.length > 0) {
-                previewMultipleImages(e);
-            } else {
-                // If user cancelled, restore the input from our DataTransfer
-                this.files = selectedFilesDataTransfer.files;
-            }
-        });
-    }
-
     // File input untuk EDIT modals
     document.querySelectorAll('input[id^="imageInput"]').forEach((input) => {
         if (input.id !== "imageInput") {
             const kamarId = input.id.replace("imageInput", "");
             input.addEventListener("change", function (e) {
+                console.log("Upload edit terdeteksi untuk kamar:", kamarId);
+                console.log("Jumlah file dipilih:", e.target.files.length);
+
                 if (e.target.files && e.target.files.length > 0) {
                     previewMultipleImagesEdit(e, kamarId);
                 } else {
                     if (selectedFilesEditDataTransfers[kamarId]) {
-                        this.files =
-                            selectedFilesEditDataTransfers[kamarId].files;
+                        this.files = selectedFilesEditDataTransfers[kamarId].files;
                     }
                 }
             });
         }
     });
 
-    // Delete image buttons
     document.querySelectorAll(".btn-delete-image").forEach((btn) => {
         btn.addEventListener("click", function () {
             const imageId = this.dataset.id;
@@ -837,102 +816,125 @@ function initEventListeners() {
         });
     });
 
-    // Set main image buttons
-    document.querySelectorAll(".btn-set-main").forEach((btn) => {
-        btn.addEventListener("click", function () {
-            const imageId = this.dataset.id;
-            const kamarId = this.dataset.kamar;
-            setMainImage(imageId, kamarId);
-        });
-    });
 }
 
 /**
  * Initialize validation for nomor kamar
  */
 function initKamarValidation() {
-    // For Add Modal
-    const formTambahKamar = document.getElementById("formTambahKamar");
-    if (formTambahKamar) {
-        const inputNomor = formTambahKamar.querySelector(
-            'input[name="nomor_kamar"]',
-        );
-        if (inputNomor) {
-            inputNomor.addEventListener("input", function () {
-                const val = this.value.trim().toLowerCase();
-                if (
-                    window.existingKamarNumbers &&
-                    window.existingKamarNumbers.some(
-                        (n) => n.toLowerCase() === val,
-                    )
-                ) {
-                    showNotification(
-                        "Nomor kamar sudah terisi/digunakan!",
-                        "error",
-                    );
-                    this.style.borderColor = "#ef4444";
-                    this.style.boxShadow = "0 0 0 3px rgba(239,68,68,0.1)";
-                    const submitBtn = formTambahKamar.querySelector(
-                        'button[type="submit"]',
-                    );
-                    if (submitBtn) submitBtn.disabled = true;
-                } else {
-                    this.style.borderColor = "#e5e7eb";
-                    this.style.boxShadow = "none";
-                    const submitBtn = formTambahKamar.querySelector(
-                        'button[type="submit"]',
-                    );
-                    if (submitBtn) submitBtn.disabled = false;
-                }
-            });
-        }
+    const inputNomor = document.getElementById("inputNomorKamar");
+    const warning = document.getElementById("duplicateWarning");
+
+    const existingNumbers = (window.existingKamarNumbers || []).map(n =>
+        String(n).trim().toLowerCase()
+    );
+
+    if (inputNomor) {
+        inputNomor.addEventListener("input", function () {
+            const val = String(this.value).trim().toLowerCase();
+
+            if (val && existingNumbers.includes(val)) {
+                this.classList.add("is-duplicate");
+                if (warning) warning.style.display = "flex";
+            } else {
+                this.classList.remove("is-duplicate");
+                if (warning) warning.style.display = "none";
+            }
+        });
     }
 
-    // For Edit Modals
     document.querySelectorAll('form[id^="formEditKamar"]').forEach((form) => {
-        const inputNomor = form.querySelector('input[name="nomor_kamar"]');
+        const inputNomorEdit = form.querySelector('input[name="nomor_kamar"]');
+        const kamarId = form.id.replace("formEditKamar", "");
+        const warningEdit = document.getElementById("duplicateWarningEdit" + kamarId);
 
-        if (inputNomor && !inputNomor.hasAttribute("data-original")) {
-            inputNomor.setAttribute(
+        if (inputNomorEdit && !inputNomorEdit.hasAttribute("data-original")) {
+            inputNomorEdit.setAttribute(
                 "data-original",
-                inputNomor.value.trim().toLowerCase(),
+                String(inputNomorEdit.value).trim().toLowerCase()
             );
         }
 
-        if (inputNomor) {
-            inputNomor.addEventListener("input", function () {
-                const val = this.value.trim().toLowerCase();
+        if (inputNomorEdit) {
+            inputNomorEdit.addEventListener("input", function () {
+                const val = String(this.value).trim().toLowerCase();
                 const originalVal = this.getAttribute("data-original");
 
                 const isTaken =
-                    window.existingKamarNumbers &&
-                    window.existingKamarNumbers.some(
-                        (n) => n.toLowerCase() === val,
-                    ) &&
+                    val &&
+                    existingNumbers.includes(val) &&
                     val !== originalVal;
 
+                const submitBtn = form.querySelector('button[type="submit"]');
+
                 if (isTaken) {
-                    showNotification(
-                        "Nomor kamar sudah terisi/digunakan!",
-                        "error",
-                    );
+                    if (warningEdit) warningEdit.style.display = "flex";
+
+                    this.classList.add("is-duplicate");
                     this.style.borderColor = "#ef4444";
                     this.style.boxShadow = "0 0 0 3px rgba(239,68,68,0.1)";
-                    const submitBtn = form.querySelector(
-                        'button[type="submit"]',
-                    );
+
                     if (submitBtn) submitBtn.disabled = true;
                 } else {
+                    if (warningEdit) warningEdit.style.display = "none";
+
+                    this.classList.remove("is-duplicate");
                     this.style.borderColor = "#e5e7eb";
                     this.style.boxShadow = "none";
-                    const submitBtn = form.querySelector(
-                        'button[type="submit"]',
-                    );
+
                     if (submitBtn) submitBtn.disabled = false;
                 }
             });
         }
     });
+}
+
+function initDeleteImageModal() {
+    const confirmDeleteBtn = document.getElementById("confirmDeleteImageBtn");
+
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener("click", function () {
+            if (!pendingDeleteImage) return;
+
+            const imageId = pendingDeleteImage.imageId;
+            const kamarId = pendingDeleteImage.kamarId;
+
+            const container = document.getElementById(`deleteImagesContainer${kamarId}`);
+            const imageElement = document.getElementById(`gallery-item-${imageId}`);
+
+            if (container) {
+                const existingInput = container.querySelector(`input[value="${imageId}"]`);
+
+                if (!existingInput) {
+                    const input = document.createElement("input");
+                    input.type = "hidden";
+                    input.name = "delete_images[]";
+                    input.value = imageId;
+                    container.appendChild(input);
+                }
+            }
+
+            if (imageElement) {
+                imageElement.style.opacity = "0.35";
+                imageElement.style.pointerEvents = "none";
+                imageElement.style.filter = "grayscale(100%)";
+            }
+
+            showNotification(
+                "Gambar akan dihapus setelah klik Simpan Perubahan",
+                "success"
+            );
+
+            const modalElement = document.getElementById("confirmDeleteImageModal");
+            const modal = bootstrap.Modal.getInstance(modalElement);
+
+            if (modal) {
+                modal.hide();
+            }
+
+            pendingDeleteImage = null;
+        });
+    }
 }
 
 // ========== DOM READY ==========
@@ -943,4 +945,85 @@ document.addEventListener("DOMContentLoaded", function () {
     initAutoHideAlerts();
     initEventListeners();
     initKamarValidation();
+    initDeleteImageModal();
+
+    if (typeof updateFasilitasCount === 'function') {
+        updateFasilitasCount();
+    }
 });
+
+let pendingDeleteImage = null;
+
+window.markDeleteImage = function (event, imageId, kamarId) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    pendingDeleteImage = {
+        imageId: imageId,
+        kamarId: kamarId
+    };
+
+    const modalElement = document.getElementById("confirmDeleteImageModal");
+
+    if (!modalElement) {
+        console.error("Modal confirmDeleteImageModal tidak ditemukan");
+        return;
+    }
+
+    // Pindahkan modal ke body agar tidak ketutup parent modal
+    if (modalElement.parentElement !== document.body) {
+        document.body.appendChild(modalElement);
+    }
+
+    modalElement.style.zIndex = "2060";
+
+    const modal = bootstrap.Modal.getOrCreateInstance(modalElement, {
+        backdrop: true,
+        keyboard: false
+    });
+
+    modal.show();
+
+    setTimeout(() => {
+        const backdrops = document.querySelectorAll(".modal-backdrop");
+        const lastBackdrop = backdrops[backdrops.length - 1];
+
+        if (lastBackdrop) {
+            lastBackdrop.classList.add("confirm-delete-backdrop");
+            lastBackdrop.style.zIndex = "2050";
+        }
+    }, 50);
+};
+
+window.markSetMainImage = function (event, imageId, kamarId) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const form = document.getElementById(`formEditKamar${kamarId}`);
+    if (!form) return;
+
+    let input = form.querySelector('input[name="set_main_image"]');
+
+    if (!input) {
+        input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "set_main_image";
+        form.appendChild(input);
+    }
+
+    input.value = imageId;
+
+    const gallery = document.getElementById(`galleryContainer${kamarId}`);
+    if (gallery) {
+        gallery.querySelectorAll(".gallery-item").forEach((item) => {
+            item.style.border = "1px solid #e5e7eb";
+        });
+    }
+
+    const selectedImage = document.getElementById(`gallery-item-${imageId}`);
+    if (selectedImage) {
+        selectedImage.style.border = "2px solid #10b981";
+    }
+
+    showNotification("Gambar utama akan diganti setelah klik Simpan Perubahan", "success");
+};

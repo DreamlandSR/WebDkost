@@ -142,7 +142,7 @@ class KamarController extends Controller
                     'image_url' => $kamar->galeri ? asset('storage/' . $kamar->galeri->firstWhere('is_main', 1)?->url_foto) : null,
                     'galeri' => $kamar->galeri ? $kamar->galeri->map(function($item) {
                         return [
-                            'id' => $item->id_galeri,
+                            'id' => $item->id_foto,
                             'foto' => asset('storage/' . $item->url_foto),
                             'is_main' => $item->is_main
                         ];
@@ -179,7 +179,7 @@ class KamarController extends Controller
                     'status' => $kamar->status_kamar,
                     'galeri' => $kamar->galeri->map(function($item) {
                         return [
-                            'id' => $item->id_galeri,
+                            'id' => $item->id_foto,
                             'url' => asset('storage/' . $item->url_foto),
                             'is_main' => $item->is_main
                         ];
@@ -214,9 +214,8 @@ class KamarController extends Controller
                 'status_kamar' => 'required|string|in:tersedia,terisi,maintenance',
                 'images' => 'nullable|array',
                 'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-                'delete_images' => 'nullable|array', // ID gambar yang akan dihapus
-                'delete_images.*' => 'integer|exists:galeri_kamar,id_galeri',
-                'set_main_image' => 'nullable|integer|exists:galeri_kamar,id_galeri', // Set gambar utama
+                'delete_images.*' => 'integer|exists:galeri_kamar,id_foto',
+                'set_main_image' => 'nullable|integer|exists:galeri_kamar,id_foto',
             ]);
 
             // Update data kamar
@@ -229,15 +228,23 @@ class KamarController extends Controller
             ]);
 
             // Hapus gambar yang dipilih
+            $deletedMainImage = false;
+
             if ($request->has('delete_images')) {
                 foreach ($request->delete_images as $imageId) {
-                    $image = GaleriKamar::where('id_galeri', $imageId)
+                    $image = GaleriKamar::where('id_foto', $imageId)
                         ->where('id_kamar', $id_kamar)
                         ->first();
+
                     if ($image) {
+                        if ($image->is_main) {
+                            $deletedMainImage = true;
+                        }
+
                         if (Storage::disk('public')->exists($image->url_foto)) {
                             Storage::disk('public')->delete($image->url_foto);
                         }
+
                         $image->delete();
                     }
                 }
@@ -266,9 +273,21 @@ class KamarController extends Controller
                 // Reset semua gambar ke is_main = 0
                 GaleriKamar::where('id_kamar', $id_kamar)->update(['is_main' => 0]);
                 // Set gambar yang dipilih jadi utama
-                GaleriKamar::where('id_galeri', $request->set_main_image)
+                GaleriKamar::where('id_foto', $request->set_main_image)
                     ->where('id_kamar', $id_kamar)
                     ->update(['is_main' => 1]);
+            }
+
+            $hasMainImage = GaleriKamar::where('id_kamar', $id_kamar)
+                ->where('is_main', 1)
+                ->exists();
+
+            if (!$hasMainImage) {
+                $newMainImage = GaleriKamar::where('id_kamar', $id_kamar)->first();
+
+                if ($newMainImage) {
+                    $newMainImage->update(['is_main' => 1]);
+                }
             }
 
             FasilitasKamar::where('id_kamar', $id_kamar)->delete();
@@ -336,10 +355,10 @@ class KamarController extends Controller
     /**
      * Delete single image from gallery (AJAX)
      */
-    public function deleteImage($id_galeri)
+    public function deleteImage($id_foto)
     {
         try {
-            $image = GaleriKamar::findOrFail($id_galeri);
+            $image = GaleriKamar::findOrFail($id_foto);
             $kamarId = $image->id_kamar;
             $wasMain = $image->is_main;
 
@@ -378,10 +397,10 @@ class KamarController extends Controller
     /**
      * Set main image (AJAX)
      */
-    public function setMainImage($id_galeri)
+    public function setMainImage($id_foto)
     {
         try {
-            $image = GaleriKamar::findOrFail($id_galeri);
+            $image = GaleriKamar::findOrFail($id_foto);
 
             // Reset semua gambar kamar ini jadi bukan utama
             GaleriKamar::where('id_kamar', $image->id_kamar)->update(['is_main' => 0]);
@@ -445,7 +464,7 @@ class KamarController extends Controller
                         : null,
                     'all_images' => $kamar->galeri->map(function($item) {
                         return [
-                            'id' => $item->id_galeri,
+                            'id' => $item->id_foto,
                             'url' => asset('storage/' . $item->url_foto),
                             'is_main' => $item->is_main
                         ];

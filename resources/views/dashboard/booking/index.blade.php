@@ -412,7 +412,7 @@
                                     </div>
                                     <div class="col-6">
                                         <div class="p-3" style="background: #f9fafb; border: 1px solid #f0f1f3; border-radius: 10px;">
-                                            <p class="text-muted mb-1" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Biaya Per Bulan</p>
+                                            <p class="text-muted mb-1" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total biaya</p>
                                             <p class="mb-0 fw-bold text-success" style="font-size: 14px;">Rp {{ number_format($booking->total_biaya_bulanan ?? 0, 0, ',', '.') }}</p>
                                         </div>
                                     </div>

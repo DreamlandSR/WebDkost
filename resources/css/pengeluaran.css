@@ -262,7 +262,10 @@
     transition: all 0.15s;
     user-select: none;
 }
-.pill-active-edit {
+.pill-active-edit,
+.kategori-pill-edit input[type="radio"]:checked + .pill-label-edit,
+.tipe-pill-edit input[type="radio"]:checked + .pill-label-edit,
+.status-pill-edit input[type="radio"]:checked + .pill-label-edit {
     background: #eff6ff !important;
     color: #3b82f6 !important;
     border-color: #3b82f6 !important;

@@ -201,7 +201,6 @@ body {
 .sidebar .nav-link:hover {
     background: #00a669 !important;
     color: #ffffff !important;
-    transform: translateX(5px);
     box-shadow: 0 4px 10px rgba(0, 166, 105, 0.2);
 }
 
@@ -210,16 +209,17 @@ body {
     transform: scale(1.1);
 }
 
-.sidebar .nav-link.active {
+/* Global Sidebar Active Override to kill purple */
+.sidebar .nav .nav-item .nav-link.active,
+.sidebar .nav .nav-item.active > .nav-link {
     background: #00a669 !important;
     color: #ffffff !important;
-    box-shadow: 0 6px 15px rgba(0, 166, 105, 0.25);
+    box-shadow: 0 6px 15px rgba(0, 166, 105, 0.25) !important;
     border-left: 5px solid #00ffa6 !important;
-    border-top-left-radius: 8px;
-    border-bottom-left-radius: 8px;
 }
 
-.sidebar .nav-link.active i {
+.sidebar .nav .nav-item .nav-link.active i,
+.sidebar .nav .nav-item.active > .nav-link i {
     color: #00ffa6 !important;
 }
 
@@ -402,14 +402,19 @@ body {
     }
 }
 
-.kategori-pill input[type="radio"]:checked + .pill-label {
+.kategori-pill input[type="radio"]:checked + .pill-label,
+.tipe-pill input[type="radio"]:checked + .pill-label,
+.status-pill input[type="radio"]:checked + .pill-label {
     background: #ecfdf5 !important;
     color: #00a669 !important;
     border-color: #00a669 !important;
     font-weight: 600 !important;
 }
 
-.pill-active-edit {
+.pill-active-edit,
+.kategori-pill-edit input[type="radio"]:checked + .pill-label-edit,
+.tipe-pill-edit input[type="radio"]:checked + .pill-label-edit,
+.status-pill-edit input[type="radio"]:checked + .pill-label-edit {
     background: #eff6ff !important;
     color: #3b82f6 !important;
     border-color: #3b82f6 !important;
