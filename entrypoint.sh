@@ -118,6 +118,51 @@ if [ -f /var/www/.env ]; then
     else
         echo "SESSION_SECURE_COOKIE=${SESSION_SECURE_COOKIE:-false}" >> /var/www/.env
     fi
+
+        # Midtrans
+    if grep -q "^MIDTRANS_SERVER_KEY=" /var/www/.env; then
+        sed -i "s|^MIDTRANS_SERVER_KEY=.*|MIDTRANS_SERVER_KEY=${MIDTRANS_SERVER_KEY:-}|" /var/www/.env
+    else
+        echo "MIDTRANS_SERVER_KEY=${MIDTRANS_SERVER_KEY:-}" >> /var/www/.env
+    fi
+
+    if grep -q "^MIDTRANS_CLIENT_KEY=" /var/www/.env; then
+        sed -i "s|^MIDTRANS_CLIENT_KEY=.*|MIDTRANS_CLIENT_KEY=${MIDTRANS_CLIENT_KEY:-}|" /var/www/.env
+    else
+        echo "MIDTRANS_CLIENT_KEY=${MIDTRANS_CLIENT_KEY:-}" >> /var/www/.env
+    fi
+
+    if grep -q "^MIDTRANS_IS_PRODUCTION=" /var/www/.env; then
+        sed -i "s|^MIDTRANS_IS_PRODUCTION=.*|MIDTRANS_IS_PRODUCTION=${MIDTRANS_IS_PRODUCTION:-false}|" /var/www/.env
+    else
+        echo "MIDTRANS_IS_PRODUCTION=${MIDTRANS_IS_PRODUCTION:-false}" >> /var/www/.env
+    fi
+
+    # Gemini
+    if grep -q "^GEMINI_API_KEY=" /var/www/.env; then
+        sed -i "s|^GEMINI_API_KEY=.*|GEMINI_API_KEY=${GEMINI_API_KEY:-}|" /var/www/.env
+    else
+        echo "GEMINI_API_KEY=${GEMINI_API_KEY:-}" >> /var/www/.env
+    fi
+
+    if grep -q "^GEMINI_MODEL=" /var/www/.env; then
+        sed -i "s|^GEMINI_MODEL=.*|GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.0-flash-lite}|" /var/www/.env
+    else
+        echo "GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.0-flash-lite}" >> /var/www/.env
+    fi
+
+    #Vite
+    if grep -q "^VITE_APP_URL=" /var/www/.env; then
+    sed -i "s|^VITE_APP_URL=.*|VITE_APP_URL=${VITE_APP_URL:-http://103.157.27.229:30080}|" /var/www/.env
+    else
+        echo "VITE_APP_URL=${VITE_APP_URL:-http://103.157.27.229:30080}" >> /var/www/.env
+    fi
+
+    if grep -q "^QUEUE_CONNECTION=" /var/www/.env; then
+        sed -i "s/^QUEUE_CONNECTION=.*/QUEUE_CONNECTION=${QUEUE_CONNECTION:-database}/" /var/www/.env
+    else
+        echo "QUEUE_CONNECTION=${QUEUE_CONNECTION:-database}" >> /var/www/.env
+    fi
 fi
 
 # Install vendor jika belum ada

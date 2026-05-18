@@ -32,12 +32,10 @@ spec:
               value: "http://103.157.27.229:30080"
 
             - name: APP_KEY
-              value: "base64:jO9BkXabhr0rBvNoEiy5GqOjNm3cyZ6uc0qGbF9Kqzg="
-
-            - name: CACHE_STORE
-              value: "file"
-            - name: CACHE_DRIVER
-              value: "file"
+              valueFrom:
+                secretKeyRef:
+                  name: webdkost-secrets
+                  key: APP_KEY
 
             - name: SESSION_DRIVER
               value: "file"
@@ -68,10 +66,45 @@ spec:
             - name: MAIL_USERNAME
               value: "dkost2428@gmail.com"
             - name: MAIL_PASSWORD
-              value: "wgugphimcwauiauu"
+              valueFrom:
+                secretKeyRef:
+                  name: webdkost-secrets
+                  key: MAIL_PASSWORD
             - name: MAIL_ENCRYPTION
               value: "tls"
             - name: MAIL_FROM_ADDRESS
               value: "dkost2428@gmail.com"
             - name: MAIL_FROM_NAME
               value: "D'Kost"
+
+            - name: VITE_APP_URL
+              value: "http://103.157.27.229:30080"
+
+            - name: MIDTRANS_SERVER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: webdkost-secrets
+                  key: MIDTRANS_SERVER_KEY
+            - name: MIDTRANS_CLIENT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: webdkost-secrets
+                  key: MIDTRANS_CLIENT_KEY
+
+            - name: MIDTRANS_IS_PRODUCTION
+              value: "false"
+            - name: QUEUE_CONNECTION
+              value: "database"
+
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: webdkost-secrets
+                  key: GEMINI_API_KEY
+            - name: GEMINI_MODEL
+              value: "gemini-2.0-flash-lite"
+
+            - name: CACHE_DRIVER
+              value: "file"
+            - name: CACHE_STORE
+              value: "file"
