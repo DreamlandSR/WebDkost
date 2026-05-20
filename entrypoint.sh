@@ -225,6 +225,6 @@ php artisan view:clear || true
 php artisan cache:clear || true
 
 # Jalankan scheduler
-php artisan schedule:work &
+# php artisan schedule:work &
 
 exec "$@"

@@ -1,20 +1,47 @@
     @extends('templates.layout')
 
+    @section('body_class', 'dark-hero')
+
     @section('styles')
         <link rel="stylesheet" href="{{ asset('css/override.css') }}">
+        <style>
+            /* ===== FORCE HERO GREEN - Highest Specificity Override ===== */
+            html body .product-hero,
+            html body section.product-hero,
+            html body section.product-hero.has-search {
+                background: linear-gradient(135deg, #00AB6B 0%, #007a4d 100%) !important;
+                min-height: 300px !important;
+                padding-top: 90px !important;
+                padding-bottom: 40px !important;
+                display: flex !important;
+                align-items: center !important;
+                overflow: hidden !important;
+                position: relative !important;
+            }
+            /* Pastikan teks di dalam hero PUTIH */
+            html body section.product-hero h1,
+            html body section.product-hero h2,
+            html body section.product-hero h3,
+            html body section.product-hero h4,
+            html body section.product-hero h5,
+            html body section.product-hero .display-4 {
+                color: #ffffff !important;
+                background: none !important;
+                -webkit-text-fill-color: #ffffff !important;
+            }
+        </style>
     @endsection
 
     @section('content')
 
-        @include('templates.header')
         @include('templates.navbar')
 
         <!-- HERO SECTION dengan Background Hijau -->
-        <section class="hero-section" style="background-color: #00AB6B;">
-            <div class="container py-5">
+        <section class="product-hero has-search" style="background: linear-gradient(135deg, #00AB6B 0%, #007a4d 100%) !important;">
+            <div class="container pt-4 pb-3">
                 <div class="row justify-content-center">
                     <div class="col-lg-8 text-center">
-                        <h5 class="display-4 fw-bold text-white mb-5 mt-5">
+                        <h5 class="display-4 fw-bold text-white mb-4 mt-3">
                             Carilah tempat dimana kamu dapat pulang dengan nyaman
                         </h5>
 
@@ -35,9 +62,10 @@
                                     <select id="filterSelect" class="form-select border-0"
                                         style="background-color: #F5F5F5; border-radius: 12px; height: 54px; padding-left: 40px; appearance: none; cursor: pointer;">
                                         <option value="">Filter</option>
-                                        <option value="kecil">Kos Biasa</option>
-                                        <option value="medium">Kos Sedang</option>
+                                        <option value="biasa">Kos Biasa</option>
+                                        <option value="sedang">Kos Sedang</option>
                                         <option value="mewah">Kos Mewah</option>
+                                        <option value="tersedia">Kamar Tersedia</option>
                                         <option value="ac">Dengan AC</option>
                                         <option value="wifi">Dengan WiFi</option>
                                         <option value="rating">Rating Tertinggi</option>
@@ -124,6 +152,7 @@
                         <div class="col-lg-3 col-md-6 kos-item" 
                              data-name="{{ strtolower($kamar->nomor_kamar) }}" 
                              data-tipe="{{ strtolower($kamar->tipe_kamar) }}" 
+                             data-status="{{ strtolower($kamar->status_kamar) }}"
                              data-rating="{{ $ratingVal }}"
                              data-fasilitas="{{ strtolower($fasilitasList->pluck('nama_fasilitas')->implode(',')) }}">
                             <div class="card kos-card border-0 shadow-sm h-100">
@@ -226,9 +255,6 @@
             </div>
         </section>
 
-
-        </div>
-
         @include('templates.main_footer')
         @include('templates.footer')
 
@@ -250,6 +276,7 @@
                 itemsArray.forEach(item => {
                     const name = item.getAttribute('data-name');
                     const tipe = item.getAttribute('data-tipe');
+                    const status = item.getAttribute('data-status');
                     const fasilitas = item.getAttribute('data-fasilitas');
                     
                     let matchesSearch = name.includes(searchTerm);
@@ -260,6 +287,8 @@
                             matchesFilter = tipe === filterValue;
                         } else if (filterValue === 'ac' || filterValue === 'wifi') {
                             matchesFilter = fasilitas.includes(filterValue);
+                        } else if (filterValue === 'tersedia') {
+                            matchesFilter = status === 'tersedia';
                         } else if (filterValue === 'rating') {
                             matchesFilter = true; // Rating is a sort, not a filter out
                         }
@@ -320,4 +349,4 @@
         });
         </script>
 
-        @endsection
+    @endsection
