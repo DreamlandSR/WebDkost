@@ -1,3 +1,67 @@
+<!-- Modal Peringatan: Kamar Masih Terisi -->
+<div class="modal fade" id="kamarTerisiModal{{ $kamar->id_kamar }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+        <div class="modal-content border-0" style="border-radius: 20px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.18);">
+
+            <!-- Top accent bar -->
+            <div style="height: 5px; background: linear-gradient(90deg, #f59e0b, #ef4444, #f59e0b); background-size: 200% 100%; animation: shimmer 2s linear infinite;"></div>
+
+            <div class="modal-body text-center" style="padding: 36px 32px 30px;">
+
+                <!-- Icon with pulse ring -->
+                <div style="position: relative; width: 88px; height: 88px; margin: 0 auto 22px;">
+                    <div style="position: absolute; inset: 0; border-radius: 50%; background: #fef3c7; animation: pulse-ring 1.8s ease-out infinite;"></div>
+                    <div style="position: relative; width: 88px; height: 88px; border-radius: 50%; background: linear-gradient(135deg, #fef3c7, #fde68a); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(245,158,11,0.3);">
+                        <i class="ti-lock" style="font-size: 34px; color: #d97706;"></i>
+                    </div>
+                </div>
+
+                <!-- Title -->
+                <h5 class="fw-bold mb-2" style="font-size: 19px; color: #111827; letter-spacing: -0.3px;">
+                    Tidak Dapat Dihapus
+                </h5>
+
+                <!-- Subtitle -->
+                <p style="font-size: 14px; color: #6b7280; line-height: 1.65; margin-bottom: 20px;">
+                    Kamar <strong style="color: #111827;">{{ $kamar->nomor_kamar }}</strong> saat ini
+                    berstatus <span style="background: #fef2f2; color: #ef4444; font-weight: 700; padding: 2px 10px; border-radius: 20px; font-size: 13px;">Terisi</span>
+                    dan sedang dihuni oleh penyewa aktif.
+                </p>
+
+                <!-- Info box -->
+                <div style="background: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid #f59e0b; border-radius: 10px; padding: 12px 16px; text-align: left; margin-bottom: 24px;">
+                    <div style="display: flex; align-items: flex-start; gap: 10px;">
+                        <i class="ti-info-alt" style="color: #d97706; font-size: 15px; margin-top: 1px; flex-shrink: 0;"></i>
+                        <p style="margin: 0; font-size: 13px; color: #92400e; line-height: 1.55;">
+                            Pastikan penyewa telah <strong>menyelesaikan kontrak</strong> atau status kamar diubah menjadi <strong>Tersedia</strong> sebelum menghapus data kamar.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Button -->
+                <button type="button" class="btn w-100 fw-bold" data-bs-dismiss="modal"
+                    style="padding: 11px; border-radius: 12px; background: linear-gradient(135deg, #374151, #1f2937); color: white; font-size: 14px; border: none; letter-spacing: 0.2px; transition: opacity 0.2s;"
+                    onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
+                    Mengerti
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes pulse-ring {
+    0%   { transform: scale(1);   opacity: 0.6; }
+    70%  { transform: scale(1.35); opacity: 0; }
+    100% { transform: scale(1.35); opacity: 0; }
+}
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+</style>
+
 <!-- hapus data -->
  <div class="modal fade" id="hapusModal{{ $kamar->id_kamar }}" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">

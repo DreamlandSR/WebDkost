@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: webdkost-ingress
+  namespace: webdkost
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - kitadkost.my.id
+      secretName: webdkost-tls
+  rules:
+    - host: kitadkost.my.id
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: webdkost-service
+                port:
+                  number: 80

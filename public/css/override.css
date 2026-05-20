@@ -19,16 +19,6 @@
     --dk-shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.12);
 }
 
-/* Tambahkan di file CSS kamu */
-.move-up {
-    margin-top: -150px !important;
-    /* Sesuaikan angkanya */
-}
-
-.moveup {
-    margin-top: -50px !important;
-    /* Sesuaikan angkanya */
-}
 
 body {
     background: #f0f2f1 !important;
@@ -36,7 +26,6 @@ body {
     font-family: "Poppins", "Segoe UI", sans-serif;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
 }
 
 /* ============================================
@@ -44,10 +33,11 @@ body {
    agar tidak pecah saat zoom out
    ============================================ */
 .page-wrapper {
-    max-width: 1440px;
-    margin: 0 auto;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
     background: var(--dk-body);
-    box-shadow: 0 0 60px rgba(0, 0, 0, 0.08);
+    box-shadow: none !important;
     position: relative;
 }
 
@@ -173,9 +163,14 @@ h6,
     padding: 12px 0 !important;
     transition: all 0.35s ease !important;
     background: transparent !important;
-    max-width: 1920px;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.navbar .container-fluid {
+    max-width: 1440px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
 .navbar.scrolled {
@@ -207,6 +202,27 @@ h6,
     font-size: 0.85rem !important;
 }
 
+/* ── Navbar di atas hero hijau (body.dark-hero) ── */
+body.dark-hero .navbar:not(.scrolled) .nav-link {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+body.dark-hero .navbar:not(.scrolled) .nav-link:hover {
+    color: #ffffff !important;
+}
+
+body.dark-hero .navbar:not(.scrolled) .navbar-brand small {
+    color: #ffffff !important;
+}
+
+body.dark-hero .navbar.scrolled .nav-link {
+    color: var(--dk-text) !important;
+}
+
+body.dark-hero .navbar.scrolled .navbar-brand small {
+    color: var(--dk-text) !important;
+}
+
 /* ============================================
    HERO / HEADER
    ============================================ */
@@ -214,29 +230,38 @@ header.py-5 {
     background: white;
     padding-top: 80px !important;
     padding-bottom: 20px !important;
-    margin-bottom: 0;
-    border-radius: 0;
-    width: 100%;
-    min-height: 700px;
+    min-height: 600px;
     display: flex;
     align-items: center;
+    width: 100%;
+    max-width: 100%;
 }
 
 /* Full-viewport sections */
 #section-andalan {
-    min-height: 700px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    min-height: auto;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
     background: var(--dk-gray-light);
 }
 
 #section-terbaik {
-    min-height: 700px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    min-height: auto;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
     background: white;
+}
+
+.row {
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 100%;
+}
+
+/* ── FIX 7: Carousel di kolom – pastikan tidak meluber ── */
+.col-lg-7.col-xl-7 {
+
+    padding-right: 1rem;
 }
 
 /* ============================================
@@ -351,15 +376,25 @@ header.py-5 {
 .carousel-inner {
     overflow: hidden;
     border-radius: var(--dk-radius-lg) !important;
+    max-width: 100%;
+}
+.carousel {
+    max-width: 100% !important;   /* override 500px yang kaku */
+    width: 100%;
+    margin: 0 auto !important;    /* hapus margin-right: 30px */
 }
 
-.carousel {
-    max-width: 500px;
-    /* Atur lebar maksimal yang kamu inginkan */
-    margin-left: auto;
-    margin-right: auto;
-    margin-right: 30px !important;
-    /* Agar carousel tetap di tengah jika lebih kecil dari kolomnya */
+/* Carousel di hero (#carouselExampleAutoplaying) */
+#carouselExampleAutoplaying {
+    max-width: 100%;
+    width: 100%;
+    margin: 0 !important;
+}
+
+#carouselExampleAutoplaying .carousel-inner img {
+    height: 300px;
+    object-fit: cover;
+    border-radius: var(--dk-radius-lg);
 }
 
 .carousel-inner img {
@@ -370,6 +405,23 @@ header.py-5 {
 
 .carousel-item {
     transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+}
+
+/* ── Carousel #productCarousel: sesuaikan ukuran agar sama seperti carousel atas ── */
+#productCarousel {
+    width: 580px !important;
+    max-width: 580px !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
+}
+
+#productCarousel .carousel-item img,
+#productCarousel .carousel-inner img {
+    width: 100% !important;
+    height: 260px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border-radius: 18px !important;
 }
 
 /* Product text */
@@ -734,11 +786,9 @@ header.py-5 {
     background: #0d1f17 !important;
     color: #b0c4b8;
     border-radius: 0;
-    width: 100%;
-    margin: 0;
-    max-width: 1440px;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
 }
 
 .dk-footer .footer-title {
@@ -976,6 +1026,10 @@ header.py-5 {
         padding-right: 8px !important;
     }
 
+    .container-fluid {
+        max-width: 100%;
+    }
+
     /* Hero header — kasih padding top lebih besar biar tidak nabrak navbar */
     header.py-5 {
         padding-top: 120px !important;
@@ -1063,8 +1117,9 @@ header.py-5 {
 
     /* Carousel andalan — center */
     #productCarousel {
+        max-width: 100%;
+        width: 100%;
         margin: 0 auto !important;
-        max-width: 100% !important;
     }
 
     #section-andalan .col-md-7 {
@@ -1189,5 +1244,212 @@ header.py-5 {
 
     .review-avatar i {
         font-size: 1.2rem !important;
+    }
+}
+
+/* ============================================
+   CLEAN HERO FIX — TANPA STYLE SCROLL
+============================================ */
+
+html,
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+/* Wrapper normal */
+.page-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    position: relative !important;
+}
+
+/* Main normal */
+main,
+main.flex-shrink-0 {
+    width: 100% !important;
+}
+
+/* Hero section */
+.hero-section {
+    height: 100vh !important;
+    min-height: 560px !important;
+    padding-top: 90px !important;
+    padding-bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+/* Container hero */
+.hero-section .container-fluid {
+    width: 100% !important;
+    padding-left: 48px !important;
+    padding-right: 48px !important;
+}
+
+/* Row hero */
+.hero-section .row.moveup {
+    width: 100% !important;
+    align-items: center !important;
+    margin: 0 !important;
+    transform: translateY(-90px) !important;
+}
+
+/* Kolom kanan */
+.hero-section .col-lg-7,
+.hero-section .col-xl-7 {
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    padding-right: 10px !important;
+}
+
+/* Carousel hero */
+#carouselExampleAutoplaying {
+    width: 580px !important;
+    max-width: 580px !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
+}
+
+/* Gambar carousel hero */
+#carouselExampleAutoplaying .carousel-item img,
+#carouselExampleAutoplaying .carousel-inner img {
+    width: 100% !important;
+    height: 260px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border-radius: 18px !important;
+}
+
+/* Caption */
+#carouselExampleAutoplaying .carousel-caption {
+    max-width: 70% !important;
+    left: 15% !important;
+    right: 15% !important;
+    bottom: 12px !important;
+}
+
+/* Tombol hero */
+.hero-buttons .btn {
+    min-width: 150px !important;
+    border-radius: 999px !important;
+}
+
+/* ============================================
+   PRODUCT HERO
+============================================ */
+
+.product-hero {
+    background: linear-gradient(135deg, #00AB6B 0%, #007a4d 100%) !important;
+    min-height: 180px;
+    padding-top: 80px !important;
+    padding-bottom: 25px !important;
+    display: flex !important;
+    align-items: center !important;
+    overflow: hidden;
+    position: relative;
+}
+
+.product-hero .display-4 {
+    color: #ffffff !important;
+    font-size: 2.7rem !important;
+    line-height: 1.3 !important;
+}
+
+/* Versi dengan search box (kamar.blade.php) */
+.product-hero.has-search {
+    background: linear-gradient(135deg, #00AB6B 0%, #007a4d 100%) !important;
+    min-height: 300px !important;
+    padding-top: 90px !important;
+    padding-bottom: 40px !important;
+}
+
+.product-hero .search-box {
+    max-width: 700px !important;
+    background: #ffffff !important;
+    border-radius: 24px !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18) !important;
+}
+
+.product-hero input,
+.product-hero select {
+    background-color: #F5F5F5 !important;
+    border-radius: 12px !important;
+    height: 54px !important;
+}
+
+/* Tablet */
+@media (max-width: 991px) {
+    .hero-section {
+        height: auto !important;
+        min-height: 100vh !important;
+        padding-top: 120px !important;
+        padding-bottom: 60px !important;
+    }
+
+    .hero-section .row.moveup {
+        transform: translateY(-30px) !important;
+    }
+
+    .hero-section .text-start {
+        text-align: center !important;
+    }
+
+    .hero-section .justify-content-sm-start {
+        justify-content: center !important;
+    }
+
+    #carouselExampleAutoplaying {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+    }
+
+    #carouselExampleAutoplaying .carousel-item img,
+    #carouselExampleAutoplaying .carousel-inner img,
+    #productCarousel .carousel-item img,
+    #productCarousel .carousel-inner img {
+        height: 220px !important;
+    }
+}
+
+/* HP */
+@media (max-width: 576px) {
+    .hero-section {
+        padding-top: 110px !important;
+        padding-bottom: 50px !important;
+    }
+
+    .hero-section .row.moveup {
+        transform: translateY(-10px) !important;
+    }
+
+    .hero-section h1 {
+        font-size: 2rem !important;
+    }
+
+    .hero-section .lead {
+        font-size: 0.95rem !important;
+    }
+
+    .hero-buttons {
+        gap: 12px !important;
+    }
+
+    .hero-buttons .btn {
+        width: 100% !important;
+        margin-right: 0 !important;
+    }
+
+    #carouselExampleAutoplaying .carousel-item img,
+    #carouselExampleAutoplaying .carousel-inner img,
+    #productCarousel .carousel-item img,
+    #productCarousel .carousel-inner img {
+        height: 180px !important;
     }
 }

@@ -19,6 +19,19 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
+
+          volumeMounts:
+            - name: laravel-storage
+              mountPath: /var/www/storage/app/public
+          
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
           env:
             - name: APP_NAME
               value: "WebDkost"
@@ -27,22 +40,22 @@ spec:
             - name: APP_DEBUG
               value: "false"
             - name: APP_URL
-              value: "http://103.157.27.229:30080"
+              value: "https://kitadkost.my.id"
             - name: ASSET_URL
-              value: "http://103.157.27.229:30080"
+              value: "https://kitadkost.my.id"
 
             - name: APP_KEY
-              valueFrom:
+              valueFrom: 
                 secretKeyRef:
                   name: webdkost-secrets
                   key: APP_KEY
 
             - name: SESSION_DRIVER
-              value: "file"
+              value: "database"
             - name: SESSION_DOMAIN
-              value: ""
+              value: "kitadkost.my.id"
             - name: SESSION_SECURE_COOKIE
-              value: "false"
+              value: "true"
 
             - name: DB_CONNECTION
               value: "mysql"
@@ -78,7 +91,7 @@ spec:
               value: "D'Kost"
 
             - name: VITE_APP_URL
-              value: "http://103.157.27.229:30080"
+              value: "https://kitadkost.my.id"
 
             - name: MIDTRANS_SERVER_KEY
               valueFrom:
@@ -108,3 +121,8 @@ spec:
               value: "file"
             - name: CACHE_STORE
               value: "file"
+        
+      volumes:
+        - name: laravel-storage
+          persistentVolumeClaim:
+            claimName: laravel-storage-pvc
