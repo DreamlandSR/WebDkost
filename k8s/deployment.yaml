@@ -23,7 +23,7 @@ spec:
           volumeMounts:
             - name: laravel-storage
               mountPath: /var/www/storage/app/public
-          
+
           resources:
             requests:
               cpu: "100m"
@@ -45,7 +45,7 @@ spec:
               value: "https://kitadkost.my.id"
 
             - name: APP_KEY
-              valueFrom: 
+              valueFrom:
                 secretKeyRef:
                   name: webdkost-secrets
                   key: APP_KEY
@@ -121,7 +121,7 @@ spec:
               value: "file"
             - name: CACHE_STORE
               value: "file"
-        
+
       volumes:
         - name: laravel-storage
           persistentVolumeClaim:
