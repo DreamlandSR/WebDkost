@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    options {
+        disableConcurrentBuilds()
+    }
+
     environment {
         IMAGE_NAME = "ryanzputra/webdkost"
         IMAGE_TAG = "latest"
@@ -57,6 +61,7 @@ pipeline {
                 kubectl apply -f k8s/ingress.yaml
 
                 kubectl apply -f k8s/hpa.yaml
+
                 '''
             }
         }
