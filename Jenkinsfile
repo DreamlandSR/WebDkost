@@ -48,9 +48,6 @@ pipeline {
 
                 kubectl apply -f k8s/storage-pvc.yaml
 
-                kubectl apply -f k8s/mysql-deployment.yaml
-                kubectl apply -f k8s/mysql-service.yaml
-
                 kubectl apply -f k8s/deployment.yaml
                 kubectl apply -f k8s/service.yaml
 
