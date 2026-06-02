@@ -193,12 +193,21 @@
                                                                 style="background-color: #4f46e5; font-size: 13px; font-weight: 500; transition: opacity 0.2s;"
                                                                 onmouseover="this.style.opacity='0.9';"
                                                                 onmouseout="this.style.opacity='1';">Edit</a>
-                                                            <a href="#" data-bs-toggle="modal"
-                                                                data-bs-target="#hapusModal{{ $kamar->id_kamar }}"
-                                                                class="badge rounded-pill text-white text-decoration-none px-4 py-2 me-1"
-                                                                style="background-color: #ef4444; font-size: 13px; font-weight: 500; transition: opacity 0.2s;"
-                                                                onmouseover="this.style.opacity='0.9';"
-                                                                onmouseout="this.style.opacity='1';">Hapus</a>
+                                                            @if ($kamar->status_kamar == 'terisi')
+                                                                <a href="#" data-bs-toggle="modal"
+                                                                    data-bs-target="#kamarTerisiModal{{ $kamar->id_kamar }}"
+                                                                    class="badge rounded-pill text-white text-decoration-none px-4 py-2 me-1"
+                                                                    style="background-color: #9ca3af; font-size: 13px; font-weight: 500; transition: opacity 0.2s; cursor: not-allowed;"
+                                                                    onmouseover="this.style.opacity='0.9';"
+                                                                    onmouseout="this.style.opacity='1';">Hapus</a>
+                                                            @else
+                                                                <a href="#" data-bs-toggle="modal"
+                                                                    data-bs-target="#hapusModal{{ $kamar->id_kamar }}"
+                                                                    class="badge rounded-pill text-white text-decoration-none px-4 py-2 me-1"
+                                                                    style="background-color: #ef4444; font-size: 13px; font-weight: 500; transition: opacity 0.2s;"
+                                                                    onmouseover="this.style.opacity='0.9';"
+                                                                    onmouseout="this.style.opacity='1';">Hapus</a>
+                                                            @endif
                                                             <a href="#" data-bs-toggle="modal"
                                                                 data-bs-target="#detailModal{{ $kamar->id_kamar }}"
                                                                 class="badge rounded-pill text-white text-decoration-none px-4 py-2"

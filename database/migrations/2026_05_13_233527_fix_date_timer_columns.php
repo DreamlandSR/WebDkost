@@ -11,9 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('booking', function (Blueprint $table) {
-            $table->dateTime('expired_at')->nullable()->change();
-        });
+        if (Schema::hasTable('booking')) {
+            Schema::table('booking', function (Blueprint $table) {
+                if (Schema::hasColumn('booking', 'expired_at')) {
+                    $table->dateTime('expired_at')->nullable()->change();
+                } else {
+                    $table->dateTime('expired_at')->nullable();
+                }
+            });
+        }
     }
 
     /**
@@ -21,8 +27,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('booking', function (Blueprint $table) {
-            $table->date('expired_at')->nullable()->change();
-        });
+        if (Schema::hasTable('booking')) {
+            Schema::table('booking', function (Blueprint $table) {
+                if (Schema::hasColumn('booking', 'expired_at')) {
+                    $table->date('expired_at')->nullable()->change();
+                }
+            });
+        }
     }
 };

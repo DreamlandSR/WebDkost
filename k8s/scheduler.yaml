@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webdkost-scheduler
+  namespace: webdkost
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webdkost-scheduler
+  template:
+    metadata:
+      labels:
+        app: webdkost-scheduler
+    spec:
+      containers:
+        - name: webdkost-scheduler
+          image: ryanzputra/webdkost:latest
+          imagePullPolicy: Always
+          workingDir: /var/www
+          command: ["php"]
+          args: ["artisan", "schedule:work"]
+
+          env:
+            - name: APP_NAME
+              value: "WebDkost"
+            - name: APP_ENV
+              value: "production"
+            - name: APP_DEBUG
+              value: "false"
+            - name: APP_URL
+              value: "https://kitadkost.my.id"
+
+            - name: APP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: webdkost-secrets
+                  key: APP_KEY
+
+            - name: DB_CONNECTION
+              value: "mysql"
+            - name: DB_HOST
+              value: "mysql-service"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: "webdkost"
+            - name: DB_USERNAME
+              value: "root"
+            - name: DB_PASSWORD
+              value: "root"
+
+            - name: CACHE_STORE
+              value: "file"
+            - name: CACHE_DRIVER
+              value: "file"
+            - name: SESSION_DRIVER
+              value: "database"
+            - name: QUEUE_CONNECTION
+              value: "database"

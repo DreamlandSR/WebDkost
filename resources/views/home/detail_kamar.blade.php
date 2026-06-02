@@ -1,13 +1,12 @@
 @extends('templates.layout')
 
-@section('container_class', 'container-fluid p-0')
+@section('body_class', 'dark-hero')
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/override.css') }}">
 @endsection
 
 @section('content')
-    @include('templates.header')
     @include('templates.navbar')
 
     @php
@@ -63,50 +62,69 @@
             $ratingDist[$s] = $kamar->reviews->where('rating', $s)->count();
         }
     @endphp
-
     {{-- ===== HERO STRIP ===== --}}
-    <section class="hero-section flex-shrink-0 position-relative border-bottom"
-        style="background: linear-gradient(135deg, #00AB6B 0%, #008151 100%); overflow: hidden;">
+    <section class="product-hero flex-shrink-0 position-relative">
         {{-- Dekorasi pola titik abstrak --}}
         <div class="position-absolute w-100 h-100"
-            style="top:0; left:0; pointer-events:none; opacity: 0.08; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.8) 1px, transparent 0); background-size: 24px 24px;">
+            style="top:0; left:0; pointer-events:none; opacity: 0.07;
+                   background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.9) 1px, transparent 0);
+                   background-size: 28px 28px;">
         </div>
+        {{-- Dekorasi lingkaran blur kanan --}}
+        <div class="position-absolute" style="top:-60px; right:-60px; width:260px; height:260px;
+             background: rgba(255,255,255,0.06); border-radius: 50%; pointer-events:none;"></div>
+        <div class="position-absolute" style="bottom:-40px; left:5%; width:180px; height:180px;
+             background: rgba(255,255,255,0.05); border-radius: 50%; pointer-events:none;"></div>
 
         <div class="container py-4 position-relative" style="z-index: 1;">
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+
                 {{-- Judul Halaman --}}
-                <div class="page-title-section text-white">
-                    <h2 class="fw-bold mb-1 d-flex align-items-center"
-                        style="font-size: 1.8rem; letter-spacing: -0.5px; text-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                        <i class="bi bi-door-open-fill text-white-50 me-2" style="font-size: 1.5rem;"></i> Detail Informasi
-                        Kamar
-                    </h2>
-                    <p class="mb-0 text-white-50" style="font-size: 0.95rem; font-weight: 500;">
-                        Informasi lengkap, fasilitas, dan ulasan kamar
+                <div class="page-title-section">
+                    {{-- Badge tipe kamar --}}
+                    <span class="badge mb-2 d-inline-flex align-items-center gap-1"
+                        style="background: rgba(255,255,255,0.2); color:#fff; font-size:0.75rem;
+                               padding: 6px 14px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.3);
+                               backdrop-filter: blur(6px); letter-spacing: 0.5px; text-transform: uppercase;">
+                        <i class="bi bi-house-door-fill"></i> {{ ucfirst($kamar->tipe_kamar) }}
+                    </span>
+                    <h1 class="fw-bold mb-1 text-white"
+                        style="font-size: 2rem; letter-spacing: -0.5px; text-shadow: 0 2px 12px rgba(0,0,0,0.15);">
+                        <i class="bi bi-door-open-fill me-2" style="font-size: 1.6rem; opacity:0.85;"></i>
+                        {{ $kamar->nomor_kamar }}
+                    </h1>
+                    <p class="mb-0" style="font-size: 0.9rem; font-weight: 500; color: rgba(255,255,255,0.75);">
+                        <i class="bi bi-geo-alt-fill me-1"></i>{{ $kamar->lokasi ?? 'Bondowoso' }}
+                        &nbsp;·&nbsp;
+                        <i class="bi bi-info-circle me-1"></i>Informasi lengkap, fasilitas & ulasan kamar
                     </p>
                 </div>
 
                 {{-- Breadcrumb Glassmorphism --}}
-                <nav aria-label="breadcrumb" class="d-inline-flex px-4 py-2 shadow-sm"
-                    style="background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px); border-radius: 30px; border: 1px solid rgba(255,255,255,0.25);"
-                    <ol class="breadcrumb mb-0 align-items-center modern-breadcrumb"
-                        style="font-size:0.88rem; font-weight:500;">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0 align-items-center px-4 py-2"
+                        style="background: rgba(0,0,0,0.2); backdrop-filter: blur(12px);
+                               border-radius: 30px; border: 1px solid rgba(255,255,255,0.2);
+                               font-size: 0.85rem; font-weight: 500;">
                         <li class="breadcrumb-item">
                             <a href="{{ route('index') }}"
                                 class="text-white text-decoration-none d-flex align-items-center gap-1"
-                                style="opacity: 0.9; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'"
-                                onmouseout="this.style.opacity='0.9'">
+                                style="opacity: 0.85; transition: opacity 0.2s;"
+                                onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.85'">
                                 <i class="bi bi-house-door-fill"></i> Beranda
                             </a>
                         </li>
                         <li class="breadcrumb-item">
-                            <a href="{{ route('product') }}" class="text-white text-decoration-none"
-                                style="opacity: 0.9; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'"
-                                onmouseout="this.style.opacity='0.9'">Kamar</a>
+                            <a href="{{ route('product') }}"
+                                class="text-white text-decoration-none"
+                                style="opacity: 0.85; transition: opacity 0.2s;"
+                                onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.85'">
+                                Kamar
+                            </a>
                         </li>
-                        <li class="breadcrumb-item active text-white fw-bold d-flex align-items-center gap-1"
-                            aria-current="page">
-                            <i class="bi bi-tag-fill ms-1" style="font-size:0.8rem; opacity:0.8;"></i>
+                        <li class="breadcrumb-item active fw-bold" aria-current="page"
+                            style="color: rgba(255,255,255,0.95);">
+                            <i class="bi bi-tag-fill me-1" style="font-size:0.75rem; opacity:0.8;"></i>
                             {{ $kamar->nomor_kamar }}
                         </li>
                     </ol>
@@ -114,6 +132,7 @@
             </div>
         </div>
     </section>
+
 
     <main class="flex-shrink-0 bg-light pb-5">
         <div class="container py-4">
@@ -351,12 +370,18 @@
                                 style="border-color:#f5f5f5!important;">
                                 <span class="text-muted">Status</span>
                                 <span class="fw-semibold">
-                                    @if (($kamar->status ?? 'tersedia') === 'tersedia')
+                                    @if ($kamar->status_kamar === 'tersedia')
                                         <span class="text-success"><i class="bi bi-circle-fill me-1"
                                                 style="font-size:0.5rem;"></i>Tersedia</span>
-                                    @else
+                                    @elseif ($kamar->status_kamar === 'terisi')
                                         <span class="text-danger"><i class="bi bi-circle-fill me-1"
                                                 style="font-size:0.5rem;"></i>Penuh</span>
+                                    @elseif ($kamar->status_kamar === 'maintenance')
+                                        <span class="text-warning"><i class="bi bi-circle-fill me-1"
+                                                style="font-size:0.5rem;"></i>Maintenance</span>
+                                    @else
+                                        <span class="text-muted"><i class="bi bi-circle-fill me-1"
+                                                style="font-size:0.5rem;"></i>{{ ucfirst($kamar->status_kamar) }}</span>
                                     @endif
                                 </span>
                             </li>

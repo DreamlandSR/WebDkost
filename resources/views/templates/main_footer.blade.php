@@ -1,5 +1,5 @@
-<footer class="dk-footer py-5 slide-in">
-    <div class="container-fluid px-4 px-md-5">  {{-- ← ganti dari .container --}}
+<footer class="dk-footer py-5">
+    <div class="container-fluid px-4 px-md-5 slide-in">
         <div class="row gy-4" style="max-width: 1440px; margin: 0 auto;"> {{-- ← tambah ini --}}
             <div class="col-12 col-md-6 col-lg-3">
                 <h5 class="footer-title">Tentang kami</h5>
@@ -39,11 +39,10 @@
                 </ul>
             </div>
         </div>
-        <div class="row mt-4 pt-3 border-top footer-bottom">
+        <div class="row mt-4 pt-3 border-top footer-bottom" style="max-width: 1440px; margin: 0 auto;">
             <div class="col text-center">
                 <small>© {{ date('Y') }} D'Kost. Semua hak cipta dilindungi.</small>
             </div>
         </div>
     </div>
 </footer>
-

@@ -12,8 +12,8 @@
     <main class="flex-shrink-0 fade-in">
 
         <!-- Header-->
-        <header class="py-5 fade-in ">
-            <div class="container-fluid px-4 px-md-5 ms-4" style="margin-top: -100px;">
+        <header class="py-5 hero-section">
+            <div class="container-fluid px-4 px-md-5">
                 <div class="row align-items-center moveup">
                     <div class="col-lg-5 col-xl-5">
                         <div class="my-2 text-start">
@@ -23,7 +23,7 @@
                             <p class="lead fw-normal text-black mb-5" style="font-size: 1rem;">
                                 <span id="typeDesc"></span><span class="typing-cursor typing-cursor-desc" style="display:none;">|</span>
                             </p>
-                            <div class="d-grid gap-3 d-sm-flex justify-content-sm-start hero-buttons" style="opacity: 0;">
+                            <div class="d-grid gap-3 d-sm-flex flex-wrap justify-content-sm-start hero-buttons" style="opacity: 0;">
                                 <a class="btn btn-primary btn-lg px-4 me-sm-3" href="{{ url('/login') }}">Login</a>
                                 <a class="btn btn-outline-green btn-lg px-4" href="{{ url('/about') }}">Selengkapnya</a>
                             </div>
@@ -42,7 +42,7 @@
                                             data-kamar-nama="{{ $kamar->nomor_kamar }}"
                                             data-kamar-desc="{{ Str::limit($kamar->deskripsi, 100) }}">
                                             <img src="{{ asset('storage/' . $foto->url_foto) }}"
-                                                class="d-block w-100 rounded" style="height: 300px; object-fit: cover;"
+                                                class="d-block w-100 rounded"
                                                 alt="{{ $kamar->nomor_kamar }}">
                                             <div class="carousel-caption d-block"
                                                 style="background: rgba(0,0,0,0.45); border-radius: 8px; padding: 8px 12px; bottom: 10px;">
@@ -57,7 +57,7 @@
                                 @empty
                                     <div class="carousel-item active">
                                         <img src="{{ asset('img/kamira.png') }}" class="d-block w-100 rounded"
-                                            style="height: 300px; object-fit: cover;" alt="Default Kamar">
+                                            alt="Default Kamar">
                                     </div>
                                 @endforelse
                             </div>
@@ -129,7 +129,7 @@
         </script>
 
         {{-- ═══════ Kamar Kos Andalan Kami ═══════ --}}
-        <div class="py-5 slide-in" id="section-andalan">
+        <div class="py-5 slide-in" id="section-andalan" style = "height: auto;">
             <div class="container-fluid px-4 px-md-5 pb-5">
                 <div class="row gx-5 justify-content-center">
                     <div class="col-lg-10 col-xl-7">
@@ -178,13 +178,12 @@
                                         data-kamar-tipe="{{ ucfirst($kamar->tipe_kamar) }}"
                                         data-kamar-harga="Rp {{ number_format($kamar->harga_per_bulan, 0, ',', '.') }} / bulan">
                                         <img src="{{ $fotoUrl }}" class="d-block w-100"
-                                            style="height: 380px; object-fit: cover;"
                                             alt="{{ $kamar->nomor_kamar }}">
                                     </div>
                                 @empty
                                     <div class="carousel-item active">
                                         <img src="{{ asset('img/kamira.png') }}" class="d-block w-100"
-                                            style="height: 380px; object-fit: cover;" alt="Default">
+                                            alt="Default">
                                     </div>
                                 @endforelse
                             </div>
@@ -406,7 +405,7 @@
                                             <div class="text-center text-sm-start text-white flex-grow-1">
                                                 <h5 class="fw-bold text-white mb-2">For Android</h5>
                                                 <p class="mb-3 text-white-50 small">Android 8.0+</p>
-                                                <a href="{{ url('downloads/Healthy.pdf') }}"
+                                                <a href="{{ asset('downloads/dkost2.apk') }}"
                                                     class="btn btn-light px-4 py-2 fw-bold"
                                                     style="color: #00AB6B; border-radius: 8px;" download>
                                                     <i class="bi bi-download me-2"></i>Download

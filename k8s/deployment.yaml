@@ -1,0 +1,128 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webdkost-app
+  namespace: webdkost
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webdkost-app
+  template:
+    metadata:
+      labels:
+        app: webdkost-app
+    spec:
+      containers:
+        - name: webdkost-app
+          image: ryanzputra/webdkost:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+
+          volumeMounts:
+            - name: laravel-storage
+              mountPath: /var/www/storage/app/public
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          env:
+            - name: APP_NAME
+              value: "WebDkost"
+            - name: APP_ENV
+              value: "production"
+            - name: APP_DEBUG
+              value: "false"
+            - name: APP_URL
+              value: "https://kitadkost.my.id"
+            - name: ASSET_URL
+              value: "https://kitadkost.my.id"
+
+            - name: APP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: webdkost-secrets
+                  key: APP_KEY
+
+            - name: SESSION_DRIVER
+              value: "database"
+            - name: SESSION_DOMAIN
+              value: "kitadkost.my.id"
+            - name: SESSION_SECURE_COOKIE
+              value: "true"
+
+            - name: DB_CONNECTION
+              value: "mysql"
+            - name: DB_HOST
+              value: "mysql-service"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: "webdkost"
+            - name: DB_USERNAME
+              value: "root"
+            - name: DB_PASSWORD
+              value: "root"
+
+            - name: MAIL_MAILER
+              value: "smtp"
+            - name: MAIL_HOST
+              value: "smtp.gmail.com"
+            - name: MAIL_PORT
+              value: "587"
+            - name: MAIL_USERNAME
+              value: "dkost2428@gmail.com"
+            - name: MAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: webdkost-secrets
+                  key: MAIL_PASSWORD
+            - name: MAIL_ENCRYPTION
+              value: "tls"
+            - name: MAIL_FROM_ADDRESS
+              value: "dkost2428@gmail.com"
+            - name: MAIL_FROM_NAME
+              value: "D'Kost"
+
+            - name: VITE_APP_URL
+              value: "https://kitadkost.my.id"
+
+            - name: MIDTRANS_SERVER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: webdkost-secrets
+                  key: MIDTRANS_SERVER_KEY
+            - name: MIDTRANS_CLIENT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: webdkost-secrets
+                  key: MIDTRANS_CLIENT_KEY
+
+            - name: MIDTRANS_IS_PRODUCTION
+              value: "false"
+            - name: QUEUE_CONNECTION
+              value: "database"
+
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: webdkost-secrets
+                  key: GEMINI_API_KEY
+            - name: GEMINI_MODEL
+              value: "gemini-2.0-flash-lite"
+
+            - name: CACHE_DRIVER
+              value: "file"
+            - name: CACHE_STORE
+              value: "file"
+
+      volumes:
+        - name: laravel-storage
+          persistentVolumeClaim:
+            claimName: laravel-storage-pvc
