@@ -87,7 +87,7 @@
                 const buttons = document.querySelector('.hero-buttons');
 
                 const titleText = "D'Kost";
-                const descText = "D'Kost Merupakan Platform Untuk pemesanan kamar kos secara online dan terpercaya. Kamar Kos kami dilengkapi dengan fasilitas yang lengkap dengan harga yang terjangkau untuk semua kalangan";
+                const descText = "DevOps Merupakan Platform Untuk pemesanan kamar kos secara online dan terpercaya. Kamar Kos kami dilengkapi dengan fasilitas yang lengkap dengan harga yang terjangkau untuk semua kalangan";
 
                 let i = 0, j = 0;
 
