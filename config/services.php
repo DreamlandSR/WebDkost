@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+
+    // Tambahkan konfigurasi untuk Gemini API
+    'gemini' => [
+    'api_key' => env('GEMINI_API_KEY'),
+    ],
+
+    // Tambahkan konfigurasi untuk Firebase Cloud Messaging (FCM)
+    'fcm' => [
+    'project_id'           => env('FCM_PROJECT_ID'),
+    'service_account_path' => storage_path('app/firebase-service-account.json'),
+    ],
+
 ];

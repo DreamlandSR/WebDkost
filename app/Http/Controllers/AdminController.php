@@ -5,120 +5,79 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Exports\PendapatanPerBulanExport;
+use App\Exports\PengeluaranPerBulanExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AdminController extends Controller
 {
     public function index()
     {
         $now = Carbon::now();
-        $thirtyDaysAgo = $now->copy()->subDays(30);
-        $prevThirtyDaysAgo = $now->copy()->subDays(60);
+        $currentMonth = $now->month;
+        $currentYear = $now->year;
 
-        // Total Kamar (pengganti products)
-        $totalProduk = DB::table('kamar')->count();
-        $prevProduk = 0;
+        // 1. Kamar Tersedia & Terisi
+        $totalKamarTersedia = DB::table('kamar')->where('status_kamar', 'tersedia')->count();
+        $totalKamarTerisi = DB::table('kamar')->where('status_kamar', 'terisi')->count();
 
-        // Total Register user baru 30 hari
-        $totalRegister = DB::table('users')
-            ->where('created_at', '>=', $thirtyDaysAgo)
-            ->count();
-        $prevRegister = DB::table('users')
-            ->whereBetween('created_at', [$prevThirtyDaysAgo, $thirtyDaysAgo])
-            ->count();
+        // 2. Pendapatan bulanan & Growth (Dibanding bulan lalu)
+        $totalPembayaran = DB::table('pendapatan')
+            ->whereMonth('tgl_diterima', $currentMonth)
+            ->whereYear('tgl_diterima', $currentYear)
+            ->sum('nominal');
 
-        // Total Booking selesai 30 hari (pengganti sold)
-        $totalSold = DB::table('booking')
-            ->where('status_booking', 'selesai')
-            ->where('tgl_booking', '>=', $thirtyDaysAgo)
-            ->count();
-        $prevSold = DB::table('booking')
-            ->where('status_booking', 'selesai')
-            ->whereBetween('tgl_booking', [$prevThirtyDaysAgo, $thirtyDaysAgo])
-            ->count();
+        $prevMonth = $now->copy()->subMonth();
+        $prevPembayaran = DB::table('pendapatan')
+            ->whereMonth('tgl_diterima', $prevMonth->month)
+            ->whereYear('tgl_diterima', $prevMonth->year)
+            ->sum('nominal');
 
-        // Total Pembayaran 30 hari
-        $totalPembayaran = DB::table('pembayaran')
-            ->where('status_pembayaran', 'settlement')
-            ->where('tgl_bayar', '>=', $thirtyDaysAgo)
-            ->sum('jumlah_bayar');
-        $prevPembayaran = DB::table('pembayaran')
-            ->where('status_pembayaran', 'settlement')
-            ->whereBetween('tgl_bayar', [$prevThirtyDaysAgo, $thirtyDaysAgo])
-            ->sum('jumlah_bayar');
+        $growthPembayaran = 0;
+        if ($prevPembayaran > 0) {
+            $growthPembayaran = round((($totalPembayaran - $prevPembayaran) / $prevPembayaran) * 100, 1);
+        } else if ($totalPembayaran > 0) {
+            $growthPembayaran = 100;
+        } else {
+            $growthPembayaran = 0;
+        }
 
-        // Hitung pertumbuhan (%)
-        $growth = function ($current, $previous) {
-            if ($previous == 0) return $current > 0 ? 100 : 0;
-            return round((($current - $previous) / $previous) * 100, 2);
-        };
-
-        $growthProduk     = $growth($totalProduk, $prevProduk);
-        $growthRegister   = $growth($totalRegister, $prevRegister);
-        $growthSold       = $growth($totalSold, $prevSold);
-        $growthPembayaran = $growth($totalPembayaran, $prevPembayaran);
-
-        // Kamar terlaris (pengganti produk terlaris)
-        $produkTerlaris = DB::table('booking')
-            ->join('kamar', 'booking.id_kamar', '=', 'kamar.id_kamar')
-            ->select('kamar.nomor_kamar as nama_produk', DB::raw('COUNT(booking.id_booking) as total_terjual'))
-            ->where('booking.status_booking', 'selesai')
-            ->groupBy('kamar.id_kamar', 'kamar.nomor_kamar')
-            ->orderByDesc('total_terjual')
-            ->limit(6)
+        // 3. Keluhan Terbaru (3 data)
+        $keluhanTerbaru = DB::table('keluhan')
+            ->join('users', 'keluhan.id_user', '=', 'users.id_user')
+            ->join('kamar', 'keluhan.id_kamar', '=', 'kamar.id_kamar')
+            ->select('users.nama', 'kamar.nomor_kamar', 'keluhan.deskripsi_masalah', 'keluhan.tgl_lapor')
+            ->whereIn('keluhan.status_keluhan', ['pending', 'diproses'])
+            ->orderByDesc('keluhan.tgl_lapor')
+            ->limit(3)
             ->get();
 
-        // Total omset keseluruhan
-        $totalOmsetKeseluruhan = DB::table('pembayaran')
-            ->where('status_pembayaran', 'settlement')
-            ->sum('jumlah_bayar');
+        // 4. Pengeluaran Bulanan
+        $pengeluaranBulanan = DB::table('pengeluaran')
+            ->select('kategori', DB::raw('SUM(nominal) as nominal'))
+            ->whereMonth('tgl_transaksi', $currentMonth)
+            ->whereYear('tgl_transaksi', $currentYear)
+            ->groupBy('kategori')
+            ->orderByDesc('nominal')
+            ->get();
 
-        // Kamar favorite (pengganti product favorite)
-        $productFavorite = DB::table('booking')
-            ->join('kamar', 'booking.id_kamar', '=', 'kamar.id_kamar')
-            ->select(
-                'kamar.id_kamar',
-                'kamar.nomor_kamar as nama_produk',
-                'kamar.tipe_kamar',
-                DB::raw('COUNT(booking.id_booking) as total_terjual')
-            )
-            ->groupBy('kamar.id_kamar', 'kamar.nomor_kamar', 'kamar.tipe_kamar')
-            ->orderByDesc('total_terjual')
-            ->limit(5)
-            ->get()
-            ->map(function ($item) {
-                // Cek apakah ada foto dari galeri_kamar
-                $foto = DB::table('galeri_kamar')
-                    ->where('id_kamar', $item->id_kamar)
-                    ->where('is_main', 1)
-                    ->first();
-
-                $item->image_base64 = $foto
-                    ? asset('storage/' . $foto->url_foto)
-                    : asset('img/default.jpg');
-
-                return $item;
-            });
-
-        // Chart booking selesai per bulan
-        $completedOrders = DB::table('booking')
-            ->selectRaw('MONTH(tgl_booking) as bulan, COUNT(*) as total')
-            ->where('status_booking', 'selesai')
-            ->groupByRaw('MONTH(tgl_booking)')
-            ->orderByRaw('MONTH(tgl_booking)')
+        // 5. Chart Pertumbuhan Pendapatan (Per bulan dalam tahun ini, dalam Nominal Juta)
+        $pendapatanPerBulan = DB::table('pendapatan')
+            ->selectRaw('MONTH(tgl_diterima) as bulan, SUM(nominal) / 1000000 as total_juta')
+            ->whereYear('tgl_diterima', $currentYear)
+            ->groupByRaw('MONTH(tgl_diterima)')
+            ->orderByRaw('MONTH(tgl_diterima)')
             ->get();
 
         $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
         $orderCountPerMonth = array_fill(0, 12, 0);
 
-        foreach ($completedOrders as $data) {
+        foreach ($pendapatanPerBulan as $data) {
             $bulanIndex = $data->bulan - 1;
             if ($bulanIndex >= 0 && $bulanIndex < 12) {
-                $orderCountPerMonth[$bulanIndex] = (int) $data->total;
+                // Return di format Juta agar grafik tidak terpotong panjang angkanya
+                $orderCountPerMonth[$bulanIndex] = round($data->total_juta, 1);
             }
-        }
-
-        if (max($orderCountPerMonth) === 0) {
-            $orderCountPerMonth = array_map(fn() => rand(1, 5), $orderCountPerMonth);
         }
 
         $growthData = [
@@ -127,17 +86,13 @@ class AdminController extends Controller
         ];
 
         return view('dashboard.admin', compact(
-            'totalProduk',
-            'totalRegister',
-            'totalSold',
+            'totalKamarTersedia',
+            'totalKamarTerisi',
             'totalPembayaran',
-            'growthProduk',
-            'growthRegister',
-            'growthSold',
             'growthPembayaran',
-            'produkTerlaris',
-            'totalOmsetKeseluruhan',
-            'productFavorite',
+            'prevMonth',
+            'keluhanTerbaru',
+            'pengeluaranBulanan',
             'growthData'
         ));
     }
@@ -154,4 +109,33 @@ class AdminController extends Controller
 
         return view('dashboard.terlaris', compact('produkTerlaris'));
     }
+
+    public function exportPendapatan(Request $request)
+    {
+        $bulan = $request->input('bulan', Carbon::now()->month);
+        $tahun = $request->input('tahun', Carbon::now()->year);
+
+        $namaBulan = Carbon::createFromDate($tahun, $bulan, 1)
+            ->locale('id')
+            ->translatedFormat('F_Y');
+
+        $fileName = 'Laporan_Pendapatan_' . $namaBulan . '.xlsx';
+
+        return Excel::download(new PendapatanPerBulanExport($bulan, $tahun), $fileName);
+    }
+
+    public function exportPengeluaran(Request $request)
+    {
+        $bulan = $request->input('bulan', Carbon::now()->month);
+        $tahun = $request->input('tahun', Carbon::now()->year);
+
+        $namaBulan = Carbon::createFromDate($tahun, $bulan, 1)
+            ->locale('id')
+            ->translatedFormat('F_Y');
+
+        $fileName = 'Laporan_Pengeluaran_' . $namaBulan . '.xlsx';
+
+        return Excel::download(new PengeluaranPerBulanExport($bulan, $tahun), $fileName);
+    }
 }
+

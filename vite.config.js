@@ -35,29 +35,17 @@ export default defineConfig({
     css: {
         url: true,
     },
+
     server: {
-    hmr: {
-        host: 'localhost',
+        host: '0.0.0.0', // Membuka akses ke semua interface jaringan dalam kontainer
+        port: 5174,
+        strictPort: false,
+        hmr: {
+            host: 'localhost', // Browser di Windows tetap mengakses via 'localhost'
+            port: 5174, // Port HMR yang sama dengan server Vite
+        },
+        watch: {
+            usePolling: true, // WAJIB untuk WSL: agar Vite peka terhadap perubahan file
+        },
     },
-    proxy: {
-        '/': { // Aturan proxy umum
-            target: process.env.VITE_APP_URL || 'http://Project.test', // Sesuaikan dengan URL backend Anda
-            changeOrigin: true,
-            bypass: (req, res, proxyOptions) => {
-                const viteAssetPatterns = [
-                    /^\/@vite\//,
-                    /^\/@id\//,
-                    /^\/__inspect\//,
-                    /^\/node_modules\//,
-                    /^\/resources\//,
-                    /\.(js|css|json|png|jpe?g|gif|svg|ico|webp|woff2?|ttf|eot)$/
-                ];
-                if (viteAssetPatterns.some(pattern => pattern.test(req.url))) {
-                    return req.url;
-                }
-                return null;
-            }
-        }
-    }
-}
 });

@@ -1,75 +1,114 @@
-node {
-    checkout scm
+pipeline {
+    agent any
 
-    stage("Build") {
-        docker.image('php:8.2-cli').inside('-u root') {
-            sh '''
-                apt-get update -qq && apt-get install -y -qq \
-                    libzip-dev libpng-dev libonig-dev libxml2-dev libsqlite3-dev sqlite3
-                docker-php-ext-install pdo_mysql pdo_sqlite mbstring gd zip bcmath
-                curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-                composer install --no-interaction --prefer-dist --optimize-autoloader
-            '''
+    options {
+        disableConcurrentBuilds()
+    }
+
+    environment {
+        IMAGE_NAME = "ryanzputra/webdkost"
+        IMAGE_TAG = "latest"
+        KUBE_NAMESPACE = "webdkost"
+        DEPLOYMENT_NAME = "webdkost-app"
+        SCHEDULER_NAME = "webdkost-scheduler"
+        KUBECONFIG = "/var/lib/jenkins/.kube/config"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
+            }
+        }
+
+        stage('Login Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USERNAME',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                )]) {
+                    sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin'
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                sh 'docker push $IMAGE_NAME:$IMAGE_TAG'
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh '''
+                kubectl apply -f k8s/namespace.yaml
+
+                kubectl apply -f k8s/storage-pvc.yaml
+
+                kubectl apply -f k8s/deployment.yaml
+                kubectl apply -f k8s/service.yaml
+
+                kubectl apply -f k8s/scheduler.yaml
+
+                kubectl apply -f k8s/letsencrypt-prod.yaml
+                kubectl apply -f k8s/ingress.yaml
+
+                kubectl apply -f k8s/hpa.yaml
+
+                '''
+            }
+        }
+
+        stage('Restart Deployment') {
+            steps {
+                sh '''
+                kubectl rollout restart deployment/$DEPLOYMENT_NAME -n $KUBE_NAMESPACE
+                kubectl rollout restart deployment/$SCHEDULER_NAME -n $KUBE_NAMESPACE
+
+                kubectl rollout status deployment/$DEPLOYMENT_NAME -n $KUBE_NAMESPACE
+                kubectl rollout status deployment/$SCHEDULER_NAME -n $KUBE_NAMESPACE
+                '''
+            }
+        }
+
+        stage('Run Migration') {
+            steps {
+                sh '''
+                kubectl exec -n $KUBE_NAMESPACE deployment/$DEPLOYMENT_NAME -- php artisan migrate --force
+                kubectl exec -n $KUBE_NAMESPACE deployment/$DEPLOYMENT_NAME -- php artisan config:clear
+                kubectl exec -n $KUBE_NAMESPACE deployment/$DEPLOYMENT_NAME -- php artisan cache:clear
+                kubectl exec -n $KUBE_NAMESPACE deployment/$DEPLOYMENT_NAME -- php artisan route:clear
+                kubectl exec -n $KUBE_NAMESPACE deployment/$DEPLOYMENT_NAME -- php artisan view:clear
+                '''
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                sh '''
+                kubectl get pods -n $KUBE_NAMESPACE
+                kubectl get svc -n $KUBE_NAMESPACE
+                kubectl get ingress -n $KUBE_NAMESPACE
+                kubectl get hpa -n $KUBE_NAMESPACE
+                '''
+            }
         }
     }
 
-    stage("Build Frontend") {
-        docker.image('node:18').inside('-u root') {
-            sh '''
-                npm install
-                npm run build
-            '''
+    post {
+        success {
+            echo 'Pipeline berhasil: image berhasil di-build, push, dan deploy ke Kubernetes.'
         }
-    }
 
-    stage("Testing") {
-        docker.image('php:8.2-cli').inside('-u root') {
-            sh '''
-                apt-get update -qq && apt-get install -y -qq \
-                    libzip-dev libpng-dev libonig-dev libxml2-dev libsqlite3-dev sqlite3
-                docker-php-ext-install pdo_mysql pdo_sqlite mbstring gd zip bcmath
-                curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-                composer install --no-interaction --prefer-dist
-                cp .env.example .env
-                php artisan key:generate
-                php artisan test
-            '''
+        failure {
+            echo 'Pipeline gagal. Cek Console Output Jenkins untuk detail error.'
         }
-    }
-
-    stage("Deploy") {
-        def branch = env.GIT_BRANCH ?: env.BRANCH_NAME ?: ''
-        echo "Current branch: ${branch}"
-
-        def projectDir = '/var/www/html/WebDkost'
-
-        if (branch.contains('main') || branch.contains('develop')) {
-            sh """
-                cd ${projectDir}
-
-                # Pastikan .env ada
-                if [ ! -f .env ]; then
-                    cp .env.example .env
-                fi
-
-                # Stop & rebuild image dengan file terbaru
-                docker compose down
-                docker compose build --no-cache
-                docker compose up -d
-
-                # Jalankan migrate setelah container up
-                sleep 5
-                docker exec laravel_app php artisan migrate --force
-                docker exec laravel_app php artisan config:cache
-                docker exec laravel_app php artisan route:cache
-            """
-            echo "Deploy berhasil ke branch: ${branch}"
-        } else {
-            echo "Branch ${branch} - skip deploy"
-        }
-    }
-
-    stage("Deploy Prod") {
-        echo "Skip - production server belum dikonfigurasi"
     }
 }

@@ -1,92 +1,200 @@
 @extends('layout')
 
 @section('content')
+    {{-- Pindahkan logika PHP ke paling atas agar bisa diakses seluruh elemen di halaman ini --}}
+    @php
+        $isRegister = session()->has('register_otp');
+        $actionRoute = $isRegister ? route('register.verify-otp') : route('otp.verify');
+        $backRoute = $isRegister ? route('register') : route('otp.request');
+    @endphp
+
     <div class="bootstrap-scope">
         <div class="container-scroller">
             <div class="container-fluid page-body-wrapper full-page-wrapper">
-                <div class="content-wrapper d-flex align-items-center auth px-0">
-                    <div class="row w-100 mx-0">
-                        <div class="col-lg-4 col-md-6 col-sm-8 mx-auto">
-                            <div class="auth-form-light p-4" style="border-radius: 10px;">
+                <div class="content-wrapper auth-wrapper-modern px-0">
 
-                                <div class="brand-logo mb-4 d-flex align-items-center justify-content-center">
-                                    <img src="{{ asset('img/Asset 6.png') }}" alt="logo" class="img-fluid me-2"
-                                        style="max-width: 50px;">
-                                </div>
+                    <div class="row w-100 mx-0 justify-content-center">
+                        <div class="col-lg-5 col-md-7 col-sm-9 mx-auto">
+                            <div class="card auth-card-modern shadow-sm border-0">
 
-                                {{-- Title and back button --}}
-                                <div class="mb-4 d-flex align-items-center">
-                                    <a href="{{ url()->previous() }}" class="me-2 text-dark" style="font-size: 24px; line-height: 1;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" class="feather feather-arrow-left">
-                                            <line x1="19" y1="12" x2="5" y2="12" />
-                                            <polyline points="12 19 5 12 12 5" />
-                                        </svg>
+                                {{-- Header: Back Icon & Stepper --}}
+                                <div class="d-flex align-items-center justify-content-between mb-5 px-1 mt-1">
+                                    {{-- Tombol back sekarang dinamis menyesuaikan asal user --}}
+                                    <a href="{{ $backRoute }}" class="auth-back-btn">
+                                        <i class="ti-angle-left"></i>
                                     </a>
-                                    <h4 class="mb-0 fw-bold">Verifikasi OTP</h4>
+
+                                    {{-- Stepper Progress Indicator (Step 2 active) --}}
+                                    <div class="auth-stepper-container">
+                                        <div class="auth-stepper-line active"></div>
+                                        <div class="auth-stepper-dot active"></div>
+                                        <div class="auth-stepper-line active"></div>
+                                        <div class="auth-stepper-dot active"></div>
+                                        <div class="auth-stepper-line"></div>
+                                        <div class="auth-stepper-dot"></div>
+                                    </div>
+
+                                    <div style="width: 18px;"></div>
                                 </div>
 
-                                <p class="text-muted mb-4">Masukkan kode OTP yang dikirim ke email Anda</p>
+                                {{-- Page Titles --}}
+                                <div class="text-center mb-5">
+                                    <h2 class="auth-title-large">Verifikasi kode</h2>
+                                    <p class="auth-subtitle-small">BETA Server</p>
+                                    <p class="auth-desc-text">
+                                        Kami sudah mengirimkan kode ke
+                                        <strong>{{ request('email') ?? session('otp_email') ?? session('register_data')['email'] ?? '' }}</strong>, silahkan cek email anda.
+                                    </p>
+                                </div>
 
-                                @if (session('status'))
-                                    <div class="alert alert-success mb-4">
-                                        {{ session('status') }}
-                                    </div>
-                                @endif
-
+                                {{-- Alert Messages --}}
                                 @if ($errors->any())
-                                    <div class="alert alert-danger">
-                                        <ul class="mb-0">
+                                    <div class="alert alert-danger border-0 rounded-3 shadow-sm mb-4 py-2 px-3 transition-all"
+                                        style="font-size: 14px;">
+                                        <ul class="mb-0 list-unstyled text-center">
                                             @foreach ($errors->all() as $error)
-                                                <li>{{ $error }}</li>
+                                                <li><i class="ti-info-alt mr-1"></i> {{ $error }}</li>
                                             @endforeach
                                         </ul>
                                     </div>
                                 @endif
 
-                                <form method="POST" action="{{ route('otp.verify') }}">
+                                <form method="POST" action="{{ $actionRoute }}" class="px-2">
                                     @csrf
-                                    <input type="hidden" name="email" value="{{ request('email') }}">
 
-                                    <div class="mb-4">
-                                        <label for="otp" class="form-label text-muted mb-1">Kode OTP</label>
-                                        <input id="otp" type="text" name="otp"
-                                            class="form-control form-control-sm rounded shadow-sm" 
-                                            placeholder="Masukkan kode OTP" required>
-                                        @error('otp')
-                                            <div class="text-danger small mt-1">{{ $message }}</div>
-                                        @enderror
+                                    {{-- Hidden email ini hanya untuk Lupa Password --}}
+                                    @if (!$isRegister)
+                                        <input type="hidden" name="email"
+                                            value="{{ request('email') ?? session('otp_email') }}">
+                                    @endif
+
+                                    <div class="mb-5 text-center">
+                                        <label class="form-label auth-form-label d-block text-start mb-3">Kode Verifikasi</label>
+                                        <div class="d-flex justify-content-between otp-container" style="gap: 8px;">
+                                            @for ($i = 0; $i < 6; $i++)
+                                                <input type="text"
+                                                    class="form-control auth-input-modern fw-bold"
+                                                    style="
+                                                        font-size: 24px !important;
+                                                        width: 100% !important;
+                                                        height: 60px !important;
+                                                        line-height: 1 !important; /* Reset line height */
+                                                        padding: 0 !important;
+                                                        margin: 0 !important;
+                                                        text-align: center !important;
+                                                        display: flex !important;
+                                                        align-items: center !important;
+                                                        justify-content: center !important;
+                                                        border-radius: 12px !important;
+                                                        border: 2px solid #e1e5eb !important;
+                                                    "
+                                                    maxlength="1"
+                                                    required
+                                                    {{ $i == 0 ? 'autofocus' : '' }}>
+                                            @endfor
+                                        </div>
+                                        <input type="hidden" name="otp" id="otp-hidden">
                                     </div>
 
-                                    <div class="mb-3">
-                                        <button type="submit" class="btn btn-primary btn-lg w-100 rounded shadow-sm"
-                                            style="padding: 12px 0;">
-                                            Verifikasi
+                                    <div class="mb-4 pb-2">
+                                        <button type="submit" class="btn auth-btn-pill-green w-100">
+                                            Next
                                         </button>
                                     </div>
+
+                                    <div class="text-center">
+                                        @if (!$isRegister)
+                                            {{-- Tampilan jika sedang Lupa Password --}}
+                                            <a href="{{ route('otp.request') }}"
+                                                class="auth-link-small text-decoration-none" style="color: #666;">
+                                                Resend code
+                                            </a>
+                                        @else
+                                            {{-- Tampilan jika sedang Registrasi Akun Baru --}}
+                                            <a href="{{ route('register') }}" class="auth-link-small text-decoration-none"
+                                                style="color: #666;">
+                                                Batalkan & Kembali
+                                            </a>
+                                        @endif
+                                    </div>
                                 </form>
-                                
-                                <div class="text-center mt-3">
-                                    <p class="mb-0 text-muted small">
-                                        Tidak menerima kode? 
-                                        <a href="{{ route('otp.request') }}" class="text-success text-decoration-none">
-                                            Kirim ulang
-                                        </a>
-                                    </p>
-                                </div>
-                                
-                                <div class="text-center mt-2">
-                                    <a href="{{ route('login') }}" class="small text-decoration-none text-success">
-                                        Kembali ke halaman login
-                                    </a>
-                                </div>
-                                
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const inputs = document.querySelectorAll('.otp-container input[type="text"]');
+            const hiddenInput = document.getElementById('otp-hidden');
+
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    // Allow only numbers
+                    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+
+                    if (e.target.value !== '') {
+                        if (index < inputs.length - 1) {
+                            inputs[index + 1].focus();
+                        }
+                    }
+                    updateHiddenInput();
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && e.target.value === '') {
+                        if (index > 0) {
+                            inputs[index - 1].focus();
+                            inputs[index - 1].value = '';
+                        }
+                    }
+                });
+
+                // Handle paste
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, 6);
+                    if(pastedData) {
+                        for(let i = 0; i < pastedData.length; i++) {
+                            if(inputs[index + i]) {
+                                inputs[index + i].value = pastedData[i];
+                            }
+                        }
+                        if(index + pastedData.length < inputs.length) {
+                            inputs[index + pastedData.length].focus();
+                        } else {
+                            inputs[inputs.length - 1].focus();
+                        }
+                        updateHiddenInput();
+                    }
+                });
+            });
+
+            function updateHiddenInput() {
+                let otpValue = '';
+                inputs.forEach(input => {
+                    otpValue += input.value;
+                });
+                hiddenInput.value = otpValue;
+            }
+        });
+
+        @if (session('status') || session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('status') ?? session('success') }}',
+                confirmButtonColor: '#00a669',
+                customClass: {
+                    popup: 'rounded-4 shadow-sm pb-4', // pb-4 agar bagian bawah juga proporsional
+                    icon: 'mt-4' // Memberikan margin top pada icon (Gunakan mt-4 untuk Bootstrap 4/5)
+                }
+            });
+        @endif
+    </script>
 @endsection

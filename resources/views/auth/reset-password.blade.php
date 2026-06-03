@@ -1,75 +1,115 @@
 @extends('layout')
 
 @section('content')
-    <div class="container-fluid page-body-wrapper full-page-wrapper">
-        <div class="content-wrapper d-flex align-items-center auth px-0">
-            <div class="row w-100 mx-0">
-                <div class="col-lg-8 mx-auto">
-                    <div class="auth-form-light d-flex flex-wrap p-4" style="border-radius: 10px;">
+    <div class="bootstrap-scope">
+        <div class="container-scroller">
+            <div class="container-fluid page-body-wrapper full-page-wrapper">
+                <div class="content-wrapper auth-wrapper-modern px-0">
+                    
+                    <div class="row w-100 mx-0 justify-content-center">
+                        <div class="col-lg-5 col-md-7 col-sm-9 mx-auto">
+                            <div class="card auth-card-modern shadow-sm border-0">
+                                
+                                {{-- Header: Back Icon & Stepper --}}
+                                <div class="d-flex align-items-center justify-content-between mb-5 px-1 mt-1">
+                                    <a href="{{ url()->previous() }}" class="auth-back-btn">
+                                        <i class="ti-angle-left"></i>
+                                    </a>
+                                    
+                                    {{-- Stepper Progress Indicator (Step 3 active) --}}
+                                    <div class="auth-stepper-container">
+                                        <div class="auth-stepper-line active"></div>
+                                        <div class="auth-stepper-dot active"></div>
+                                        <div class="auth-stepper-line active"></div>
+                                        <div class="auth-stepper-dot active"></div>
+                                        <div class="auth-stepper-line active"></div>
+                                        <div class="auth-stepper-dot active"></div>
+                                    </div>
+                                    
+                                    <div style="width: 18px;"></div>
+                                </div>
 
-                        {{-- Form Section --}}
-                        <div class="col-12 col-md-6 px-4 py-5">
-                            {{-- Logo --}}
-                            <div class="mb-5 d-flex justify-content-center">
-                                <img src="{{ asset('img/dkos_logo.png') }}" alt="logo" class="img-fluid"
-                                    style="max-width: 0px;">
+                                {{-- Page Titles --}}
+                                <div class="text-center mb-5">
+                                    <h2 class="auth-title-large">Password baru</h2>
+                                    <p class="auth-subtitle-small">BETA Server</p>
+                                </div>
+
+                                {{-- Alert Messages --}}
+                                @if ($errors->any())
+                                    <div class="alert alert-danger border-0 rounded-3 shadow-sm mb-4 py-2 px-3 transition-all" style="font-size: 14px;">
+                                        <ul class="mb-0 list-unstyled text-center">
+                                            @foreach ($errors->all() as $error)
+                                                <li><i class="ti-info-alt mr-1"></i> {{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+
+                                {{-- Reset password form --}}
+                                <form method="POST" action="{{ route('otp.reset.password', ['email' => $email]) }}" class="px-2">
+                                    @csrf
+
+                                    {{-- Password baru --}}
+                                    <div class="mb-4">
+                                        <label for="password" class="form-label auth-form-label">Password baru</label>
+                                        <div class="position-relative">
+                                            <input id="password" type="password" name="password"
+                                                   class="form-control auth-input-modern" 
+                                                   placeholder="********" required autofocus>
+                                            <span class="position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer;" onclick="togglePassword('password')">
+                                                <i class="ti-eye text-muted" id="toggle-icon-password"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {{-- Konfirmasi password --}}
+                                    <div class="mb-5">
+                                        <label for="password_confirmation" class="form-label auth-form-label">Konfirmasi password</label>
+                                        <div class="position-relative">
+                                            <input id="password_confirmation" type="password" name="password_confirmation"
+                                                   class="form-control auth-input-modern" 
+                                                   placeholder="********" required>
+                                            <span class="position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer;" onclick="togglePassword('password_confirmation')">
+                                                <i class="ti-eye text-muted" id="toggle-icon-confirmation"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4 pb-2">
+                                        <button type="submit" class="btn auth-btn-pill-green w-100">
+                                            Next
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
-
-                            {{-- Title and Back Button --}}
-                            <div class="mb-3 d-flex align-items-center">
-                                <a href="{{ url()->previous() }}" class="mr-2 text-dark" style="font-size: 24px;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
-                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="feather feather-arrow-left">
-                                        <line x1="19" y1="12" x2="5" y2="12" />
-                                        <polyline points="12 19 5 12 12 5" />
-                                    </svg>
-                                </a>
-                                <h3 class="mb-0 font-weight-bold">Reset Password</h3>
-                            </div>
-
-                            <p class="mb-3">Masukkan password baru Anda</p>
-
-                            <form method="POST" action="{{ route('otp.reset.password', ['email' => $email]) }}">
-                                @csrf
-
-                                <div class="mb-3">
-                                    <input type="password" name="password"
-                                        class="form-control form-control-sm rounded shadow-sm" placeholder="Password Baru"
-                                        required>
-                                </div>
-
-                                <div class="mb-3">
-                                    <input type="password" name="password_confirmation"
-                                        class="form-control form-control-sm rounded shadow-sm"
-                                        placeholder="Konfirmasi Password" required>
-                                </div>
-
-
-                                @error('password')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-
-                                <div class="mb-3">
-                                    <button type="submit" class="btn btn-primary btn-lg w-100 rounded shadow-sm"
-                                        style="padding: 12px 0;">
-                                        Reset Password
-                                    </button>
-                                </div>
-                            </form>
                         </div>
-
-                        {{-- Image Section --}}
-                        <div class="col-12 col-md-6 d-none d-md-flex justify-content-center align-items-center pr-1">
-                            <div class="w-100 h-100 rounded overflow-hidden" style="position: relative;">
-                                <img src="{{ asset('img/Batik 2.jpg') }}" alt="Batik" class="img-fluid w-100 h-100"
-                                    style="object-fit: cover; position: absolute; top: 0; left: 0;">
-                            </div>
-                        </div>
-
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const iconId = inputId === 'password' ? 'toggle-icon-password' : 'toggle-icon-confirmation';
+            const icon = document.getElementById(iconId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('ti-eye');
+                icon.classList.add('ti-eye-off'); // Note: Make sure ti-eye-off exists or use another one
+                // Using ti-eye with style changes as fallback if ti-eye-off doesn't exist
+                icon.style.color = '#28a745'; 
+            } else {
+                input.type = 'password';
+                icon.classList.remove('ti-eye-off');
+                icon.classList.add('ti-eye');
+                icon.style.color = '#999';
+            }
+        }
+    </script>
 @endsection
+

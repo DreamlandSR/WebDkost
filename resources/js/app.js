@@ -4,7 +4,8 @@ window.$ = window.jQuery = $;
 import { createPopper } from '@popperjs/core';
 window.Popper = createPopper;
 
-import 'bootstrap';
+import * as bootstrap from 'bootstrap';
+window.bootstrap = bootstrap;
 
 import 'datatables.net-bs4/css/dataTables.bootstrap4.css';
 import 'datatables.net-select';
@@ -26,8 +27,10 @@ import './template';
 import './settings';
 import './todolist';
 import './dashboard';
-
-import '../css/vertical-layout-light/style.css';
+import './auth-toggle';
+import './pages/dashboard.js';
+import './pengeluaran.js';
+import './kamar.js';
 
 import Alpine from 'alpinejs';
 window.Alpine = Alpine;

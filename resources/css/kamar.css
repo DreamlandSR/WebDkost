@@ -1,0 +1,372 @@
+.carousel {
+    position: relative !important;
+    overflow: visible !important;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 44px !important;
+    height: 44px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    opacity: 1 !important;
+    background: transparent !important;
+    z-index: 1060 !important;
+    pointer-events: auto !important;
+}
+
+.carousel-control-prev {
+    left: -10px !important;
+}
+
+.carousel-control-next {
+    right: -10px !important;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: #00a669 !important;
+    border-radius: 50% !important;
+    width: 40px !important;
+    height: 40px !important;
+    background-size: 50% 50% !important;
+    display: inline-block !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
+    background-image: none !important;
+    position: relative !important;
+}
+
+.carousel-control-prev-icon::after {
+    content: "‹" !important;
+    font-size: 32px !important;
+    font-weight: bold !important;
+    color: white !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    line-height: 1 !important;
+}
+
+.carousel-control-next-icon::after {
+    content: "›" !important;
+    font-size: 32px !important;
+    font-weight: bold !important;
+    color: white !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    line-height: 1 !important;
+}
+
+.carousel-control-prev-icon:hover,
+.carousel-control-next-icon:hover {
+    background-color: #008a57 !important;
+    transform: scale(1.1);
+}
+
+/* Custom Carousel Buttons for Detail Modal */
+.carousel-btn-prev,
+.carousel-btn-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background: #00a669;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    transition: background 0.2s;
+}
+
+.carousel-btn-prev {
+    left: 10px;
+}
+
+.carousel-btn-next {
+    right: 10px;
+}
+
+.carousel-btn-prev:hover,
+.carousel-btn-next:hover {
+    background: #008a57;
+}
+
+/* ---------- BUTTON STYLES ---------- */
+.btn-tambah {
+    background: linear-gradient(135deg, #00a669, #008a57) !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px 24px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    transition: all 0.2s !important;
+}
+
+.btn-tambah:hover {
+    opacity: 0.9 !important;
+    transform: translateY(-2px) !important;
+}
+
+/* ---------- TABLE STYLES ---------- */
+.table-row-hover:hover {
+    background-color: #fafbfc !important;
+}
+
+/* ---------- PILL ACTIVE STATE ---------- */
+.pill-active-edit {
+    background: #ecfdf5 !important;
+    color: #00a669 !important;
+    border-color: #00a669 !important;
+    font-weight: 600 !important;
+}
+
+/* ---------- ALERT STYLES ---------- */
+.custom-alert {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    animation: slideIn 0.3s ease-out;
+}
+
+.custom-alert.success {
+    background-color: #ecfdf5;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+.custom-alert.error {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.custom-alert-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;   /* penting agar tidak gepeng */
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-right: 12px;
+    font-size: 16px;
+}
+
+.custom-alert.success .custom-alert-icon {
+    background-color: #00a669;
+    color: #ffffff;
+}
+
+.custom-alert.error .custom-alert-icon {
+    background-color: #ef4444;
+    color: #ffffff;
+}
+
+.custom-alert-content {
+    flex: 1;
+}
+
+.custom-alert-close {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0;
+    margin-left: 12px;
+    opacity: 0.6;
+}
+
+.custom-alert-close:hover {
+    opacity: 1;
+}
+/* Error Alert */
+.alert-danger {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    border-radius: 10px;
+    position: relative;
+}
+
+.btn-close {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+/* ---------- NOTIFICATION ---------- */
+.custom-notification {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    min-width: 320px;
+    max-width: 90%;
+    animation: slideInCenter 0.3s ease-out;
+}
+
+/* Alert di dalam notification tidak perlu margin */
+.custom-notification .custom-alert {
+    margin-bottom: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ---------- GALLERY STYLES ---------- */
+.gallery-item {
+    position: relative;
+    width: 100px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f9fafb;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+}
+
+/* ---------- SPIN ANIMATION ---------- */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ---------- SLIDE IN ANIMATION ---------- */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInCenter {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -10px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+/* ---------- MOBILE RESPONSIVE ---------- */
+@media (max-width: 768px) {
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        width: 32px !important;
+        height: 32px !important;
+    }
+
+    .carousel-control-prev-icon::after,
+    .carousel-control-next-icon::after {
+        font-size: 24px !important;
+    }
+
+    .carousel-control-prev {
+        left: -5px !important;
+    }
+
+    .carousel-control-next {
+        right: -5px !important;
+    }
+
+    .carousel-btn-prev,
+    .carousel-btn-next {
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+    }
+
+    .custom-notification {
+        width: 90%;
+        min-width: auto;
+    }
+}
+
+/* ---------- FORM FOCUS STATES ---------- */
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+}
+
+/* ---------- UTILITY ---------- */
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fw-600 {
+    font-weight: 600;
+}
+
+/* ---------- NEW PILL STYLES ---------- */
+.tipe-pill input, .status-pill input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.pill-active-tipe {
+    background: #ecfdf5 !important;
+    color: #00a669 !important;
+    border-color: #00a669 !important;
+    box-shadow: 0 2px 8px rgba(0,166,105,0.15);
+    font-weight: 600 !important;
+}
+.pill-active-status {
+    background: #eff6ff !important;
+    color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 2px 8px rgba(59,130,246,0.15);
+    font-weight: 600 !important;
+}
+
+.is-duplicate {
+    border-color: #f87171 !important;
+    box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.1) !important;
+}
+
+#confirmDeleteImageModal {
+    z-index: 2060 !important;
+}
+
+.modal-backdrop.confirm-delete-backdrop {
+    z-index: 2050 !important;
+}

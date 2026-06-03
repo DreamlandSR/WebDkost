@@ -4,6 +4,11 @@
 @import "../js/vendors/datatables.net-bs4/dataTables.bootstrap4.css";
 @import "../js/select.dataTables.min.css";
 @import "./vertical-layout-light/style.css";
+@import "./dashboard.css";
+@import "./navbar.css";
+@import "./pengeluaran.css";
+@import "./kamar.css";
+
 
 @tailwind base;
 @tailwind components;
