@@ -87,7 +87,7 @@
                 const buttons = document.querySelector('.hero-buttons');
 
                 const titleText = "D'Kost";
-                const descText = "DevOps Merupakan Platform Untuk pemesanan kamar kos secara online dan terpercaya. Kamar Kos kami dilengkapi dengan fasilitas yang lengkap dengan harga yang terjangkau untuk semua kalangan";
+                const descText = "D'Kost Merupakan Platform Untuk pemesanan kamar kos secara online dan terpercaya. Kamar Kos kami dilengkapi dengan fasilitas yang lengkap dengan harga yang terjangkau untuk semua kalangan";
 
                 let i = 0, j = 0;
 
@@ -265,59 +265,181 @@
             </div>
         </div>
 
-        <!-- Kos Terbaik section — FIXED: card ukuran konsisten -->
+        <!-- Kos Terbaik section — Modern Slider -->
         <section class="py-5 my-0 slide-in" id="section-terbaik">
             <div class="container-fluid px-4 px-md-5 slide-in">
-                <div class="row align-items-center">
-                    <div class="col-lg-8 col-xl-6">
-                        <h2 class="fw-bolder">Kamar Terbaik</h2>
-                        <p class="lead fw-normal text-muted mb-5">Kamar terbaik berdasarkan rating pengguna</p>
-                    </div>
-                    <div class="col text-end">
-                        <i class="bi bi-arrow-left-circle-fill fs-2 me-2" id="prevBtn" style="cursor: pointer;"></i>
-                        <i class="bi bi-arrow-right-circle-fill fs-2" id="nextBtn" style="cursor: pointer;"></i>
-                    </div>
+                <div class="text-center mb-5">
+                    <h2 class="fw-bolder">Kamar Terbaik</h2>
+                    <p class="lead fw-normal text-muted">Kamar terbaik berdasarkan rating pengguna</p>
                 </div>
 
-                <div id="carouselContainer" class="d-flex overflow-hidden">
-                    @foreach ($kamars as $kamar)
-                        @php
-                            $image = $kamar->galeri->first();
-                            $imageUrl = $image ? asset('storage/' . $image->url_foto) : asset('img/room-default-1.png');
-                        @endphp
+                <div class="terbaik-slider-wrapper">
+                    {{-- Navigation arrows --}}
+                    <button class="ulasan-nav ulasan-nav-prev" id="terbaikPrev" aria-label="Previous room">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <button class="ulasan-nav ulasan-nav-next" id="terbaikNext" aria-label="Next room">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
 
-                        <div class="product-card me-3 mx-2 mb-5">
-                            <div class="card h-100 shadow-sm">
-                                <div class="card-img-wrapper">
-                                    <img class="card-img-top" src="{{ $imageUrl }}"
-                                        alt="{{ $kamar->nomor_kamar }}">
-                                </div>
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <h5 class="card-title fw-bold mb-0 fs-6">{{ $kamar->nomor_kamar }}</h5>
-                                        @php
-                                            $ratingVal = $kamar->rating ?? 0;
-                                            $reviewCount = $kamar->reviews->count();
-                                        @endphp
-                                        <span class="badge bg-primary" title="{{ $reviewCount }} ulasan">
-                                            <i class="bi bi-star-fill text-warning me-1"></i>
-                                            {{ $ratingVal > 0 ? $ratingVal : '-' }}
-                                            @if ($reviewCount > 0)
-                                                <small class="ms-1 text-white-50">({{ $reviewCount }})</small>
-                                            @endif
-                                        </span>
+                    {{-- Track --}}
+                    <div class="ulasan-slider-viewport">
+                        <div class="ulasan-slider-track" id="terbaikTrack">
+                            @foreach ($kamars as $kamar)
+                                @php
+                                    $image = $kamar->galeri->first();
+                                    $imageUrl = $image ? asset('storage/' . $image->url_foto) : asset('img/room-default-1.png');
+                                    $ratingVal = $kamar->rating ?? 0;
+                                    $reviewCount = $kamar->reviews->count();
+                                @endphp
+                                <div class="ulasan-slide terbaik-slide">
+                                    <div class="terbaik-card-modern">
+                                        <div class="terbaik-img-wrapper">
+                                            <img src="{{ $imageUrl }}" alt="{{ $kamar->nomor_kamar }}">
+                                            <div class="terbaik-rating-badge">
+                                                <i class="bi bi-star-fill"></i>
+                                                {{ $ratingVal > 0 ? $ratingVal : '-' }}
+                                            </div>
+                                        </div>
+                                        <div class="terbaik-card-body">
+                                            <h5 class="terbaik-room-name">{{ $kamar->nomor_kamar }}</h5>
+                                            <div class="terbaik-meta">
+                                                <span><i class="bi bi-geo-alt-fill me-1"></i>{{ $kamar->lokasi ?? 'Bondowoso' }}</span>
+                                                @if ($reviewCount > 0)
+                                                    <span class="ulasan-date-sep">•</span>
+                                                    <span>{{ $reviewCount }} ulasan</span>
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
-                                    <p class="text-muted mb-0">
-                                        <i class="bi bi-geo-alt-fill"></i> {{ $kamar->lokasi ?? 'Bondowoso' }}
-                                    </p>
                                 </div>
-                            </div>
+                            @endforeach
                         </div>
-                    @endforeach
+                    </div>
+
+                    {{-- Dot indicators --}}
+                    <div class="ulasan-dots" id="terbaikDots"></div>
                 </div>
 
-                {{-- ═══════ ULASAN KAMAR — Section baru ═══════ --}}
-                <div class="py-5 slide-in">
+                {{-- Terbaik Slider JS --}}
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const track = document.getElementById('terbaikTrack');
+                    const viewport = track ? track.parentElement : null;
+                    const prevBtn = document.getElementById('terbaikPrev');
+                    const nextBtn = document.getElementById('terbaikNext');
+                    const dotsContainer = document.getElementById('terbaikDots');
+                    if (!track || !viewport) return;
+
+                    const slides = track.querySelectorAll('.terbaik-slide');
+                    if (slides.length === 0) return;
+
+                    let currentIndex = 0;
+                    let autoPlayTimer = null;
+                    let slidesPerView = getSlidesPerView();
+
+                    function getSlidesPerView() {
+                        const w = window.innerWidth;
+                        if (w >= 1200) return 4;
+                        if (w >= 992) return 3;
+                        if (w >= 768) return 2;
+                        return 1;
+                    }
+
+                    function getMaxIndex() {
+                        return Math.max(0, slides.length - slidesPerView);
+                    }
+
+                    function buildDots() {
+                        dotsContainer.replaceChildren();
+                        const total = getMaxIndex() + 1;
+                        for (let i = 0; i < total; i++) {
+                            const dot = document.createElement('button');
+                            dot.className = 'ulasan-dot' + (i === currentIndex ? ' active' : '');
+                            dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+                            dot.addEventListener('click', function() {
+                                goTo(i);
+                                resetAutoPlay();
+                            });
+                            dotsContainer.appendChild(dot);
+                        }
+                    }
+
+                    function updateDots() {
+                        const dots = dotsContainer.querySelectorAll('.ulasan-dot');
+                        dots.forEach(function(d, i) {
+                            d.classList.toggle('active', i === currentIndex);
+                        });
+                    }
+
+                    function goTo(index) {
+                        const max = getMaxIndex();
+                        currentIndex = Math.max(0, Math.min(index, max));
+                        const slideWidth = slides[0].offsetWidth;
+                        const gap = 24;
+                        track.style.transform = 'translateX(-' + (currentIndex * (slideWidth + gap)) + 'px)';
+                        updateDots();
+                        updateNavButtons();
+                    }
+
+                    function updateNavButtons() {
+                        if (prevBtn) prevBtn.classList.toggle('disabled', currentIndex === 0);
+                        if (nextBtn) nextBtn.classList.toggle('disabled', currentIndex >= getMaxIndex());
+                    }
+
+                    function nextSlide() {
+                        goTo(currentIndex >= getMaxIndex() ? 0 : currentIndex + 1);
+                    }
+
+                    function prevSlide() {
+                        goTo(currentIndex <= 0 ? getMaxIndex() : currentIndex - 1);
+                    }
+
+                    function startAutoPlay() {
+                        stopAutoPlay();
+                        autoPlayTimer = setInterval(nextSlide, 4500);
+                    }
+
+                    function stopAutoPlay() {
+                        if (autoPlayTimer) { clearInterval(autoPlayTimer); autoPlayTimer = null; }
+                    }
+
+                    function resetAutoPlay() {
+                        stopAutoPlay();
+                        startAutoPlay();
+                    }
+
+                    if (prevBtn) prevBtn.addEventListener('click', function() { prevSlide(); resetAutoPlay(); });
+                    if (nextBtn) nextBtn.addEventListener('click', function() { nextSlide(); resetAutoPlay(); });
+
+                    let touchStartX = 0;
+                    viewport.addEventListener('touchstart', function(e) { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+                    viewport.addEventListener('touchend', function(e) {
+                        const diff = touchStartX - e.changedTouches[0].screenX;
+                        if (Math.abs(diff) > 50) {
+                            if (diff > 0) nextSlide(); else prevSlide();
+                            resetAutoPlay();
+                        }
+                    }, { passive: true });
+
+                    viewport.addEventListener('mouseenter', stopAutoPlay);
+                    viewport.addEventListener('mouseleave', startAutoPlay);
+
+                    window.addEventListener('resize', function() {
+                        slidesPerView = getSlidesPerView();
+                        if (currentIndex > getMaxIndex()) currentIndex = getMaxIndex();
+                        buildDots();
+                        goTo(currentIndex);
+                    });
+
+                    buildDots();
+                    goTo(0);
+                    startAutoPlay();
+                });
+                </script>
+
+                {{-- ═══════ ULASAN PENGHUNI — Slider Modern ═══════ --}}
+                <div class="py-5 slide-in" id="section-ulasan">
                     <div class="text-center mb-5">
                         <h2 class="fw-bolder">Ulasan Penghuni</h2>
                         <p class="lead fw-normal text-muted">Apa kata mereka tentang pengalaman tinggal di D'Kost</p>
@@ -334,42 +456,195 @@
                         $latestReviews = $allReviews
                             ->filter(fn($rev) => $rev->rating >= 4)
                             ->sortByDesc('tgl_review')
-                            ->take(6)
+                            ->take(8)
                             ->values();
                     @endphp
 
                     @if($latestReviews->isNotEmpty())
-                        <div class="row g-4">
-                            @foreach ($latestReviews as $review)
-                                <div class="col-lg-4 col-md-6">
-                                    <div class="card review-card h-100 shadow-sm p-4">
-                                        <div class="d-flex align-items-center mb-3">
-                                            <div class="review-avatar me-3">
-                                                <i class="bi bi-person-circle"></i>
-                                            </div>
-                                            <div>
-                                                <h6 class="fw-bold mb-0">{{ $review->user->name ?? 'Pengguna' }}</h6>
-                                                <small class="text-muted">{{ $review->kamar_nama }}</small>
+                        {{-- Slider wrapper --}}
+                        <div class="ulasan-slider-wrapper">
+                            {{-- Navigation arrows --}}
+                            <button class="ulasan-nav ulasan-nav-prev" id="ulasanPrev" aria-label="Previous review">
+                                <i class="bi bi-chevron-left"></i>
+                            </button>
+                            <button class="ulasan-nav ulasan-nav-next" id="ulasanNext" aria-label="Next review">
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+
+                            {{-- Track --}}
+                            <div class="ulasan-slider-viewport">
+                                <div class="ulasan-slider-track" id="ulasanTrack">
+                                    @foreach ($latestReviews as $review)
+                                        <div class="ulasan-slide">
+                                            <div class="ulasan-card-modern">
+                                                {{-- User info (top) --}}
+                                                <div class="ulasan-user-info">
+                                                    <div class="ulasan-avatar-ring">
+                                                        <div class="ulasan-avatar-inner">
+                                                            {{ strtoupper(substr($review->user->name ?? 'P', 0, 1)) }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="ulasan-user-meta">
+                                                        <h6 class="ulasan-user-name">{{ $review->user->name ?? 'Pengguna' }}</h6>
+                                                        <div class="ulasan-user-detail">
+                                                            <span><i class="bi bi-door-open-fill me-1"></i>{{ $review->kamar_nama }}</span>
+                                                            @if($review->tgl_review)
+                                                                <span class="ulasan-date-sep">•</span>
+                                                                <span>{{ \Carbon\Carbon::parse($review->tgl_review)->format('d M Y') }}</span>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {{-- Stars --}}
+                                                <div class="ulasan-stars">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        <i class="bi {{ $i <= $review->rating ? 'bi-star-fill' : 'bi-star' }}"></i>
+                                                    @endfor
+                                                </div>
+
+                                                {{-- Comment --}}
+                                                <p class="ulasan-comment">
+                                                    "{{ Str::limit($review->komentar, 250) }}"
+                                                </p>
+
+                                                {{-- Quote icon (decorative, bottom-right) --}}
+                                                <div class="ulasan-quote-icon">
+                                                    <i class="bi bi-quote"></i>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="text-warning mb-2" style="font-size: 0.85rem;">
-                                            @for ($i = 1; $i <= 5; $i++)
-                                                <i class="bi {{ $i <= $review->rating ? 'bi-star-fill' : 'bi-star' }}"></i>
-                                            @endfor
-                                        </div>
-                                        <p class="text-muted mb-2" style="font-size: 0.9rem; line-height: 1.6;">
-                                            "{{ Str::limit($review->komentar, 150) }}"
-                                        </p>
-                                        @if($review->tgl_review)
-                                            <small class="text-muted mt-auto">
-                                                <i class="bi bi-calendar3 me-1"></i>
-                                                {{ \Carbon\Carbon::parse($review->tgl_review)->format('d M Y') }}
-                                            </small>
-                                        @endif
-                                    </div>
+                                    @endforeach
                                 </div>
-                            @endforeach
+                            </div>
+
+                            {{-- Dot indicators --}}
+                            <div class="ulasan-dots" id="ulasanDots"></div>
                         </div>
+
+                        {{-- Slider JS --}}
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const track = document.getElementById('ulasanTrack');
+                            const viewport = track ? track.parentElement : null;
+                            const prevBtn = document.getElementById('ulasanPrev');
+                            const nextBtn = document.getElementById('ulasanNext');
+                            const dotsContainer = document.getElementById('ulasanDots');
+                            if (!track || !viewport) return;
+
+                            const slides = track.querySelectorAll('.ulasan-slide');
+                            if (slides.length === 0) return;
+
+                            let currentIndex = 0;
+                            let autoPlayTimer = null;
+                            let slidesPerView = getSlidesPerView();
+
+                            function getSlidesPerView() {
+                                const w = window.innerWidth;
+                                if (w >= 1200) return 3;
+                                if (w >= 992) return 2;
+                                return 1;
+                            }
+
+                            function getMaxIndex() {
+                                return Math.max(0, slides.length - slidesPerView);
+                            }
+
+                            function buildDots() {
+                                // Safe DOM clearing without innerHTML
+                                dotsContainer.replaceChildren();
+                                const total = getMaxIndex() + 1;
+                                for (let i = 0; i < total; i++) {
+                                    const dot = document.createElement('button');
+                                    dot.className = 'ulasan-dot' + (i === currentIndex ? ' active' : '');
+                                    dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+                                    dot.addEventListener('click', function() {
+                                        goTo(i);
+                                        resetAutoPlay();
+                                    });
+                                    dotsContainer.appendChild(dot);
+                                }
+                            }
+
+                            function updateDots() {
+                                const dots = dotsContainer.querySelectorAll('.ulasan-dot');
+                                dots.forEach(function(d, i) {
+                                    d.classList.toggle('active', i === currentIndex);
+                                });
+                            }
+
+                            function goTo(index) {
+                                const max = getMaxIndex();
+                                currentIndex = Math.max(0, Math.min(index, max));
+                                const slideWidth = slides[0].offsetWidth;
+                                const gap = 24;
+                                track.style.transform = 'translateX(-' + (currentIndex * (slideWidth + gap)) + 'px)';
+                                updateDots();
+                                updateNavButtons();
+                            }
+
+                            function updateNavButtons() {
+                                if (prevBtn) prevBtn.classList.toggle('disabled', currentIndex === 0);
+                                if (nextBtn) nextBtn.classList.toggle('disabled', currentIndex >= getMaxIndex());
+                            }
+
+                            function nextSlide() {
+                                goTo(currentIndex >= getMaxIndex() ? 0 : currentIndex + 1);
+                            }
+
+                            function prevSlide() {
+                                goTo(currentIndex <= 0 ? getMaxIndex() : currentIndex - 1);
+                            }
+
+                            function startAutoPlay() {
+                                stopAutoPlay();
+                                autoPlayTimer = setInterval(nextSlide, 5000);
+                            }
+
+                            function stopAutoPlay() {
+                                if (autoPlayTimer) { clearInterval(autoPlayTimer); autoPlayTimer = null; }
+                            }
+
+                            function resetAutoPlay() {
+                                stopAutoPlay();
+                                startAutoPlay();
+                            }
+
+                            // Event listeners
+                            if (prevBtn) prevBtn.addEventListener('click', function() { prevSlide(); resetAutoPlay(); });
+                            if (nextBtn) nextBtn.addEventListener('click', function() { nextSlide(); resetAutoPlay(); });
+
+                            // Touch/swipe support
+                            let touchStartX = 0;
+                            let touchEndX = 0;
+                            viewport.addEventListener('touchstart', function(e) { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+                            viewport.addEventListener('touchend', function(e) {
+                                touchEndX = e.changedTouches[0].screenX;
+                                const diff = touchStartX - touchEndX;
+                                if (Math.abs(diff) > 50) {
+                                    if (diff > 0) nextSlide(); else prevSlide();
+                                    resetAutoPlay();
+                                }
+                            }, { passive: true });
+
+                            // Pause on hover
+                            viewport.addEventListener('mouseenter', stopAutoPlay);
+                            viewport.addEventListener('mouseleave', startAutoPlay);
+
+                            // Responsive
+                            window.addEventListener('resize', function() {
+                                slidesPerView = getSlidesPerView();
+                                if (currentIndex > getMaxIndex()) currentIndex = getMaxIndex();
+                                buildDots();
+                                goTo(currentIndex);
+                            });
+
+                            // Initialize
+                            buildDots();
+                            goTo(0);
+                            startAutoPlay();
+                        });
+                        </script>
                     @else
                         <div class="text-center py-4">
                             <i class="bi bi-chat-square-text fs-1 text-muted mb-3 d-block"></i>
@@ -390,7 +665,7 @@
                                         <span class="text-primary">Pembayaran</span> bisa lewat sini
                                     </h3>
                                     <p class="text-muted mb-0" style="max-width: 90%;">
-                                        Pembayaran bisa menggunakan Aplikasi kami pada tombol download di samping →
+                                        Pembayaran bisa menggunakan Aplikasi kami pada tombol download <span class="download-dir-side">di samping →</span><span class="download-dir-below">di bawah ↓</span>
                                     </p>
                                 </div>
                             </div>

@@ -378,10 +378,13 @@ header.py-5 {
     border-radius: var(--dk-radius-lg) !important;
     max-width: 100%;
 }
+
 .carousel {
-    max-width: 100% !important;   /* override 500px yang kaku */
+    max-width: 100% !important;
+    /* override 500px yang kaku */
     width: 100%;
-    margin: 0 auto !important;    /* hapus margin-right: 30px */
+    margin: 0 auto !important;
+    /* hapus margin-right: 30px */
 }
 
 /* Carousel di hero (#carouselExampleAutoplaying) */
@@ -703,37 +706,402 @@ header.py-5 {
 
 .rekomen-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.1) !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* ============================================
-   REVIEW CARDS — Baru
+   MODERN SLIDER — Shared (Ulasan + Terbaik)
    ============================================ */
-.review-card {
-    border-radius: var(--dk-radius) !important;
-    border: 1px solid var(--dk-gray-border);
-    transition: all 0.35s;
+
+/* -- Slider wrapper -- */
+.ulasan-slider-wrapper,
+.terbaik-slider-wrapper {
+    position: relative;
+    padding: 0 60px;
 }
 
-.review-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--dk-shadow-hover);
-    border-color: transparent;
+/* -- Viewport & track -- */
+.ulasan-slider-viewport {
+    overflow: hidden;
+    border-radius: 8px;
+    padding: 16px 0 20px;
+    margin: -16px 0 -20px;
 }
 
-.review-avatar {
-    width: 48px;
-    height: 48px;
+.ulasan-slider-track {
+    display: flex;
+    gap: 24px;
+    transition: transform 0.55s cubic-bezier(0.25, 0.1, 0.25, 1);
+    will-change: transform;
+}
+
+/* -- Each slide -- */
+.ulasan-slide {
+    flex: 0 0 calc((100% - 48px) / 3);
+    min-width: 0;
+}
+
+.terbaik-slide {
+    flex: 0 0 calc((100% - 72px) / 4);
+}
+
+/* ============================================
+   ULASAN CARD
+   ============================================ */
+.ulasan-card-modern {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 28px 24px 20px;
+    height: 100%;
+    min-height: 250px;
+    border: 1px solid rgba(0, 171, 107, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    transition: all 0.4s cubic-bezier(0.2, 0, 0, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.ulasan-card-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--dk-primary), #34d399, var(--dk-primary));
+    background-size: 200% 100%;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.ulasan-card-modern:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 50px rgba(0, 171, 107, 0.12), 0 8px 24px rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 171, 107, 0.15);
+}
+
+.ulasan-card-modern:hover::before {
+    opacity: 1;
+    animation: shimmer 2s linear infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* -- User info (top of card) -- */
+.ulasan-user-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.ulasan-avatar-ring {
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
-    background: var(--dk-primary-light);
+    padding: 2px;
+    background: linear-gradient(135deg, var(--dk-primary), #34d399);
+    flex-shrink: 0;
+}
+
+.ulasan-avatar-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #f0fdf4;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--dk-primary);
 }
 
-.review-avatar i {
-    font-size: 1.5rem;
+.ulasan-user-name {
+    font-weight: 700;
+    font-size: 0.92rem;
+    margin-bottom: 2px !important;
+    color: #1a202c;
+}
+
+.ulasan-user-meta {
+    min-width: 0;
+}
+
+.ulasan-user-detail {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: var(--dk-text-light);
+    flex-wrap: wrap;
+}
+
+.ulasan-user-detail i {
     color: var(--dk-primary);
+    font-size: 0.72rem;
+}
+
+.ulasan-date-sep {
+    color: #cbd5e0;
+}
+
+/* -- Stars -- */
+.ulasan-stars {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 12px;
+}
+
+.ulasan-stars i {
+    font-size: 0.85rem;
+    color: #f5b042;
+    filter: drop-shadow(0 1px 2px rgba(245, 176, 66, 0.3));
+}
+
+/* -- Comment text -- */
+.ulasan-comment {
+    font-size: 0.92rem;
+    line-height: 1.75;
+    color: #4a5568;
+    flex: 1;
+    margin-bottom: 0;
+    font-style: italic;
+}
+
+/* -- Quote icon (decorative bottom-right) -- */
+.ulasan-quote-icon {
+    position: absolute;
+    bottom: 16px;
+    right: 20px;
+    pointer-events: none;
+}
+
+.ulasan-quote-icon i {
+    font-size: 3rem;
+    background: linear-gradient(135deg, var(--dk-primary), #34d399);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    opacity: 0.08;
+    line-height: 1;
+}
+
+/* ============================================
+   TERBAIK CARD
+   ============================================ */
+.terbaik-card-modern {
+    background: #ffffff;
+    border-radius: 20px;
+    overflow: hidden;
+    height: 100%;
+    border: 1px solid rgba(0, 171, 107, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    transition: all 0.4s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.terbaik-card-modern:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 50px rgba(0, 171, 107, 0.12), 0 8px 24px rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 171, 107, 0.15);
+}
+
+.terbaik-img-wrapper {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+}
+
+.terbaik-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.terbaik-card-modern:hover .terbaik-img-wrapper img {
+    transform: scale(1.05);
+}
+
+.terbaik-rating-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #ffffff;
+    padding: 4px 10px;
+    border-radius: 50px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.terbaik-rating-badge i {
+    color: #f5b042;
+    font-size: 0.72rem;
+}
+
+.terbaik-card-body {
+    padding: 16px 18px 18px;
+}
+
+.terbaik-room-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #1a202c;
+    margin-bottom: 6px;
+}
+
+.terbaik-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: var(--dk-text-light);
+    flex-wrap: wrap;
+}
+
+.terbaik-meta i {
+    color: var(--dk-primary);
+    font-size: 0.72rem;
+}
+
+/* ============================================
+   SHARED NAV & DOTS
+   ============================================ */
+.ulasan-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: #ffffff;
+    color: var(--dk-primary);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.ulasan-nav:hover {
+    background: var(--dk-primary);
+    color: #ffffff;
+    transform: translateY(-50%) scale(1.08);
+    box-shadow: 0 8px 24px rgba(0, 171, 107, 0.3);
+}
+
+.ulasan-nav.disabled {
+    opacity: 0.35;
+    cursor: default;
+    pointer-events: none;
+}
+
+.ulasan-nav-prev { left: 0; }
+.ulasan-nav-next { right: 0; }
+
+.ulasan-dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 36px;
+}
+
+.ulasan-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: none;
+    background: #d1d5db;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.35s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.ulasan-dot.active {
+    background: var(--dk-primary);
+    width: 32px;
+    border-radius: 50px;
+    box-shadow: 0 2px 8px rgba(0, 171, 107, 0.35);
+}
+
+.ulasan-dot:hover:not(.active) {
+    background: #9ca3af;
+    transform: scale(1.2);
+}
+
+/* -- Section spacing -- */
+#section-ulasan {
+    margin-top: 7rem;
+}
+
+/* ============================================
+   SLIDER RESPONSIVE
+   ============================================ */
+@media (max-width: 1199.98px) {
+    .ulasan-slide:not(.terbaik-slide) {
+        flex: 0 0 calc((100% - 24px) / 2);
+    }
+    .terbaik-slide {
+        flex: 0 0 calc((100% - 48px) / 3);
+    }
+}
+
+@media (max-width: 991.98px) {
+    .ulasan-slide:not(.terbaik-slide) {
+        flex: 0 0 100%;
+    }
+    .terbaik-slide {
+        flex: 0 0 calc((100% - 24px) / 2);
+    }
+}
+
+@media (max-width: 767.98px) {
+    .terbaik-slide {
+        flex: 0 0 100%;
+    }
+
+    .ulasan-slider-wrapper,
+    .terbaik-slider-wrapper {
+        padding: 0 16px;
+    }
+
+    .ulasan-nav {
+        width: 38px;
+        height: 38px;
+        font-size: 1rem;
+    }
+
+    .ulasan-nav-prev { left: -2px; }
+    .ulasan-nav-next { right: -2px; }
+
+    .ulasan-card-modern {
+        padding: 22px 18px 18px;
+        border-radius: 16px;
+    }
+
+    .terbaik-img-wrapper {
+        height: 160px;
+    }
+
+    #section-ulasan {
+        margin-top: 1rem;
+    }
 }
 
 /* ============================================
@@ -996,7 +1364,7 @@ header.py-5 {
    RESPONSIVE
    ============================================ */
 /* ============================================
-   INDEX — MOBILE FIXES
+   INDEX — TABLET FIXES
    ============================================ */
 @media (max-width: 991px) {
 
@@ -1046,11 +1414,13 @@ header.py-5 {
     #android-download .d-flex.justify-content-md-end {
         justify-content: center !important;
     }
+
     #android-download {
         padding-left: 16px !important;
         padding-right: 16px !important;
         overflow: hidden;
     }
+
     .download-card .bg-white {
         max-width: 120px;
         margin: 0 auto;
@@ -1065,9 +1435,9 @@ header.py-5 {
     .navbar-collapse {
         padding: 12px 16px !important;
         margin-top: 8px;
-        background: rgba(255,255,255,0.97);
+        background: rgba(255, 255, 255, 0.97);
         border-radius: 12px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     }
 
     /* Hapus margin-top negatif yang bikin nabrak di mobile */
@@ -1110,6 +1480,7 @@ header.py-5 {
     .move-up {
         margin-top: 0 !important;
     }
+
     .display-4 {
         font-size: 2.5rem !important;
         margin-bottom: 50px !important;
@@ -1136,10 +1507,21 @@ header.py-5 {
 
 @media (max-width: 768px) {
 
-        /* Typography */
-    h1, .h1 { font-size: 1.6rem !important; }
-    h2, .h2 { font-size: 1.3rem !important; }
-    h3, .h3 { font-size: 1.1rem !important; }
+    /* Typography */
+    h1,
+    .h1 {
+        font-size: 1.6rem !important;
+    }
+
+    h2,
+    .h2 {
+        font-size: 1.3rem !important;
+    }
+
+    h3,
+    .h3 {
+        font-size: 1.1rem !important;
+    }
 
     .display-5 {
         font-size: 1.6rem !important;
@@ -1179,7 +1561,7 @@ header.py-5 {
     .navbar.scrolled .navbar-toggler {
         border-color: rgba(0, 0, 0, 0.2) !important;
     }
-    
+
     /* Tentang kami section — font lebih kecil */
     .fst-italic.fs-5 {
         font-size: 0.9rem !important;
@@ -1237,13 +1619,13 @@ header.py-5 {
         font-size: 0.85rem !important;
     }
 
-    /* Ulasan penghuni cards */
-    .review-card {
-        padding: 12px !important;
+    /* Ulasan penghuni slider */
+    .ulasan-card-modern {
+        padding: 20px 16px !important;
     }
 
-    .review-avatar i {
-        font-size: 1.2rem !important;
+    .ulasan-quote-icon i {
+        font-size: 1.6rem !important;
     }
 }
 
@@ -1410,46 +1792,279 @@ main.flex-shrink-0 {
         margin: 0 auto !important;
     }
 
+        #android-download {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+        overflow: hidden !important;
+    }
+
+    #android-download .download-card {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 1rem !important;
+    }
+
+    #android-download .download-card .d-flex {
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 0.75rem !important;
+    }
+
+    #android-download .download-card img {
+        max-width: 75px !important;
+        height: auto !important;
+    }
+
+    #android-download .bg-white.p-2.rounded-3 {
+        padding: 6px !important;
+    }
+
+        .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    [class*="col-"] {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+    .container,
+    .container-fluid {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    /* ─── Prevent overflow global ─── */
+    section,
+    div {
+        max-width: 100% !important;
+    }
+
+    /* ─── QR Card ─── */
+    #android-download .download-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 1.25rem !important;
+    }
+
+    #android-download .download-card img {
+        max-width: 75px !important;
+    }
+
+        #android-download .download-card .flex-column {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: 0.75rem !important;
+    }
+
+    #android-download .download-card .flex-column > div:first-child {
+        flex: 1 !important;
+        text-align: left !important;
+    }
+
+    #android-download .download-card .flex-column > div:last-child {
+        flex-shrink: 0 !important;
+    }
+
+    #android-download .download-card img {
+        max-width: 75px !important;
+        width: 75px !important;
+        height: auto !important;
+    }
+
     #carouselExampleAutoplaying .carousel-item img,
     #carouselExampleAutoplaying .carousel-inner img,
     #productCarousel .carousel-item img,
     #productCarousel .carousel-inner img {
         height: 220px !important;
     }
-}
 
-/* HP */
-@media (max-width: 576px) {
-    .hero-section {
-        padding-top: 110px !important;
-        padding-bottom: 50px !important;
+        .hero-section .container-fluid {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
     }
 
-    .hero-section .row.moveup {
-        transform: translateY(-10px) !important;
-    }
-
-    .hero-section h1 {
-        font-size: 2rem !important;
-    }
-
-    .hero-section .lead {
-        font-size: 0.95rem !important;
-    }
-
-    .hero-buttons {
-        gap: 12px !important;
-    }
-
-    .hero-buttons .btn {
-        width: 100% !important;
+    .hero-section .row {
+        margin-left: 0 !important;
         margin-right: 0 !important;
     }
 
-    #carouselExampleAutoplaying .carousel-item img,
-    #carouselExampleAutoplaying .carousel-inner img,
-    #productCarousel .carousel-item img,
-    #productCarousel .carousel-inner img {
-        height: 180px !important;
+    .hero-section [class*="col-"] {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+}
+
+/* Force side-by-side layout on tablet (>=768px) for download section */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    #android-download .col-md-7 {
+        width: 58.33333333% !important;
+        flex: 0 0 58.33333333% !important;
+        max-width: 58.33333333% !important;
+        text-align: left !important;
+    }
+    #android-download .col-md-5 {
+        width: 41.66666667% !important;
+        flex: 0 0 41.66666667% !important;
+        max-width: 41.66666667% !important;
+    }
+    #android-download .d-flex.justify-content-md-end {
+        justify-content: flex-end !important;
+    }
+}
+
+html, body {
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+}
+
+/* ─── MOBILE FIX ──────────────────────────────────────────────── */
+@media (max-width: 767.98px) {
+
+    /* Reset row negative margin (penyebab konten miring) */
+    .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    /* Konsistenkan padding container */
+    .container-fluid {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    /* Col padding konsisten, JANGAN overflow hidden di sini */
+    [class*="col-"] {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+
+    /* ─── Hero section: jangan potong teks ─── */
+    .hero-section {
+        overflow: visible !important;
+        z-index: 1 !important;
+    }
+
+    .navbar {
+        z-index: 1050 !important;
+    }
+
+    .navbar-collapse {
+        z-index: 1049 !important;
+        position: relative !important;
+    }
+
+/* ─── Fix hero product page: jangan potong navbar dropdown ─── */
+    .product-hero {
+        overflow: visible !important;
+        z-index: 1 !important;
+    }
+
+    .hero-section h1,
+    .hero-section .lead {
+        overflow: visible !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+    }
+
+    /* ─── Hero carousel: sembunyikan di bawah lg (< 992px) ─── */
+    /* Pakai !important agar tidak tertimpa fix row di atas */
+    .col-lg-7.col-xl-7.d-none.d-lg-block {
+        display: none !important;
+    }
+
+    /* ─── Section Andalan: stack vertical ─── */
+    #section-andalan .col-md-5,
+    #section-andalan .col-md-7 {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+    }
+
+    #productText {
+        text-align: center !important;
+        padding-bottom: 1rem !important;
+    }
+
+    #productCarousel .carousel-item img {
+        height: 220px !important;
+        object-fit: cover !important;
+    }
+
+    /* ─── Section Download & QR ─── */
+    #android-download .col-lg-6,
+    #android-download .col-md-7,
+    #android-download .col-md-5 {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+        text-align: center !important;
+    }
+
+    #android-download .pe-md-5 {
+        padding-right: 0 !important;
+    }
+
+    #android-download .download-card {
+        max-width: 100% !important;
+    }
+
+    #android-download .justify-content-md-end {
+        justify-content: center !important;
+    }
+
+    #productText {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
+
+    #section-andalan .col-md-5 {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
+
+    #section-andalan .row.g-4 {
+        row-gap: 0 !important;
+    }
+
+        #section-andalan .container-fluid.my-3 {
+        margin-top: 15 !important;
+        padding-top: 0 !important;
+    }
+
+    #section-andalan .pb-5 {
+        padding-bottom: 1rem !important;
+    }
+
+    #section-andalan > .container-fluid:first-child {
+        padding-bottom: 0 !important;
+        margin-bottom: 0 !important;
+    }
+    
+}
+
+/* ─── Tambahan: lg ke bawah (tablet) tetap sembunyikan hero carousel ─── */
+@media (max-width: 991.98px) {
+    .col-lg-7.col-xl-7.d-none.d-lg-block {
+        display: none !important;
+    }
+}
+
+/* ─── Download Direction Helper ─── */
+.download-dir-side {
+    display: none !important;
+}
+.download-dir-below {
+    display: inline !important;
+}
+
+@media (min-width: 768px) {
+    .download-dir-side {
+        display: inline !important;
+    }
+    .download-dir-below {
+        display: none !important;
     }
 }
